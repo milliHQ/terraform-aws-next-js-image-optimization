@@ -31,7 +31,7 @@ function generateParams(url: string, options: Options = {}) {
 }
 
 describe('[unit] imageOptimizer', () => {
-  test('', async () => {
+  test('External image', async () => {
     const imageConfig: ImageConfig = {
       ...imageConfigDefault,
       domains: ['upload.wikimedia.org'],
@@ -57,11 +57,12 @@ describe('[unit] imageOptimizer', () => {
 
     const defer = createDeferred();
 
-    response.on('send', (chunk: any) => {
-      console.log(response._getData());
+    response.on('data', () => {
+      response._getData();
     });
 
     response.on('end', () => {
+      response._getData();
       defer.resolve();
     });
 
@@ -72,11 +73,16 @@ describe('[unit] imageOptimizer', () => {
       params.parsedUrl
     );
 
+    await defer.promise;
+
     const header = response._getHeaders();
     const body = response._getBuffer();
 
     expect(result.finished).toBe(true);
 
-    await defer.promise;
+    // Write the snapshots as image
+    // addSnapshotSerializer
+    // https://github.com/synyx/jest-canvas-snapshot-serializer
+    expect(body).toMatchSnapshot();
   });
 });
