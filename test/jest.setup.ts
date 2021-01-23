@@ -1,3 +1,3 @@
-import { toMatchImageSnapshot } from 'jest-image-snapshot';
+import { toMatchFile } from 'jest-file-snapshot';
 
-expect.extend({ toMatchImageSnapshot });
+expect.extend({ toMatchFile });
