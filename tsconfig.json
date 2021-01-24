@@ -10,6 +10,5 @@
     "sourceMap": false,
     "experimentalDecorators": true,
     "esModuleInterop": true
-  },
-  "include": ["lib/**/*"]
+  }
 }

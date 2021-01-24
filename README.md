@@ -1,5 +1,7 @@
 # Terraform Next.js Image Optimization module for AWS
 
+![CI](https://github.com/dealmore/terraform-aws-next-js-image-optimization/workflows/CI/badge.svg)
+
 A drop-in image optimization [loader](https://nextjs.org/docs/basic-features/image-optimization#loader) for Next.js image component `next/image`.
 
 ## Features

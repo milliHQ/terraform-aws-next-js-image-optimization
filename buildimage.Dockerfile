@@ -4,4 +4,14 @@
 
 FROM registry.gitlab.com/dealmore/dealmore-build-images/lambdaci:nodejs12.x
 
-RUN yarn --frozen-lockfile
+WORKDIR /app
+
+ADD tsconfig.json \
+    ./lib/package.json \
+    ./lib/*.ts \
+    /app/
+
+RUN ls -a /app
+
+RUN npm i &&\
+    npm run build
