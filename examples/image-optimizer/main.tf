@@ -18,3 +18,7 @@ module "next_image_optimizer" {
 
   debug_use_local_packages = true
 }
+
+output "domain" {
+  value = module.next_image_optimizer.cloudfront_domain_name
+}

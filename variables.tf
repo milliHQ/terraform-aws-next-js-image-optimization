@@ -36,9 +36,37 @@ variable "lambda_timeout" {
 }
 
 variable "lambda_role_permissions_boundary" {
-  type        = string
   description = "ARN of IAM policy that scopes aws_iam_role access for the lambda."
+  type        = string
   default     = null
+}
+
+variable "expire_cache" {
+  description = "The amount of days a processed image should be stored in the S3 cache. Set to -1 to disable."
+  type        = number
+  default     = 30
+}
+
+#####################
+# CloudFront settings
+#####################
+
+variable "cloudfront_create_distribution" {
+  description = "Controls whether a CloudFront distribution should be created."
+  type        = bool
+  default     = true
+}
+
+variable "cloudfront_price_class" {
+  description = "The price class for the CloudFront distributions (main & proxy config). One of PriceClass_All, PriceClass_200, PriceClass_100."
+  type        = string
+  default     = "PriceClass_100"
+}
+
+variable "cloudfront_minimum_protocol_version" {
+  description = "The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections. One of SSLv3, TLSv1, TLSv1_2016, TLSv1.1_2016, TLSv1.2_2018 or TLSv1.2_2019."
+  type        = string
+  default     = "TLSv1.2_2019"
 }
 
 ##########
