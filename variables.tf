@@ -7,13 +7,19 @@ variable "next_js_version" {
   default     = "^10.0.0"
 }
 
+variable "domains" {
+  description = "The allowed origin domains that can be used for fetching images."
+  type        = list(string)
+  default     = []
+}
+
 variable "lambda_memory_size" {
   description = "Amount of memory in MB the worker Lambda Function can use. Valid value between 128 MB to 10,240 MB, in 1 MB increments."
   type        = number
   default     = 1024
 
   validation {
-    condition     = var.lambda_timeout >= 128 && var.lambda_timeout <= 10240
+    condition     = var.lambda_memory_size >= 128 && var.lambda_memory_size <= 10240
     error_message = "The var.lambda_memory_size must between 128 and 10240 MB."
   }
 }
@@ -40,9 +46,9 @@ variable "lambda_role_permissions_boundary" {
 ##########
 
 variable "deployment_name" {
-  description = "Identifier for the deployment group (Added to Comments)."
+  description = "Identifier for the deployment group (alphanumeric characters, underscores, hyphens, slashes, hash signs and dots are allowed)."
   type        = string
-  default     = "Terraform-next.js image optimizer"
+  default     = "tf-next-image"
 }
 
 variable "tags" {

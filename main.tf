@@ -39,7 +39,8 @@ module "image_optimizer" {
   publish       = true
 
   environment_variables = {
-    NODE_ENV = "production"
+    NODE_ENV = "production",
+    DOMAINS  = jsonencode(var.domains)
   }
 
   create_package         = false

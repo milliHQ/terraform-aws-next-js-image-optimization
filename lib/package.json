@@ -7,9 +7,9 @@
     "url": "https://github.com/dealmore/terraform-aws-next-js-image-optimization.git"
   },
   "scripts": {
-    "build": "funny build -e aws-sdk handler.ts dist.zip",
-    "prepack": "cp ../../LICENSE ./",
-    "postpack": "rm ./LICENSE"
+    "build": "ncc-zip build -e aws-sdk -f handler --license third-party-licenses.txt -m handler.ts",
+    "prepack": "cp ../LICENSE dist/third-party-licenses.txt ./",
+    "postpack": "rm ./LICENSE ./third-party-licenses.txt"
   },
   "dependencies": {
     "aws-sdk": "*",
@@ -17,12 +17,16 @@
     "node-fetch": "2.6.1"
   },
   "devDependencies": {
-    "@dealmore/funny": "^0.3.2",
-    "@types/aws-lambda": "^8.10.71",
+    "@dealmore/terraform-next-node-bridge": "^1.0.0",
+    "@types/aws-lambda": "8.10.56",
+    "@types/node": "^12.0.0",
     "@types/node-fetch": "^2.5.7",
+    "@vercel/ncc": "^0.27.0",
+    "ncc-zip": "^1.0.0",
     "typescript": "^4.1.3"
   },
   "files": [
-    "dist.zip"
+    "dist.zip",
+    "third-party-licenses.txt"
   ]
 }
