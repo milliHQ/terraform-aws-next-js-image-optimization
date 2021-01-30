@@ -94,6 +94,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: lambda
+          path: lib
 
       - name: Run e2e-test
         run: yarn test:e2e --runInBand
