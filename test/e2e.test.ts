@@ -9,7 +9,7 @@ import { getLocalIpAddressFromHost } from './utils/host-ip-address';
 describe('e2e test', () => {
   const route = '/_next/image';
   const hostIpAddress = getLocalIpAddressFromHost();
-  const s3Endpoint = process.env.CI ? 's3:9000' : `${hostIpAddress}:9000`;
+  const s3Endpoint = `${hostIpAddress}:9000`;
   const pathToWorker = path.resolve(__dirname, '../lib');
   const fixturesDir = path.resolve(__dirname, './fixtures');
   const fixtures = ['jpeg/Macaca_nigra_self-portrait_large.jpg'];
@@ -28,7 +28,7 @@ describe('e2e test', () => {
           route,
           method: 'get',
           environment: {
-            DOMAINS: JSON.stringify([hostIpAddress, 's3']),
+            DOMAINS: JSON.stringify([hostIpAddress]),
           },
         },
       },
