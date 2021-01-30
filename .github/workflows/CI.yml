@@ -27,6 +27,13 @@ jobs:
           yarn --frozen-lockfile --cache-folder .yarn
           yarn workspace @dealmore/tf-next-image-optimization build
 
+      - name: Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: lambda
+          path: lib/dist.zip
+          if-no-files-found: error
+
   test-integration:
     runs-on: ubuntu-latest
     container: registry.gitlab.com/dealmore/dealmore-build-images/lambdaci:nodejs12.x
@@ -53,3 +60,40 @@ jobs:
         run: |
           yarn --frozen-lockfile --cache-folder .yarn
           yarn test
+
+  test-e2e:
+    runs-on: ubuntu-latest
+    needs: build
+    env:
+      SAM_CLI_TELEMETRY: 0
+      # Don't worry these are fake AWS credentials for AWS SAM
+      AWS_ACCESS_KEY_ID: ABIAZLJNBT8I3KFOU4NO
+      AWS_SECRET_ACCESS_KEY: 4Xt3Rbx4DO21MhK1IHXZXRvVRDuqaQ0Wo5lILA/h
+
+    steps:
+      - name: Setup AWS SAM
+        run: |
+          brew tap aws/tap
+          brew install aws-sam-cli
+          sam --version
+
+      - uses: actions/checkout@v2
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            .yarn
+            **/node_modules
+          key: e2e-${{ hashFiles('yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --check-files
+
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: lambda
+
+      - name: Run e2e-test
+        run: yarn test:e2e --runInBand

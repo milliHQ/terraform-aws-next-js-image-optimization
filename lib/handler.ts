@@ -6,8 +6,10 @@ import {
 import { Bridge } from '@dealmore/terraform-next-node-bridge';
 import { parse as parseUrl } from 'url';
 import { APIGatewayProxyEventV2, Context } from 'aws-lambda';
+import { S3 } from 'aws-sdk';
 
 import { imageOptimizer } from './image-optimizer';
+import { cacheResponse } from './cache-response';
 
 let domains = [];
 try {
@@ -30,12 +32,13 @@ const server = new Server((req, res) => {
 const bridge = new Bridge(server);
 bridge.listen();
 
+const s3 = new S3();
+
 export async function handler(event: APIGatewayProxyEventV2, context: Context) {
   const response = await bridge.launcher(event, context);
 
-  // We intercept the response from Next.js here and upload the result to S3
-  // if (response.statusCode === 200) {
-  // }
+  //  We intercept the response from Next.js here and cache the result to S3
+  await cacheResponse(s3, event, response);
 
   return response;
 }

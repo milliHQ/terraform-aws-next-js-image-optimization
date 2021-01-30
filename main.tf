@@ -18,6 +18,7 @@ resource "aws_s3_bucket" "cache" {
   tags = var.tags
 }
 
+# CloudFront access policy
 resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
   comment = var.deployment_name
 }
@@ -42,6 +43,14 @@ resource "aws_s3_bucket_policy" "cloudfront_access" {
 ###############
 # Worker Lambda
 ###############
+
+# Access to caching bucket
+data "aws_iam_policy_document" "lambda_access_cache" {
+  statement {
+    actions   = ["s3:PutObject"]
+    resources = ["${aws_s3_bucket.cache.arn}/*"]
+  }
+}
 module "lambda_content" {
   source  = "dealmore/download/npm"
   version = "1.0.0"
@@ -85,7 +94,10 @@ module "image_optimizer" {
   }
 
   cloudwatch_logs_retention_in_days = 30
-  role_permissions_boundary         = var.lambda_role_permissions_boundary
+
+  attach_policy_json        = true
+  policy_json               = data.aws_iam_policy_document.lambda_access_cache.json
+  role_permissions_boundary = var.lambda_role_permissions_boundary
 
   tags = var.tags
 }

@@ -80,7 +80,7 @@ describe('[unit] External image', () => {
     // Mock request & response
     const request = createRequest({
       method: 'GET',
-      url: '/image',
+      url: '/_next/image',
       params: params.params,
     });
     const response = createResponse({
