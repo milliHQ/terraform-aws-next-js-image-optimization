@@ -76,6 +76,8 @@ jobs:
         env:
           MINIO_ACCESS_KEY: test
           MINIO_SECRET_KEY: testtest
+        ports:
+          - 9000:9000
 
     steps:
       - name: Setup AWS SAM
