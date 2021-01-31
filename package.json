@@ -10,7 +10,7 @@
   "scripts": {
     "build:local": "scripts/build-local.sh",
     "test": "jest --testPathIgnorePatterns e2e.*",
-    "test:e2e": "jest e2e.*"
+    "test:e2e": "jest --testTimeout=60000 e2e.*"
   },
   "devDependencies": {
     "@dealmore/sammy": "^1.0.0",
