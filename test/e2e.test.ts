@@ -5,14 +5,15 @@ import { URLSearchParams } from 'url';
 
 import { s3PublicDir } from './utils/s3-public-dir';
 import { getLocalIpAddressFromHost } from './utils/host-ip-address';
+import { acceptAllFixtures } from './constants';
 
-describe('e2e test', () => {
+describe('[e2e] External image', () => {
   const route = '/_next/image';
   const hostIpAddress = getLocalIpAddressFromHost();
   const s3Endpoint = `${hostIpAddress}:9000`;
   const pathToWorker = path.resolve(__dirname, '../lib');
   const fixturesDir = path.resolve(__dirname, './fixtures');
-  const fixtures = ['jpeg/Macaca_nigra_self-portrait_large.jpg'];
+  const cacheControlHeader = 'public, max-age=123456';
   let fixtureBucketName: string;
   let lambdaSAM: LambdaSAM;
   let s3: S3;
@@ -48,7 +49,7 @@ describe('e2e test', () => {
     };
     s3 = new S3(S3options);
 
-    const upload = await s3PublicDir(s3, fixturesDir);
+    const upload = await s3PublicDir(s3, fixturesDir, cacheControlHeader);
     fixtureBucketName = upload.bucketName;
   });
 
@@ -56,32 +57,39 @@ describe('e2e test', () => {
     await lambdaSAM.stop();
   });
 
-  test.each(fixtures)('%p', async (filePath) => {
-    const publicPath = `http://${s3Endpoint}/${fixtureBucketName}/${filePath}`;
-    const params = new URLSearchParams({
-      url: publicPath,
-      w: '2048',
-      q: '75',
-    });
-    const optimizerPrefix = `external_w-${params.get('w')}_q-${params.get(
-      'q'
-    )}_`;
-    const snapshotFileName = path.join(
-      __dirname,
-      '__snapshots__/e2e/',
-      `${optimizerPrefix}${filePath.replace('/', '_')}`
-    );
+  test.each(acceptAllFixtures)(
+    'Accept */*: %s',
+    async (filePath, fixtureResponse) => {
+      const publicPath = `http://${s3Endpoint}/${fixtureBucketName}/${filePath}`;
+      const optimizerParams = new URLSearchParams({
+        url: publicPath,
+        w: '2048',
+        q: '75',
+      });
+      const optimizerPrefix = `external_accept_all_w-${optimizerParams.get(
+        'w'
+      )}_q-${optimizerParams.get('q')}_`;
+      const snapshotFileName = path.join(
+        __dirname,
+        '__snapshots__/e2e/',
+        `${optimizerPrefix}${filePath.replace('/', '_')}.${fixtureResponse.ext}`
+      );
 
-    const response = await lambdaSAM.sendApiGwRequest(
-      `${route}?${params.toString()}`
-    );
-    const body = await response
-      .text()
-      .then((text) => Buffer.from(text, 'base64'));
+      const response = await lambdaSAM.sendApiGwRequest(
+        `${route}?${optimizerParams.toString()}`
+      );
+      const body = await response
+        .text()
+        .then((text) => Buffer.from(text, 'base64'));
 
-    expect(response.status).toBe(200);
-    expect(body).toMatchFile(snapshotFileName);
-  });
+      expect(response.status).toBe(200);
+      expect(body).toMatchFile(snapshotFileName);
+      expect(response.headers.get('Content-Type')).toBe(
+        fixtureResponse['content-type']
+      );
+      expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
+    }
+  );
 
   test.todo('Run test against domain that is not on the list');
 });

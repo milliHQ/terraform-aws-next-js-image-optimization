@@ -9,13 +9,12 @@ If you need a complete hosting solution for Next.js with Terraform, please check
 
 This module is currently under active development.
 
-- ✅  Terraform `v0.13+`
-- ✅  Serverless image processing powered by [AWS Lambda](https://aws.amazon.com/lambda/)
-- ✅  [Amazon CloudFront](https://aws.amazon.com/cloudfront/) powered image caching
-- 🚧  S3 powered image cache with automatic expiration
-- 🚧  CORS based security rules (Only allow image embed from defined domains)
-- 🚧  Support for [Device Sizes](https://nextjs.org/docs/basic-features/image-optimization#device-sizes)
-- 🚧  Support for [Image Sizes](https://nextjs.org/docs/basic-features/image-optimization#image-sizes)
+- ✅ &nbsp;Terraform `v0.13+`
+- ✅ &nbsp;Serverless image processing powered by [AWS Lambda](https://aws.amazon.com/lambda/)
+- ✅ &nbsp;[Amazon CloudFront](https://aws.amazon.com/cloudfront/) powered image caching
+- 🚧 &nbsp;CORS based security rules (Only allow image embed from defined domains)
+- 🚧 &nbsp;Support for [Device Sizes](https://nextjs.org/docs/basic-features/image-optimization#device-sizes)
+- 🚧 &nbsp;Support for [Image Sizes](https://nextjs.org/docs/basic-features/image-optimization#image-sizes)
 
 ## Usage
 

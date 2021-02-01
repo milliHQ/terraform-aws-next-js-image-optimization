@@ -13,6 +13,7 @@ import * as path from 'path';
 import { imageOptimizer } from '../lib/image-optimizer';
 import { createDeferred } from './utils';
 import { s3PublicDir } from './utils/s3-public-dir';
+import { acceptAllFixtures, acceptWebpFixtures } from './constants';
 
 interface Options {
   w?: string;
@@ -35,12 +36,62 @@ function generateParams(url: string, options: Options = {}) {
   };
 }
 
+async function runOptimizer(
+  params: ReturnType<typeof generateParams>,
+  imageConfig: ImageConfig,
+  requestHeaders: Record<string, string>
+) {
+  // Mock request & response
+  const request = createRequest({
+    method: 'GET',
+    url: '/_next/image',
+    params: params.params,
+    headers: requestHeaders,
+  });
+
+  const response = createResponse({
+    eventEmitter: EventEmitter,
+  });
+
+  const defer = createDeferred();
+
+  response.on('data', () => {
+    response._getData();
+  });
+
+  response.on('end', () => {
+    response._getData();
+    defer.resolve();
+  });
+
+  const result = await imageOptimizer(
+    imageConfig,
+    request,
+    response,
+    params.parsedUrl
+  );
+
+  return {
+    result,
+    headers: response._getHeaders(),
+    body: response._getBuffer(),
+  };
+}
+
 describe('[unit] External image', () => {
   const s3Endpoint = process.env.CI ? 's3:9000' : 'localhost:9000';
   const fixturesDir = path.resolve(__dirname, './fixtures');
+  const optimizerParams = {
+    w: '2048',
+    q: '75',
+  };
+  const imageConfig: ImageConfig = {
+    ...imageConfigDefault,
+    domains: ['localhost', 's3'],
+  };
   let s3: S3;
-  let fixtures = ['jpeg/Macaca_nigra_self-portrait_large.jpg'];
   let bucketName: string;
+  const cacheControlHeader = 'public, max-age=123456';
 
   beforeAll(async () => {
     // Upload files to local s3 Server
@@ -54,63 +105,66 @@ describe('[unit] External image', () => {
     };
     s3 = new S3(S3options);
 
-    const upload = await s3PublicDir(s3, fixturesDir);
+    const upload = await s3PublicDir(s3, fixturesDir, cacheControlHeader);
     bucketName = upload.bucketName;
   });
 
-  test.each(fixtures)('%p', async (filePath) => {
-    const publicPath = `http://${s3Endpoint}/${bucketName}/${filePath}`;
-    const optimizerParams = {
-      w: '2048',
-      q: '75',
-    };
-    const optimizerPrefix = `external_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
-    const snapshotFileName = path.join(
-      __dirname,
-      '__snapshots__',
-      `${optimizerPrefix}${filePath.replace('/', '_')}`
-    );
+  test.each(acceptAllFixtures)(
+    'Accept */*: %s',
+    async (filePath, fixtureResponse) => {
+      const publicPath = `http://${s3Endpoint}/${bucketName}/${filePath}`;
+      const params = generateParams(publicPath, optimizerParams);
 
-    const imageConfig: ImageConfig = {
-      ...imageConfigDefault,
-      domains: ['localhost', 's3'],
-    };
-    const params = generateParams(publicPath, optimizerParams);
+      const { result, headers, body } = await runOptimizer(
+        params,
+        imageConfig,
+        {
+          accept: '*/*',
+        }
+      );
 
-    // Mock request & response
-    const request = createRequest({
-      method: 'GET',
-      url: '/_next/image',
-      params: params.params,
-    });
-    const response = createResponse({
-      eventEmitter: EventEmitter,
-    });
+      expect(result.finished).toBe(true);
+      expect(headers['content-type']).toBe(fixtureResponse['content-type']);
 
-    const defer = createDeferred();
+      const optimizerPrefix = `external_accept_all_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
+      const snapshotFileName = path.join(
+        __dirname,
+        '__snapshots__',
+        `${optimizerPrefix}${filePath.replace('/', '_')}.${fixtureResponse.ext}`
+      );
+      expect(body).toMatchFile(snapshotFileName);
+    }
+  );
 
-    response.on('data', () => {
-      response._getData();
-    });
+  test.each(acceptWebpFixtures)(
+    'Accept image/webp: %s',
+    async (filePath, fixtureResponse) => {
+      const publicPath = `http://${s3Endpoint}/${bucketName}/${filePath}`;
+      const params = generateParams(publicPath, optimizerParams);
 
-    response.on('end', () => {
-      response._getData();
-      defer.resolve();
-    });
+      const { result, headers, body } = await runOptimizer(
+        params,
+        imageConfig,
+        {
+          accept: 'image/webp,*/*',
+        }
+      );
 
-    const result = await imageOptimizer(
-      imageConfig,
-      request,
-      response,
-      params.parsedUrl
-    );
+      expect(result.finished).toBe(true);
+      expect(result.originCacheControl).toBe(cacheControlHeader);
+      expect(headers['content-type']).toBe(fixtureResponse['content-type']);
+      expect(headers['etag']).toBeDefined();
+      expect(headers['cache-control']).toBe(
+        'public, max-age=0, must-revalidate'
+      );
 
-    await defer.promise;
-
-    const header = response._getHeaders();
-    const body = response._getBuffer();
-
-    expect(result.finished).toBe(true);
-    expect(body).toMatchFile(snapshotFileName);
-  });
+      const optimizerPrefix = `external_accept_webp_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
+      const snapshotFileName = path.join(
+        __dirname,
+        '__snapshots__',
+        `${optimizerPrefix}${filePath.replace('/', '_')}.${fixtureResponse.ext}`
+      );
+      expect(body).toMatchFile(snapshotFileName);
+    }
+  );
 });

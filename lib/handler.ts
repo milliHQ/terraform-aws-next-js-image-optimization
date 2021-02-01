@@ -1,15 +1,15 @@
-import { Server } from 'http';
 import {
   ImageConfig,
   imageConfigDefault,
 } from 'next/dist/next-server/server/image-config';
-import { Bridge } from '@dealmore/terraform-next-node-bridge';
 import { parse as parseUrl } from 'url';
-import { APIGatewayProxyEventV2, Context } from 'aws-lambda';
-import { S3 } from 'aws-sdk';
+import {
+  APIGatewayProxyEventV2,
+  APIGatewayProxyStructuredResultV2,
+} from 'aws-lambda';
+import { Writable } from 'stream';
 
 import { imageOptimizer } from './image-optimizer';
-import { cacheResponse } from './cache-response';
 
 let domains = [];
 try {
@@ -24,21 +24,57 @@ const imageConfig: ImageConfig = {
   domains,
 };
 
-const server = new Server((req, res) => {
-  const parsedUrl = parseUrl(req.url!, true);
+export async function handler(
+  event: APIGatewayProxyEventV2
+): Promise<APIGatewayProxyStructuredResultV2> {
+  const reqMock: any = {
+    headers: event.headers,
+    method: event.requestContext.http.method,
+    url: `/?${event.rawQueryString}`,
+  };
 
-  imageOptimizer(imageConfig, req, res, parsedUrl);
-});
-const bridge = new Bridge(server);
-bridge.listen();
+  const resBuffers: Buffer[] = [];
+  const resMock: any = new Writable();
 
-const s3 = new S3();
+  resMock.write = (chunk: Buffer | string) => {
+    resBuffers.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  };
+  resMock._write = (chunk: Buffer | string) => {
+    resMock.write(chunk);
+  };
+  const mockHeaders: Record<string, string | string[]> = {};
+  resMock.writeHead = (_status: any, _headers: any) =>
+    Object.assign(mockHeaders, _headers);
+  resMock.getHeader = (name: string) => mockHeaders[name.toLowerCase()];
+  resMock.getHeaders = () => mockHeaders;
+  resMock.getHeaderNames = () => Object.keys(mockHeaders);
+  resMock.setHeader = (name: string, value: string | string[]) =>
+    (mockHeaders[name.toLowerCase()] = value);
+  resMock._implicitHeader = () => {};
 
-export async function handler(event: APIGatewayProxyEventV2, context: Context) {
-  const response = await bridge.launcher(event, context);
+  const parsedUrl = parseUrl(reqMock.url, true);
+  const result = await imageOptimizer(imageConfig, reqMock, resMock, parsedUrl);
 
-  //  We intercept the response from Next.js here and cache the result to S3
-  await cacheResponse(s3, event, response);
+  const normalizedHeaders: Record<string, string> = {};
+  for (const [headerKey, headerValue] of Object.entries(mockHeaders)) {
+    if (Array.isArray(headerValue)) {
+      normalizedHeaders[headerKey] = headerValue.join(', ');
+      continue;
+    }
 
-  return response;
+    normalizedHeaders[headerKey] = headerValue;
+  }
+
+  if (result.originCacheControl) {
+    normalizedHeaders['cache-control'] = result.originCacheControl;
+  } else {
+    normalizedHeaders['cache-control'] = 'public, max-age=60';
+  }
+
+  return {
+    statusCode: resMock.statusCode || 200,
+    body: Buffer.concat(resBuffers).toString('base64'),
+    isBase64Encoded: true,
+    headers: normalizedHeaders,
+  };
 }

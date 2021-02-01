@@ -2,10 +2,16 @@ import { S3 } from 'aws-sdk';
 import { randomBytes } from 'crypto';
 import { promises as fs, createReadStream } from 'fs';
 import * as path from 'path';
+import { getType } from 'mime';
 
 // Upload the content of the dirPath to the bucket
 // https://stackoverflow.com/a/46213474/831465
-async function uploadDir(s3: S3, s3Path: string, bucketName: string) {
+async function uploadDir(
+  s3: S3,
+  s3Path: string,
+  bucketName: string,
+  cacheControl?: string
+) {
   async function getFiles(dir: string): Promise<string | string[]> {
     const dirents = await fs.readdir(dir, { withFileTypes: true });
     const files = await Promise.all(
@@ -27,6 +33,8 @@ async function uploadDir(s3: S3, s3Path: string, bucketName: string) {
           Key: objectKey,
           Bucket: bucketName,
           Body: createReadStream(filePath),
+          CacheControl: cacheControl,
+          ContentType: getType(filePath) ?? undefined,
         })
         .promise();
     })
@@ -39,7 +47,11 @@ async function uploadDir(s3: S3, s3Path: string, bucketName: string) {
  * Creates a public bucket and uploads the content of dir to it
  * Returns the bucket name
  */
-export async function s3PublicDir(s3: S3, dirPath: string) {
+export async function s3PublicDir(
+  s3: S3,
+  dirPath: string,
+  cacheControl?: string
+) {
   const bucketName = randomBytes(8).toString('hex');
 
   // Configure the bucket so that the objects can be accessed publicly
@@ -89,7 +101,7 @@ export async function s3PublicDir(s3: S3, dirPath: string) {
     .promise();
   await s3.putBucketPolicy(bucketPolicy).promise();
 
-  const files = await uploadDir(s3, dirPath, bucketName);
+  const files = await uploadDir(s3, dirPath, bucketName, cacheControl);
 
   return { bucketName, files };
 }
