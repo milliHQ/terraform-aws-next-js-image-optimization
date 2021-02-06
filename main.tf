@@ -1,56 +1,6 @@
-##############################
-# Processed image storage (S3)
-##############################
-resource "aws_s3_bucket" "cache" {
-  bucket_prefix = "tf-next-image"
-  acl           = "private"
-  force_destroy = true
-
-  lifecycle_rule {
-    id      = "expire_cached_images"
-    enabled = var.expire_cache >= 0 # -1 disables the expiration
-
-    expiration {
-      days = var.expire_cache > 0 ? var.expire_cache : 0
-    }
-  }
-
-  tags = var.tags
-}
-
-# CloudFront access policy
-resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
-  comment = var.deployment_name
-}
-
-data "aws_iam_policy_document" "cloudfront_s3_access" {
-  statement {
-    actions   = ["s3:GetObject"]
-    resources = ["${aws_s3_bucket.cache.arn}/*"]
-
-    principals {
-      type        = "AWS"
-      identifiers = [aws_cloudfront_origin_access_identity.origin_access_identity.iam_arn]
-    }
-  }
-}
-
-resource "aws_s3_bucket_policy" "cloudfront_access" {
-  bucket = aws_s3_bucket.cache.id
-  policy = data.aws_iam_policy_document.cloudfront_s3_access.json
-}
-
 ###############
 # Worker Lambda
 ###############
-
-# Access to caching bucket
-data "aws_iam_policy_document" "lambda_access_cache" {
-  statement {
-    actions   = ["s3:PutObject"]
-    resources = ["${aws_s3_bucket.cache.arn}/*"]
-  }
-}
 module "lambda_content" {
   source  = "dealmore/download/npm"
   version = "1.0.0"
@@ -95,8 +45,6 @@ module "image_optimizer" {
 
   cloudwatch_logs_retention_in_days = 30
 
-  attach_policy_json        = true
-  policy_json               = data.aws_iam_policy_document.lambda_access_cache.json
   role_permissions_boundary = var.lambda_role_permissions_boundary
 
   tags = var.tags
@@ -135,14 +83,8 @@ locals {
   # Must be sorted to prevent unnessesary updates of the cloudFront distribution
   cloudfront_allowed_query_string_keys = sort(["url", "w", "q"])
 
-  cloudfront_origin_image_cache = {
-    domain_name = aws_s3_bucket.cache.bucket_regional_domain_name
-    origin_id   = "tf-next-image-cache"
-
-    s3_origin_config = {
-      origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path
-    }
-  }
+  # Headers that are used by the image optimizer
+  cloudfront_allowed_headers = sort(["accept", "referer"])
 
   cloudfront_origin_image_optimizer = {
     domain_name = trimprefix(module.api_gateway.this_apigatewayv2_api_api_endpoint, "https://")
@@ -155,22 +97,34 @@ locals {
       origin_ssl_protocols   = ["TLSv1.2"]
     }
   }
-
-  cloudfront_origin_group = {
-    origin_id = "tf-next-image-origin-group"
-
-    # When the image does not exist on S3, S3 sends a 403, which then triggers
-    # the image optimizer Lambda reoute
-    failover_criteria = {
-      status_codes = [403]
-    }
-
-    member = [
-      local.cloudfront_origin_image_cache["origin_id"],
-      local.cloudfront_origin_image_optimizer["origin_id"]
-    ]
-  }
 }
+
+# TODO: Use request policy once support for cache policies is released
+# (We cannot use request policies without cache policies)
+# https://github.com/hashicorp/terraform-provider-aws/pull/17336
+
+# resource "aws_cloudfront_origin_request_policy" "api_gateway" {
+#   name        = var.deployment_name
+#   description = "Managed by Terraform-next.js image optimizer"
+
+#   cookies_config {
+#     cookie_behavior = "none"
+#   }
+
+#   headers_config {
+#     header_behavior = "whitelist"
+#     headers {
+#       items = local.cloudfront_allowed_headers
+#     }
+#   }
+
+#   query_strings_config {
+#     query_string_behavior = "whitelist"
+#     query_strings {
+#       items = local.cloudfront_allowed_query_string_keys
+#     }
+#   }
+# }
 
 module "cloudfront" {
   source = "./modules/cloudfront-cache"
@@ -179,11 +133,8 @@ module "cloudfront" {
   cloudfront_minimum_protocol_version  = var.cloudfront_minimum_protocol_version
   cloudfront_price_class               = var.cloudfront_price_class
   cloudfront_allowed_query_string_keys = local.cloudfront_allowed_query_string_keys
-  cloudfront_origins = [
-    local.cloudfront_origin_image_cache,
-    local.cloudfront_origin_image_optimizer
-  ]
-  cloudfront_origin_group = local.cloudfront_origin_group
+  cloudfront_allowed_headers           = local.cloudfront_allowed_headers
+  cloudfront_origin                    = local.cloudfront_origin_image_optimizer
 
   deployment_name = var.deployment_name
   tags            = var.tags

@@ -41,12 +41,6 @@ variable "lambda_role_permissions_boundary" {
   default     = null
 }
 
-variable "expire_cache" {
-  description = "The amount of days a processed image should be stored in the S3 cache. Set to -1 to disable."
-  type        = number
-  default     = 30
-}
-
 #####################
 # CloudFront settings
 #####################

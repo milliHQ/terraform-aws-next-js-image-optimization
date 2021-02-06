@@ -12,16 +12,7 @@ resource "aws_cloudfront_distribution" "distribution" {
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = lookup(var.cloudfront_origin_group, "origin_id", null)
-
-    forwarded_values {
-      query_string            = true
-      query_string_cache_keys = var.cloudfront_allowed_query_string_keys
-
-      cookies {
-        forward = "none"
-      }
-    }
+    target_origin_id = lookup(var.cloudfront_origin, "origin_id", null)
 
     viewer_protocol_policy = "redirect-to-https"
     compress               = true
@@ -30,26 +21,21 @@ resource "aws_cloudfront_distribution" "distribution" {
     min_ttl     = 0
     default_ttl = 86400
     max_ttl     = 31536000
-  }
 
-  origin_group {
-    origin_id = lookup(var.cloudfront_origin_group, "origin_id", null)
-
-    failover_criteria {
-      status_codes = lookup(var.cloudfront_origin_group["failover_criteria"], "status_codes", null)
-    }
-
-    dynamic "member" {
-      for_each = lookup(var.cloudfront_origin_group, "member", [])
-
-      content {
-        origin_id = member.value
+    forwarded_values {
+      cookies {
+        forward = "none"
       }
+
+      headers = var.cloudfront_allowed_headers
+
+      query_string            = true
+      query_string_cache_keys = var.cloudfront_allowed_query_string_keys
     }
   }
 
   dynamic "origin" {
-    for_each = var.cloudfront_origins
+    for_each = [var.cloudfront_origin]
 
     content {
       domain_name = origin.value["domain_name"]
@@ -82,7 +68,7 @@ resource "aws_cloudfront_distribution" "distribution" {
 
   viewer_certificate {
     cloudfront_default_certificate = true
-    minimum_protocol_version       = var.cloudfront_minimum_protocol_version
+    # minimum_protocol_version       = var.cloudfront_minimum_protocol_version
   }
 
   restrictions {

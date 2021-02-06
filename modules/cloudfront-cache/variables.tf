@@ -10,11 +10,11 @@ variable "cloudfront_allowed_query_string_keys" {
   type = list(string)
 }
 
-variable "cloudfront_origins" {
-  type = any
+variable "cloudfront_allowed_headers" {
+  type = list(string)
 }
 
-variable "cloudfront_origin_group" {
+variable "cloudfront_origin" {
   type = any
 }
 
