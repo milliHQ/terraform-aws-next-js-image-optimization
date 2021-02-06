@@ -56,16 +56,18 @@ After Terraform has successfully created all resources in your AWS account, you 
 > domain = "<distribution-id>.cloudfront.net"
 ```
 
-You should save the `<distribution-id>.cloudfront.net` output somewhere since you will need it in the next step.
+You should save the `<distribution-id>.cloudfront.net` output somewhere since you need it in the next step.
 
 ## 2. Adjust Next.js config
 
 In your Next.js project, open or create the `next.config.js` file and add the following lines (Remember to replace `<distribution-id>` with the output from the previous step):
 
 ```diff
+// next.config.js
+
 module.exports = {
 +  images: {
-+    path: 'https://<distribution-id>.cloudfront.net/_next/image/'
++    path: 'https://<distribution-id>.cloudfront.net/_next/image'
 +  },
 }
 ```
@@ -85,4 +87,4 @@ vercel
 ---
 
 Now you are all set!  
-You can now visit your Next.js app in browser and the assets should be delivered by the CloudFront distribution.
+You can now visit your Next.js app in browser and the images should be delivered by the CloudFront distribution.
