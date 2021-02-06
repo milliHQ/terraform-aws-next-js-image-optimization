@@ -1,10 +1,12 @@
 # Standalone Example
 
-This example describes how to use the image optimizer together with an existing Next.js deployment.
+This example shows how to use the image optimizer together with an existing Next.js deployment.
+
+> **Note:** The full example code is available on [GitHub](https://github.com/dealmore/terraform-aws-next-js-image-optimization/tree/main/examples/with-next-js)
 
 ## 1. Deploy the image optimizer to AWS
 
-Create a new `main.tf` file and add the following code:
+Create a new `main.tf` file (can be in the same directory where your Next.js project is located) and add the following code:
 
 ```tf
 # main.tf
@@ -27,7 +29,7 @@ provider "aws" {
 module "next_image_optimizer" {
   source = "dealmore/next-js-image-optimization/aws"
 
-  domains = ["example.com", "my.example.com"]
+  domains = ["assets.vercel.com"]
 }
 
 output "domain" {
@@ -63,11 +65,24 @@ In your Next.js project, open or create the `next.config.js` file and add the fo
 ```diff
 module.exports = {
 +  images: {
-+    loader: 'default',
-+    path: 'https://<distribution-id>.cloudfront.net/_next/image/',
++    path: 'https://<distribution-id>.cloudfront.net/_next/image/'
 +  },
 }
 ```
 
+## 3. Deploy your Next.js app
+
+Now build and redeploy your app (for this example we host our Next.js app on [Vercel](https://vercel.com/)):
+
+> Note that Vercel already has built-in image optimization, so this is only for demonstration purposes.
+
+```sh
+npm i -g vercel
+vercel init
+vercel
+```
+
+---
+
 Now you are all set!  
-Rebuild your Next.js app and after a new deployment it should use the image optimizer.
+You can now visit your Next.js app in browser and the assets should be delivered by the CloudFront distribution.

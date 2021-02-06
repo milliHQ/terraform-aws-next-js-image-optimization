@@ -8,13 +8,13 @@ terraform {
 }
 
 provider "aws" {
-  region = "eu-central-1"
+  region = "us-east-1"
 }
 
 module "next_image_optimizer" {
   source = "../.."
 
-  domains = ["raw.githubusercontent.com"]
+  domains = ["assets.vercel.com"]
 
   debug_use_local_packages = true
 }
