@@ -2,7 +2,6 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { imageOptimizer as nextImageOptimizer } from 'next/dist/next-server/server/image-optimizer';
 import { ImageConfig } from 'next/dist/next-server/server/image-config';
 import nodeFetch, { RequestInfo, RequestInit } from 'node-fetch';
-
 import { UrlWithParsedQuery } from 'url';
 import Server from 'next/dist/next-server/server/next-server';
 
@@ -34,8 +33,41 @@ async function imageOptimizer(
       images: imageConfig,
     },
     distDir: '/tmp',
-    getRequestHandler: () => () => {
-      // TODO
+    getRequestHandler: () => async (
+      { headers }: IncomingMessage,
+      res: ServerResponse,
+      url: UrlWithParsedQuery
+    ) => {
+      // TODO: When deployed together with Terraform Next.js we can use
+      // AWS SDK here to fetch the image directly from S3 instead of
+      // using node - fetch
+
+      if (headers.referer) {
+        let upstreamBuffer: Buffer;
+        let upstreamType: string | null;
+
+        const { referer } = headers;
+        const trimmedReferer = referer.endsWith('/')
+          ? referer.substring(0, referer.length - 1)
+          : referer;
+        const origin = `${trimmedReferer}${url.href}`;
+        const upstreamRes = await nodeFetch(origin);
+
+        if (!upstreamRes.ok) {
+          throw new Error(`Could not fetch image from ${origin}`);
+        }
+
+        res.statusCode = upstreamRes.status;
+        upstreamBuffer = Buffer.from(await upstreamRes.arrayBuffer());
+        upstreamType = upstreamRes.headers.get('Content-Type');
+        originCacheControl = upstreamRes.headers.get('Cache-Control');
+
+        if (upstreamType) {
+          res.setHeader('Content-Type', upstreamType);
+        }
+
+        res.end(upstreamBuffer);
+      }
     },
   } as unknown) as Server;
 

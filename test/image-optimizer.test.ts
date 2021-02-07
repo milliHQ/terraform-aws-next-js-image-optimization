@@ -78,7 +78,7 @@ async function runOptimizer(
   };
 }
 
-describe('[unit] External image', () => {
+describe('[unit]', () => {
   const s3Endpoint = process.env.CI ? 's3:9000' : 'localhost:9000';
   const fixturesDir = path.resolve(__dirname, './fixtures');
   const optimizerParams = {
@@ -110,7 +110,7 @@ describe('[unit] External image', () => {
   });
 
   test.each(acceptAllFixtures)(
-    'Accept */*: %s',
+    'External image: Accept */*: %s',
     async (filePath, fixtureResponse) => {
       const publicPath = `http://${s3Endpoint}/${bucketName}/${filePath}`;
       const params = generateParams(publicPath, optimizerParams);
@@ -137,7 +137,7 @@ describe('[unit] External image', () => {
   );
 
   test.each(acceptWebpFixtures)(
-    'Accept image/webp: %s',
+    'External image: Accept image/webp: %s',
     async (filePath, fixtureResponse) => {
       const publicPath = `http://${s3Endpoint}/${bucketName}/${filePath}`;
       const params = generateParams(publicPath, optimizerParams);
@@ -159,6 +159,62 @@ describe('[unit] External image', () => {
       );
 
       const optimizerPrefix = `external_accept_webp_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
+      const snapshotFileName = path.join(
+        __dirname,
+        '__snapshots__',
+        `${optimizerPrefix}${filePath.replace('/', '_')}.${fixtureResponse.ext}`
+      );
+      expect(body).toMatchFile(snapshotFileName);
+    }
+  );
+
+  test.each(acceptAllFixtures)(
+    'Internal image: Accept */*: %s',
+    async (filePath, fixtureResponse) => {
+      const publicPath = `/${bucketName}/${filePath}`;
+      const params = generateParams(publicPath, optimizerParams);
+
+      const { result, headers, body } = await runOptimizer(
+        params,
+        imageConfig,
+        {
+          accept: '*/*',
+          referer: `http://${s3Endpoint}/`,
+        }
+      );
+
+      expect(result.finished).toBe(true);
+      expect(headers['content-type']).toBe(fixtureResponse['content-type']);
+
+      const optimizerPrefix = `internal_accept_all_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
+      const snapshotFileName = path.join(
+        __dirname,
+        '__snapshots__',
+        `${optimizerPrefix}${filePath.replace('/', '_')}.${fixtureResponse.ext}`
+      );
+      expect(body).toMatchFile(snapshotFileName);
+    }
+  );
+
+  test.each(acceptWebpFixtures)(
+    'Internal image: Accept image/webp: %s',
+    async (filePath, fixtureResponse) => {
+      const publicPath = `/${bucketName}/${filePath}`;
+      const params = generateParams(publicPath, optimizerParams);
+
+      const { result, headers, body } = await runOptimizer(
+        params,
+        imageConfig,
+        {
+          accept: 'image/webp,*/*',
+          referer: `http://${s3Endpoint}/`,
+        }
+      );
+
+      expect(result.finished).toBe(true);
+      expect(headers['content-type']).toBe(fixtureResponse['content-type']);
+
+      const optimizerPrefix = `internal_accept_webp_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
       const snapshotFileName = path.join(
         __dirname,
         '__snapshots__',

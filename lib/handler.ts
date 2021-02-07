@@ -10,6 +10,7 @@ import {
 import { Writable } from 'stream';
 
 import { imageOptimizer } from './image-optimizer';
+import { normalizeHeaders } from './normalized-headers';
 
 let domains = [];
 try {
@@ -28,7 +29,7 @@ export async function handler(
   event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyStructuredResultV2> {
   const reqMock: any = {
-    headers: event.headers,
+    headers: normalizeHeaders(event.headers),
     method: event.requestContext.http.method,
     url: `/?${event.rawQueryString}`,
   };
