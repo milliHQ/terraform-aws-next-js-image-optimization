@@ -60,6 +60,7 @@ async function imageOptimizer(
         res.statusCode = upstreamRes.status;
         upstreamBuffer = Buffer.from(await upstreamRes.arrayBuffer());
         upstreamType = upstreamRes.headers.get('Content-Type');
+        originCacheControl = upstreamRes.headers.get('Cache-Control');
 
         if (upstreamType) {
           res.setHeader('Content-Type', upstreamType);

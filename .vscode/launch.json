@@ -22,6 +22,7 @@
         "--inspect-brk",
         "${workspaceRoot}/node_modules/.bin/jest",
         "--runInBand",
+        "--testTimeout=60000",
         "${file}"
       ],
       "console": "integratedTerminal",
