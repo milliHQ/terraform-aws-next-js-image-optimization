@@ -14,7 +14,7 @@ provider "aws" {
 module "next_image_optimizer" {
   source = "../.."
 
-  domains = ["assets.vercel.com"]
+  next_image_domains = ["assets.vercel.com"]
 
   debug_use_local_packages = true
 }

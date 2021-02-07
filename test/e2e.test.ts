@@ -30,7 +30,7 @@ describe('[e2e]', () => {
           route,
           method: 'get',
           environment: {
-            DOMAINS: JSON.stringify([hostIpAddress]),
+            TF_NEXTIMAGE_DOMAINS: JSON.stringify([hostIpAddress]),
           },
         },
       },

@@ -109,6 +109,114 @@ describe('[unit]', () => {
     bucketName = upload.bucketName;
   });
 
+  test('Custom image size', async () => {
+    const fixture = acceptAllFixtures[0];
+    const fixturePath = `http://${s3Endpoint}/${bucketName}/${fixture[0]}`;
+    const defaultImageSize = 32;
+    const nonDefaultImageSize = 33;
+
+    expect(imageConfigDefault.imageSizes).toContain(defaultImageSize);
+    expect(imageConfigDefault.imageSizes).not.toContain(nonDefaultImageSize);
+
+    const params = generateParams(fixturePath, {
+      w: nonDefaultImageSize.toString(),
+      q: '75',
+    });
+
+    {
+      const customImageConfig = {
+        ...imageConfig,
+        imageSizes: [nonDefaultImageSize],
+      };
+
+      const { result, headers } = await runOptimizer(
+        params,
+        customImageConfig,
+        {
+          accept: '*/*',
+        }
+      );
+
+      expect(result.finished).toBe(true);
+      expect(headers['content-type']).toBe(fixture[1]['content-type']);
+    }
+
+    {
+      // Using default image size should not be possible when custom
+      // image size is defined
+      const customImageConfig = {
+        ...imageConfig,
+        imageSizes: [defaultImageSize],
+      };
+
+      const { result, headers, body } = await runOptimizer(
+        params,
+        customImageConfig,
+        {
+          accept: '*/*',
+        }
+      );
+
+      expect(result.finished).toBe(true);
+      expect(body.toString('utf-8').length).toBe(0);
+      expect(headers['content-type']).toBeUndefined();
+    }
+  });
+
+  test('Custom device size', async () => {
+    const fixture = acceptAllFixtures[0];
+    const fixturePath = `http://${s3Endpoint}/${bucketName}/${fixture[0]}`;
+    const defaultDeviceSize = 1080;
+    const nonDefaultDeviceSize = 1081;
+
+    expect(imageConfigDefault.deviceSizes).toContain(defaultDeviceSize);
+    expect(imageConfigDefault.deviceSizes).not.toContain(nonDefaultDeviceSize);
+
+    const params = generateParams(fixturePath, {
+      w: nonDefaultDeviceSize.toString(),
+      q: '75',
+    });
+
+    {
+      const customImageConfig = {
+        ...imageConfig,
+        deviceSizes: [nonDefaultDeviceSize],
+      };
+
+      const { result, headers } = await runOptimizer(
+        params,
+        customImageConfig,
+        {
+          accept: '*/*',
+        }
+      );
+
+      expect(result.finished).toBe(true);
+      expect(headers['content-type']).toBe(fixture[1]['content-type']);
+    }
+
+    {
+      // Using default device size should not be possible when custom
+      // device size is defined
+      const customImageConfig = {
+        ...imageConfig,
+        deviceSizes: [defaultDeviceSize],
+      };
+
+      const { result, headers, body } = await runOptimizer(
+        params,
+        customImageConfig,
+        {
+          accept: '*/*',
+        }
+      );
+
+      expect(result.finished).toBe(true);
+      expect(body.toString('utf-8').length).toBe(0);
+      expect(headers['content-type']).toBeUndefined();
+    }
+  });
+
   test.each(acceptAllFixtures)(
     'External image: Accept */*: %s',
     async (filePath, fixtureResponse) => {

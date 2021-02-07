@@ -29,7 +29,7 @@ provider "aws" {
 module "next_image_optimizer" {
   source = "dealmore/next-js-image-optimization/aws"
 
-  domains = ["assets.vercel.com"]
+  next_image_domains = ["assets.vercel.com"]
 }
 
 output "domain" {

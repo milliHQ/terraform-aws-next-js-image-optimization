@@ -13,8 +13,7 @@ This module is currently under active development.
 - ✅ &nbsp;Serverless image processing powered by [AWS Lambda](https://aws.amazon.com/lambda/)
 - ✅ &nbsp;[Amazon CloudFront](https://aws.amazon.com/cloudfront/) powered image caching
 - 🚧 &nbsp;CORS based security rules (Only allow image embed from defined domains)
-- 🚧 &nbsp;Support for [Device Sizes](https://nextjs.org/docs/basic-features/image-optimization#device-sizes)
-- 🚧 &nbsp;Support for [Image Sizes](https://nextjs.org/docs/basic-features/image-optimization#image-sizes)
+- ✅ &nbsp;Support for custom [Device Sizes](https://nextjs.org/docs/basic-features/image-optimization#device-sizes) & [Image Sizes](https://nextjs.org/docs/basic-features/image-optimization#image-sizes)
 
 ## Usage
 
@@ -43,7 +42,7 @@ provider "aws" {
 module "next_image_optimizer" {
   source = "dealmore/next-js-image-optimization/aws"
 
-  domains = ["example.com", "sub.example.com"]
+  next_image_domains = ["example.com", "sub.example.com"]
 }
 
 output "domain" {

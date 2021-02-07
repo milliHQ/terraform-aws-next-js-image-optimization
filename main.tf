@@ -6,7 +6,7 @@ module "lambda_content" {
   version = "1.0.0"
 
   module_name    = "@dealmore/tf-next-image-optimization"
-  module_version = var.next_js_version
+  module_version = var.next_image_version
   path_to_file   = "dist.zip"
   use_local      = var.debug_use_local_packages
 }
@@ -29,8 +29,10 @@ module "image_optimizer" {
   publish       = true
 
   environment_variables = {
-    NODE_ENV = "production",
-    DOMAINS  = jsonencode(var.domains)
+    NODE_ENV                  = "production",
+    TF_NEXTIMAGE_DOMAINS      = jsonencode(var.next_image_domains)
+    TF_NEXTIMAGE_DEVICE_SIZES = var.next_image_device_sizes != null ? jsonencode(var.next_image_device_sizes) : null
+    TF_NEXTIMAGE_IMAGE_SIZES  = var.next_image_image_sizes != null ? jsonencode(var.next_image_image_sizes) : null
   }
 
   create_package         = false

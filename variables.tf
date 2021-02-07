@@ -1,16 +1,28 @@
 ##########
 # Settings
 ##########
-variable "next_js_version" {
+variable "next_image_version" {
   description = "The Next.js version from where you want to use the image optimizer from. Supports semver ranges."
   type        = string
   default     = "^10.0.0"
 }
 
-variable "domains" {
+variable "next_image_domains" {
   description = "The allowed origin domains that can be used for fetching images."
   type        = list(string)
   default     = []
+}
+
+variable "next_image_device_sizes" {
+  description = "The allowed device sizes that should be used for image optimization."
+  type        = list(number)
+  default     = null
+}
+
+variable "next_image_image_sizes" {
+  description = "The allowed image sizes that should be used for image optimization."
+  type        = list(number)
+  default     = null
 }
 
 variable "lambda_memory_size" {

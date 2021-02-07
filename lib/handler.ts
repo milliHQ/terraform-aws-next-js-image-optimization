@@ -12,17 +12,38 @@ import { Writable } from 'stream';
 import { imageOptimizer } from './image-optimizer';
 import { normalizeHeaders } from './normalized-headers';
 
-let domains = [];
-try {
-  domains = JSON.parse(process.env.DOMAINS);
-} catch (err) {
-  console.error('Could not parse the provided domain list!');
-  console.error(err);
+function parseFromEnv<T>(key: string, defaultValue: T) {
+  try {
+    if (key in process.env) {
+      return JSON.parse(process.env[key]!) as T;
+    }
+
+    return defaultValue;
+  } catch (err) {
+    console.error(`Could not parse ${key} from environment variable`);
+    console.error(err);
+    return defaultValue;
+  }
 }
+
+const domains = parseFromEnv(
+  'TF_NEXTIMAGE_DOMAINS',
+  imageConfigDefault.domains!
+);
+const deviceSizes = parseFromEnv(
+  'TF_NEXTIMAGE_DEVICE_SIZES',
+  imageConfigDefault.deviceSizes
+);
+const imageSizes = parseFromEnv(
+  'TF_NEXTIMAGE_IMAGE_SIZES',
+  imageConfigDefault.deviceSizes
+);
 
 const imageConfig: ImageConfig = {
   ...imageConfigDefault,
   domains,
+  deviceSizes,
+  imageSizes,
 };
 
 export async function handler(

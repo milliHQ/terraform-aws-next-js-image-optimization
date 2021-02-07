@@ -4,6 +4,8 @@ declare module NodeJS {
   }
 
   export interface ProcessEnv {
-    DOMAINS: string;
+    TF_NEXTIMAGE_DOMAINS?: string;
+    TF_NEXTIMAGE_DEVICE_SIZES?: string;
+    TF_NEXTIMAGE_IMAGE_SIZES?: string;
   }
 }
