@@ -12,11 +12,9 @@ provider "aws" {
 }
 
 module "next_image_optimizer" {
-  source = "../.."
+  source = "dealmore/next-js-image-optimization/aws"
 
   next_image_domains = ["assets.vercel.com"]
-
-  debug_use_local_packages = true
 }
 
 output "domain" {
