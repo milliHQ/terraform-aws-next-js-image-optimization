@@ -118,6 +118,10 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 25
+
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
       - name: Download build artifact
         uses: actions/download-artifact@v2
