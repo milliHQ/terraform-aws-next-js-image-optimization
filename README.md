@@ -135,7 +135,7 @@ module.exports = {
 
 We rely on the original Next.js image optimizer, so every version of the internal Lambda component [`@dealmore/tf-next-image-optimization`](https://www.npmjs.com/package/@dealmore/tf-next-image-optimization) follows the versioning schema of the official [Next.js package](https://www.npmjs.com/package/next).
 
-By default we use the current major version `^10.0.0` of Next.js as base, so each deployment of the Terraform module pulls the latest package from this range.
+By default we use the current major version `^10.0.5` of Next.js as base, so each deployment of the Terraform module pulls the latest package from this range.
 
 However if you have problems with a specific version Next.js you can override this setting with a fixed version number or semver range:
 
