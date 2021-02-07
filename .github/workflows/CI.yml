@@ -31,7 +31,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: lambda
-          path: lib/dist.zip
+          path: |
+            lib/dist.zip
+            lib/dist/**/*
           if-no-files-found: error
 
   test-integration:
