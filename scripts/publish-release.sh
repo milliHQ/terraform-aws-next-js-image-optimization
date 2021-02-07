@@ -14,8 +14,7 @@ fi
 
 echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
 
-if [[ $(git describe --exact-match 2> /dev/null || :) =~ "tf-next-image-optimization" ]];
-
+if [[ $(git describe --exact-match 2> /dev/null || :) =~ "tf-next-image-optimization" ]];then
   echo "Publishing version"
   cd lib
   npm publish --access public
