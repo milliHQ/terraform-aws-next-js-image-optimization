@@ -2,25 +2,25 @@
 # Settings
 ##########
 variable "next_image_version" {
-  description = "The Next.js version from where you want to use the image optimizer from. Supports semver ranges."
+  description = "Next.js version from where you want to use the image optimizer from. Supports semver ranges."
   type        = string
   default     = "^10.0.5-beta"
 }
 
 variable "next_image_domains" {
-  description = "The allowed origin domains that can be used for fetching images."
+  description = "Allowed origin domains that can be used for fetching images."
   type        = list(string)
   default     = []
 }
 
 variable "next_image_device_sizes" {
-  description = "The allowed device sizes that should be used for image optimization."
+  description = "Allowed device sizes that should be used for image optimization."
   type        = list(number)
   default     = null
 }
 
 variable "next_image_image_sizes" {
-  description = "The allowed image sizes that should be used for image optimization."
+  description = "Allowed image sizes that should be used for image optimization."
   type        = list(number)
   default     = null
 }
@@ -37,7 +37,7 @@ variable "lambda_memory_size" {
 }
 
 variable "lambda_timeout" {
-  description = "The max amount of time the worker Lambda Function has to return a response in seconds. Should not be more than 30 (Limited by API Gateway)."
+  description = "Max amount of time the worker Lambda Function has to return a response in seconds. Should not be more than 30 (Limited by API Gateway)."
   type        = number
   default     = 30
 
@@ -64,15 +64,9 @@ variable "cloudfront_create_distribution" {
 }
 
 variable "cloudfront_price_class" {
-  description = "The price class for the CloudFront distributions (main & proxy config). One of PriceClass_All, PriceClass_200, PriceClass_100."
+  description = "Price class for the CloudFront distributions (main & proxy config). One of PriceClass_All, PriceClass_200, PriceClass_100."
   type        = string
   default     = "PriceClass_100"
-}
-
-variable "cloudfront_minimum_protocol_version" {
-  description = "The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections. One of SSLv3, TLSv1, TLSv1_2016, TLSv1.1_2016, TLSv1.2_2018 or TLSv1.2_2019."
-  type        = string
-  default     = "TLSv1.2_2019"
 }
 
 ##########

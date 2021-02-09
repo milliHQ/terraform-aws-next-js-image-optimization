@@ -18,9 +18,6 @@ variable "cloudfront_origin" {
   type = any
 }
 
-variable "cloudfront_minimum_protocol_version" {
-  type = string
-}
 
 variable "deployment_name" {
   type = string

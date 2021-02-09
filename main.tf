@@ -132,7 +132,6 @@ module "cloudfront" {
   source = "./modules/cloudfront-cache"
 
   cloudfront_create_distribution       = var.cloudfront_create_distribution
-  cloudfront_minimum_protocol_version  = var.cloudfront_minimum_protocol_version
   cloudfront_price_class               = var.cloudfront_price_class
   cloudfront_allowed_query_string_keys = local.cloudfront_allowed_query_string_keys
   cloudfront_allowed_headers           = local.cloudfront_allowed_headers
