@@ -86,6 +86,7 @@ module.exports = {
 ## Examples
 
 - [Next.js + Vercel](https://github.com/dealmore/terraform-aws-next-js-image-optimization/tree/main/examples/with-next-js) - Use the image optimizer together with a Next.js app deployed on Vercel.
+- [Existing CloudFront](https://github.com/dealmore/terraform-aws-next-js-image-optimization/tree/main/examples/with-existing-cloudfront) - Embedd the image optimizer in an existing CloudFront distribution.
 
 <!-- prettier-ignore-start -->
 <!--- BEGIN_TF_DOCS --->
