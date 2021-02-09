@@ -118,7 +118,7 @@ module.exports = {
 | next\_image\_device\_sizes | The allowed device sizes that should be used for image optimization. | `list(number)` | `null` | no |
 | next\_image\_domains | The allowed origin domains that can be used for fetching images. | `list(string)` | `[]` | no |
 | next\_image\_image\_sizes | The allowed image sizes that should be used for image optimization. | `list(number)` | `null` | no |
-| next\_image\_version | The Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"^10.0.0"` | no |
+| next\_image\_version | The Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"^10.0.5-beta"` | no |
 | tags | Tag metadata to label AWS resources that support tags. | `map(string)` | `{}` | no |
 
 ## Outputs
