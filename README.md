@@ -108,25 +108,27 @@ module.exports = {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | cloudfront\_create\_distribution | Controls whether a CloudFront distribution should be created. | `bool` | `true` | no |
-| cloudfront\_minimum\_protocol\_version | The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections. One of SSLv3, TLSv1, TLSv1\_2016, TLSv1.1\_2016, TLSv1.2\_2018 or TLSv1.2\_2019. | `string` | `"TLSv1.2_2019"` | no |
-| cloudfront\_price\_class | The price class for the CloudFront distributions (main & proxy config). One of PriceClass\_All, PriceClass\_200, PriceClass\_100. | `string` | `"PriceClass_100"` | no |
+| cloudfront\_price\_class | Price class for the CloudFront distributions (main & proxy config). One of PriceClass\_All, PriceClass\_200, PriceClass\_100. | `string` | `"PriceClass_100"` | no |
 | debug\_use\_local\_packages | (Debug) Use local packages instead of downloading them from npm. | `bool` | `false` | no |
 | deployment\_name | Identifier for the deployment group (alphanumeric characters, underscores, hyphens, slashes, hash signs and dots are allowed). | `string` | `"tf-next-image"` | no |
 | lambda\_memory\_size | Amount of memory in MB the worker Lambda Function can use. Valid value between 128 MB to 10,240 MB, in 1 MB increments. | `number` | `1024` | no |
 | lambda\_role\_permissions\_boundary | ARN of IAM policy that scopes aws\_iam\_role access for the lambda. | `string` | `null` | no |
-| lambda\_timeout | The max amount of time the worker Lambda Function has to return a response in seconds. Should not be more than 30 (Limited by API Gateway). | `number` | `30` | no |
-| next\_image\_device\_sizes | The allowed device sizes that should be used for image optimization. | `list(number)` | `null` | no |
-| next\_image\_domains | The allowed origin domains that can be used for fetching images. | `list(string)` | `[]` | no |
-| next\_image\_image\_sizes | The allowed image sizes that should be used for image optimization. | `list(number)` | `null` | no |
-| next\_image\_version | The Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"^10.0.5-beta"` | no |
+| lambda\_timeout | Max amount of time the worker Lambda Function has to return a response in seconds. Should not be more than 30 (Limited by API Gateway). | `number` | `30` | no |
+| next\_image\_device\_sizes | Allowed device sizes that should be used for image optimization. | `list(number)` | `null` | no |
+| next\_image\_domains | Allowed origin domains that can be used for fetching images. | `list(string)` | `[]` | no |
+| next\_image\_image\_sizes | Allowed image sizes that should be used for image optimization. | `list(number)` | `null` | no |
+| next\_image\_version | Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"^10.0.5-beta"` | no |
 | tags | Tag metadata to label AWS resources that support tags. | `map(string)` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| cloudfront\_domain\_name | The domain of the CloudFront distribution. |
-| cloudfront\_hosted\_zone\_id | The zone id of the CloudFront distribution. |
+| cloudfront\_allowed\_headers | Allowed header keys used by the image optimizer. |
+| cloudfront\_allowed\_query\_string\_keys | Allowed query string keys used by the image optimizer. |
+| cloudfront\_domain\_name | Domain of the internal CloudFront distribution. |
+| cloudfront\_hosted\_zone\_id | Zone id of the internal CloudFront distribution. |
+| cloudfront\_origin\_image\_optimizer | Predefined CloudFront origin of the image optimizer. Can be used to embedd the image optimizer into an existing CloudFront resource. |
 
 <!--- END_TF_DOCS --->
 <!-- prettier-ignore-end -->
