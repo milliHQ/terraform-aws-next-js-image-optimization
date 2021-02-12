@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { LambdaSAM, generateSAM } from '@dealmore/sammy';
-import { S3 } from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
 import { URLSearchParams } from 'url';
 
 import { s3PublicDir } from './utils/s3-public-dir';

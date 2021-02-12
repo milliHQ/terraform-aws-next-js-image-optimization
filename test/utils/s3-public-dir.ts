@@ -1,4 +1,4 @@
-import { S3 } from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
 import { randomBytes } from 'crypto';
 import { promises as fs, createReadStream } from 'fs';
 import * as path from 'path';
