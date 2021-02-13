@@ -8,9 +8,30 @@ import {
   APIGatewayProxyStructuredResultV2,
 } from 'aws-lambda';
 import { Writable } from 'stream';
+import S3 from 'aws-sdk/clients/s3';
 
-import { imageOptimizer } from './image-optimizer';
+import { imageOptimizer, S3Config } from './image-optimizer';
 import { normalizeHeaders } from './normalized-headers';
+
+function generateS3Config(bucketName?: string): S3Config | undefined {
+  let s3: S3;
+
+  if (!bucketName) {
+    return undefined;
+  }
+
+  // Only for testing purposes when connecting against a local S3 backend
+  if (process.env.__DEBUG__USE_LOCAL_BUCKET) {
+    s3 = new S3(JSON.parse(process.env.__DEBUG__USE_LOCAL_BUCKET));
+  } else {
+    s3 = new S3();
+  }
+
+  return {
+    s3,
+    bucket: bucketName,
+  };
+}
 
 function parseFromEnv<T>(key: string, defaultValue: T) {
   try {
@@ -38,6 +59,7 @@ const imageSizes = parseFromEnv(
   'TF_NEXTIMAGE_IMAGE_SIZES',
   imageConfigDefault.deviceSizes
 );
+const sourceBucket = process.env.TF_NEXTIMAGE_SOURCE_BUCKET ?? undefined;
 
 const imageConfig: ImageConfig = {
   ...imageConfigDefault,
@@ -49,6 +71,8 @@ const imageConfig: ImageConfig = {
 export async function handler(
   event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyStructuredResultV2> {
+  const s3Config = generateS3Config(sourceBucket);
+
   const reqMock: any = {
     headers: normalizeHeaders(event.headers),
     method: event.requestContext.http.method,
@@ -75,7 +99,13 @@ export async function handler(
   resMock._implicitHeader = () => {};
 
   const parsedUrl = parseUrl(reqMock.url, true);
-  const result = await imageOptimizer(imageConfig, reqMock, resMock, parsedUrl);
+  const result = await imageOptimizer(
+    imageConfig,
+    reqMock,
+    resMock,
+    parsedUrl,
+    s3Config
+  );
 
   const normalizedHeaders: Record<string, string> = {};
   for (const [headerKey, headerValue] of Object.entries(mockHeaders)) {

@@ -25,19 +25,21 @@ async function uploadDir(
 
   const files = (await getFiles(s3Path)) as string[];
   await Promise.all(
-    files.map((filePath) => {
-      // Restore the relative structure
-      const objectKey = path.relative(s3Path, filePath);
-      return s3
-        .putObject({
-          Key: objectKey,
-          Bucket: bucketName,
-          Body: createReadStream(filePath),
-          CacheControl: cacheControl,
-          ContentType: getType(filePath) ?? undefined,
-        })
-        .promise();
-    })
+    files
+      .filter((filePath) => !filePath.includes('.DS_Store'))
+      .map((filePath) => {
+        // Restore the relative structure
+        const objectKey = path.relative(s3Path, filePath);
+        return s3
+          .putObject({
+            Key: objectKey,
+            Bucket: bucketName,
+            Body: createReadStream(filePath),
+            CacheControl: cacheControl,
+            ContentType: getType(filePath) ?? undefined,
+          })
+          .promise();
+      })
   );
 
   return files;

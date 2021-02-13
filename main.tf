@@ -29,10 +29,11 @@ module "image_optimizer" {
   publish       = true
 
   environment_variables = {
-    NODE_ENV                  = "production",
-    TF_NEXTIMAGE_DOMAINS      = jsonencode(var.next_image_domains)
-    TF_NEXTIMAGE_DEVICE_SIZES = var.next_image_device_sizes != null ? jsonencode(var.next_image_device_sizes) : null
-    TF_NEXTIMAGE_IMAGE_SIZES  = var.next_image_image_sizes != null ? jsonencode(var.next_image_image_sizes) : null
+    NODE_ENV                   = "production",
+    TF_NEXTIMAGE_DOMAINS       = jsonencode(var.next_image_domains)
+    TF_NEXTIMAGE_DEVICE_SIZES  = var.next_image_device_sizes != null ? jsonencode(var.next_image_device_sizes) : null
+    TF_NEXTIMAGE_IMAGE_SIZES   = var.next_image_image_sizes != null ? jsonencode(var.next_image_image_sizes) : null
+    TF_NEXTIMAGE_SOURCE_BUCKET = var.source_bucket_id
   }
 
   create_package         = false
@@ -47,6 +48,8 @@ module "image_optimizer" {
 
   cloudwatch_logs_retention_in_days = 30
 
+  attach_policy_json        = var.lambda_policy_json != null
+  policy_json               = var.lambda_policy_json
   role_permissions_boundary = var.lambda_role_permissions_boundary
 
   tags = var.tags
