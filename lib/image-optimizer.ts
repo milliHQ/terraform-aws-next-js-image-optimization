@@ -4,6 +4,7 @@ import { ImageConfig } from 'next/dist/next-server/server/image-config';
 import nodeFetch, { RequestInfo, RequestInit } from 'node-fetch';
 import { UrlWithParsedQuery } from 'url';
 import Server from 'next/dist/next-server/server/next-server';
+import S3 from 'aws-sdk/clients/s3';
 
 let originCacheControl: string | null;
 
@@ -21,11 +22,17 @@ async function fetchPolyfill(url: RequestInfo, init?: RequestInit) {
 // Polyfill fetch used by nextImageOptimizer
 global.fetch = fetchPolyfill;
 
+interface S3Config {
+  s3: S3;
+  bucket: string;
+}
+
 async function imageOptimizer(
   imageConfig: ImageConfig,
   req: IncomingMessage,
   res: ServerResponse,
-  parsedUrl: UrlWithParsedQuery
+  parsedUrl: UrlWithParsedQuery,
+  s3Config?: S3Config
 ) {
   // Create Next Server mock
   const server = ({
@@ -38,11 +45,35 @@ async function imageOptimizer(
       res: ServerResponse,
       url: UrlWithParsedQuery
     ) => {
-      // TODO: When deployed together with Terraform Next.js we can use
-      // AWS SDK here to fetch the image directly from S3 instead of
-      // using node - fetch
+      if (s3Config) {
+        // S3 expects keys without leading `/`
+        const trimmedKey = url.href.startsWith('/')
+          ? url.href.substring(1)
+          : url.href;
 
-      if (headers.referer) {
+        const object = await s3Config.s3
+          .getObject({
+            Key: trimmedKey,
+            Bucket: s3Config.bucket,
+          })
+          .promise();
+
+        if (!object.Body) {
+          throw new Error(`Could not fetch image ${trimmedKey} from bucket.`);
+        }
+
+        res.statusCode = 200;
+
+        if (object.ContentType) {
+          res.setHeader('Content-Type', object.ContentType);
+        }
+
+        if (object.CacheControl) {
+          originCacheControl = object.CacheControl;
+        }
+
+        res.end(object.Body);
+      } else if (headers.referer) {
         let upstreamBuffer: Buffer;
         let upstreamType: string | null;
 
@@ -54,7 +85,7 @@ async function imageOptimizer(
         const upstreamRes = await nodeFetch(origin);
 
         if (!upstreamRes.ok) {
-          throw new Error(`Could not fetch image from ${origin}`);
+          throw new Error(`Could not fetch image from ${origin}.`);
         }
 
         res.statusCode = upstreamRes.status;
@@ -78,4 +109,4 @@ async function imageOptimizer(
   };
 }
 
-export { imageOptimizer };
+export { S3Config, imageOptimizer };

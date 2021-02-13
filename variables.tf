@@ -47,8 +47,26 @@ variable "lambda_timeout" {
   }
 }
 
+variable "lambda_attach_policy_json" {
+  description = "Controls whether lambda_policy_json should be added to IAM role for Lambda function."
+  type        = bool
+  default     = false
+}
+
+variable "lambda_policy_json" {
+  description = "Additional policy document as JSON to attach to the Lambda Function role."
+  type        = string
+  default     = ""
+}
+
 variable "lambda_role_permissions_boundary" {
   description = "ARN of IAM policy that scopes aws_iam_role access for the lambda."
+  type        = string
+  default     = null
+}
+
+variable "source_bucket_id" {
+  description = "When your static files are deployed to a Bucket (e.g. with Terraform Next.js) the optimizer can pull the source from the bucket rather than over the internet."
   type        = string
   default     = null
 }

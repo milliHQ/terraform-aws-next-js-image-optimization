@@ -7,10 +7,10 @@ import {
   ImageConfig,
   imageConfigDefault,
 } from 'next/dist/next-server/server/image-config';
-import { S3 } from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
 import * as path from 'path';
 
-import { imageOptimizer } from '../lib/image-optimizer';
+import { imageOptimizer, S3Config } from '../lib/image-optimizer';
 import { createDeferred } from './utils';
 import { s3PublicDir } from './utils/s3-public-dir';
 import { acceptAllFixtures, acceptWebpFixtures } from './constants';
@@ -39,7 +39,8 @@ function generateParams(url: string, options: Options = {}) {
 async function runOptimizer(
   params: ReturnType<typeof generateParams>,
   imageConfig: ImageConfig,
-  requestHeaders: Record<string, string>
+  requestHeaders: Record<string, string>,
+  s3Config?: S3Config
 ) {
   // Mock request & response
   const request = createRequest({
@@ -68,7 +69,8 @@ async function runOptimizer(
     imageConfig,
     request,
     response,
-    params.parsedUrl
+    params.parsedUrl,
+    s3Config
   );
 
   return {
@@ -107,6 +109,24 @@ describe('[unit]', () => {
 
     const upload = await s3PublicDir(s3, fixturesDir, cacheControlHeader);
     bucketName = upload.bucketName;
+  });
+
+  test('Fetch internal image from S3', async () => {
+    const fixture = acceptAllFixtures[0];
+    const fixturePath = `/${fixture[0]}`;
+    const params = generateParams(fixturePath, optimizerParams);
+
+    const { result, headers } = await runOptimizer(
+      params,
+      imageConfig,
+      {
+        accept: '*/*',
+      },
+      { s3, bucket: bucketName }
+    );
+
+    expect(result.finished).toBe(true);
+    expect(headers['content-type']).toBe(fixture[1]['content-type']);
   });
 
   test('Custom image size', async () => {
