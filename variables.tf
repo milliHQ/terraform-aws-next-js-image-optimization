@@ -47,10 +47,16 @@ variable "lambda_timeout" {
   }
 }
 
+variable "lambda_attach_policy_json" {
+  description = "Controls whether lambda_policy_json should be added to IAM role for Lambda function."
+  type        = bool
+  default     = false
+}
+
 variable "lambda_policy_json" {
   description = "Additional policy document as JSON to attach to the Lambda Function role."
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "lambda_role_permissions_boundary" {

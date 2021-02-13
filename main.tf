@@ -48,7 +48,7 @@ module "image_optimizer" {
 
   cloudwatch_logs_retention_in_days = 30
 
-  attach_policy_json        = var.lambda_policy_json != null
+  attach_policy_json        = var.lambda_attach_policy_json
   policy_json               = var.lambda_policy_json
   role_permissions_boundary = var.lambda_role_permissions_boundary
 
