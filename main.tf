@@ -23,7 +23,7 @@ module "image_optimizer" {
   function_name = random_id.function_name.hex
   description   = var.deployment_name
   handler       = "handler.handler"
-  runtime       = "nodejs12.x"
+  runtime       = "nodejs14.x"
   memory_size   = var.lambda_memory_size
   timeout       = var.lambda_timeout
   publish       = true

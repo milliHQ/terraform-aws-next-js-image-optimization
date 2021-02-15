@@ -7,6 +7,8 @@ import { s3PublicDir } from './utils/s3-public-dir';
 import { getLocalIpAddressFromHost } from './utils/host-ip-address';
 import { acceptAllFixtures } from './constants';
 
+const NODE_RUNTIME = 'nodejs14.x';
+
 describe('[e2e]', () => {
   const route = '/_next/image';
   const hostIpAddress = getLocalIpAddressFromHost();
@@ -43,7 +45,7 @@ describe('[e2e]', () => {
           imageOptimizer: {
             filename: 'dist.zip',
             handler: 'handler.handler',
-            runtime: 'nodejs12.x',
+            runtime: NODE_RUNTIME,
             memorySize: 1024,
             route,
             method: 'get',
@@ -166,7 +168,7 @@ describe('[e2e]', () => {
           imageOptimizer: {
             filename: 'dist.zip',
             handler: 'handler.handler',
-            runtime: 'nodejs12.x',
+            runtime: NODE_RUNTIME,
             memorySize: 1024,
             route,
             method: 'get',
