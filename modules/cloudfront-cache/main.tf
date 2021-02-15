@@ -17,21 +17,8 @@ resource "aws_cloudfront_distribution" "distribution" {
     viewer_protocol_policy = "redirect-to-https"
     compress               = true
 
-    # Default values (Should be provided by origin)
-    min_ttl     = 0
-    default_ttl = 86400
-    max_ttl     = 31536000
-
-    forwarded_values {
-      cookies {
-        forward = "none"
-      }
-
-      headers = var.cloudfront_allowed_headers
-
-      query_string            = true
-      query_string_cache_keys = var.cloudfront_allowed_query_string_keys
-    }
+    origin_request_policy_id = var.cloudfront_origin_request_policy_id
+    cache_policy_id          = var.cloudfront_cache_policy_id
   }
 
   dynamic "origin" {
