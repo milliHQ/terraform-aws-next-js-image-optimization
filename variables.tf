@@ -87,6 +87,12 @@ variable "cloudfront_price_class" {
   default     = "PriceClass_100"
 }
 
+variable "cloudfront_origin_id" {
+  description = "Override the id for the custom CloudFront id."
+  type        = string
+  default     = "tf-next-image-optimizer"
+}
+
 ##########
 # Labeling
 ##########

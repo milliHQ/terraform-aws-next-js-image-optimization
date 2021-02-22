@@ -38,25 +38,13 @@ resource "aws_cloudfront_distribution" "distribution" {
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = module.next_image_optimizer.cloudfront_origin_image_optimizer.origin_id
+    target_origin_id = module.next_image_optimizer.cloudfront_origin_id
 
     viewer_protocol_policy = "redirect-to-https"
     compress               = true
 
-    min_ttl     = 0
-    default_ttl = 86400
-    max_ttl     = 31536000
-
-    forwarded_values {
-      cookies {
-        forward = "none"
-      }
-
-      headers = module.next_image_optimizer.cloudfront_allowed_headers
-
-      query_string            = true
-      query_string_cache_keys = module.next_image_optimizer.cloudfront_allowed_query_string_keys
-    }
+    origin_request_policy_id = module.next_image_optimizer.cloudfront_origin_request_policy_id
+    cache_policy_id = module.next_image_optimizer.cloudfront_cache_policy_id
   }
 
   # This is a generic dynamic to create an origin

@@ -93,7 +93,7 @@ locals {
 
   cloudfront_origin_image_optimizer = {
     domain_name = trimprefix(module.api_gateway.this_apigatewayv2_api_api_endpoint, "https://")
-    origin_id   = "tf-next-image-optimizer"
+    origin_id   = var.cloudfront_origin_id
 
     custom_origin_config = {
       http_port              = "80"
@@ -168,9 +168,9 @@ resource "aws_cloudfront_cache_policy" "this" {
 module "cloudfront" {
   source = "./modules/cloudfront-cache"
 
-  cloudfront_create_distribution       = var.cloudfront_create_distribution
-  cloudfront_price_class               = var.cloudfront_price_class
-  cloudfront_origin                    = local.cloudfront_origin_image_optimizer
+  cloudfront_create_distribution = var.cloudfront_create_distribution
+  cloudfront_price_class         = var.cloudfront_price_class
+  cloudfront_origin              = local.cloudfront_origin_image_optimizer
 
   cloudfront_origin_request_policy_id = aws_cloudfront_origin_request_policy.this.id
   cloudfront_cache_policy_id          = aws_cloudfront_cache_policy.this.id
