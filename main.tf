@@ -93,7 +93,7 @@ locals {
 
   cloudfront_origin_image_optimizer = {
     domain_name = trimprefix(module.api_gateway.this_apigatewayv2_api_api_endpoint, "https://")
-    origin_id   = "tf-next-image-optimizer"
+    origin_id   = var.cloudfront_origin_id
 
     custom_origin_config = {
       http_port              = "80"
@@ -104,41 +104,76 @@ locals {
   }
 }
 
-# TODO: Use request policy once support for cache policies is released
-# (We cannot use request policies without cache policies)
-# https://github.com/hashicorp/terraform-provider-aws/pull/17336
+resource "random_id" "policy_name" {
+  prefix      = "${var.deployment_name}-"
+  byte_length = 4
+}
 
-# resource "aws_cloudfront_origin_request_policy" "api_gateway" {
-#   name        = var.deployment_name
-#   description = "Managed by Terraform-next.js image optimizer"
+resource "aws_cloudfront_origin_request_policy" "this" {
+  name    = "${random_id.policy_name.hex}-request"
+  comment = "Managed by Terraform-next.js image optimizer"
 
-#   cookies_config {
-#     cookie_behavior = "none"
-#   }
+  cookies_config {
+    cookie_behavior = "none"
+  }
 
-#   headers_config {
-#     header_behavior = "whitelist"
-#     headers {
-#       items = local.cloudfront_allowed_headers
-#     }
-#   }
+  headers_config {
+    header_behavior = "whitelist"
+    headers {
+      items = local.cloudfront_allowed_headers
+    }
+  }
 
-#   query_strings_config {
-#     query_string_behavior = "whitelist"
-#     query_strings {
-#       items = local.cloudfront_allowed_query_string_keys
-#     }
-#   }
-# }
+  query_strings_config {
+    query_string_behavior = "whitelist"
+    query_strings {
+      items = local.cloudfront_allowed_query_string_keys
+    }
+  }
+}
+
+resource "aws_cloudfront_cache_policy" "this" {
+  name    = "${random_id.policy_name.hex}-cache"
+  comment = "Managed by Terraform-next.js image optimizer"
+
+  # Default values (Should be provided by origin)
+  min_ttl     = 0
+  default_ttl = 86400
+  max_ttl     = 31536000
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    cookies_config {
+      cookie_behavior = "none"
+    }
+
+    headers_config {
+      header_behavior = "whitelist"
+      headers {
+        items = local.cloudfront_allowed_headers
+      }
+    }
+
+    query_strings_config {
+      query_string_behavior = "whitelist"
+      query_strings {
+        items = local.cloudfront_allowed_query_string_keys
+      }
+    }
+
+    enable_accept_encoding_gzip   = true
+    enable_accept_encoding_brotli = true
+  }
+}
 
 module "cloudfront" {
   source = "./modules/cloudfront-cache"
 
-  cloudfront_create_distribution       = var.cloudfront_create_distribution
-  cloudfront_price_class               = var.cloudfront_price_class
-  cloudfront_allowed_query_string_keys = local.cloudfront_allowed_query_string_keys
-  cloudfront_allowed_headers           = local.cloudfront_allowed_headers
-  cloudfront_origin                    = local.cloudfront_origin_image_optimizer
+  cloudfront_create_distribution = var.cloudfront_create_distribution
+  cloudfront_price_class         = var.cloudfront_price_class
+  cloudfront_origin              = local.cloudfront_origin_image_optimizer
+
+  cloudfront_origin_request_policy_id = aws_cloudfront_origin_request_policy.this.id
+  cloudfront_cache_policy_id          = aws_cloudfront_cache_policy.this.id
 
   deployment_name = var.deployment_name
   tags            = var.tags
