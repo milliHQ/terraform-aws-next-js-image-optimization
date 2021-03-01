@@ -11,7 +11,7 @@ import S3 from 'aws-sdk/clients/s3';
 import * as path from 'path';
 
 import { imageOptimizer, S3Config } from '../lib/image-optimizer';
-import { createDeferred } from './utils';
+import { createDeferred } from '../lib/utils';
 import { s3PublicDir } from './utils/s3-public-dir';
 import { acceptAllFixtures, acceptWebpFixtures } from './constants';
 
