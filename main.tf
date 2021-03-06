@@ -60,7 +60,7 @@ module "image_optimizer" {
 #########################
 module "api_gateway" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
-  version = "0.8.0"
+  version = "0.11.0"
 
   name          = var.deployment_name
   description   = "Managed by Terraform-next.js image optimizer"
