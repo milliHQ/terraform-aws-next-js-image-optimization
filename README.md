@@ -89,6 +89,7 @@ module.exports = {
 - [Existing CloudFront](https://github.com/dealmore/terraform-aws-next-js-image-optimization/tree/main/examples/with-existing-cloudfront) - Embedd the image optimizer in an existing CloudFront distribution.
 
 <!-- prettier-ignore-start -->
+<!--- STOP: Auto generated values - Make no manual edits here --->
 <!--- BEGIN_TF_DOCS --->
 ## Requirements
 
@@ -159,6 +160,11 @@ module "next_image_optimizer" {
 ```
 
 Please note that we only publish versions `>=10.0.5`, for a full list of available versions see this [npm page](https://www.npmjs.com/package/@dealmore/tf-next-image-optimization?activeTab=versions).
+
+## Contributing
+
+Contributions are welcome!  
+If you want to improve this module, please take a look at our [contributing guide](https://github.com/dealmore/terraform-aws-next-js-image-optimization/blob/main/CONTRIBUTING.md).
 
 ## License
 
