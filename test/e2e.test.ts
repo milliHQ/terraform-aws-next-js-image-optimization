@@ -244,10 +244,9 @@ describe('[e2e]', () => {
           },
         },
         cwd: pathToWorker,
-        // @ts-expect-error https://github.com/dealmore/sammy/pull/1
-        warmContainers: 'EAGER',
         onData: (data) => console.log(data.toString()),
         onError: (data) => console.log(data.toString()),
+        cliOptions: { warmContainers: 'EAGER' },
       });
 
       await lambdaSAM.start();
