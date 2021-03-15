@@ -21,4 +21,4 @@ jobs:
           upstream-branch: main
           release-branch: release
           release-tag: ${{ github.event.inputs.tag }}
-          exclude: '["lib/*", "test/*", "package.json", "yarn.lock"]'
+          exclude: '["lib/**/*", "test/**/*", "package.json", "yarn.lock"]'
