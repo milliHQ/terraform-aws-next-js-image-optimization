@@ -17,7 +17,3 @@ export function createDeferred<T>() {
 
   return ({ promise, resolve: r, reject: j } as unknown) as Deferred<T>;
 }
-
-export const delay = (ms: number) => new Promise(resolve => {
-  setTimeout(resolve, ms)
-})

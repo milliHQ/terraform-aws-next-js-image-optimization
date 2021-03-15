@@ -225,5 +225,71 @@ describe('[e2e]', () => {
     });
   });
 
+  describe('From filesystem cache for external image', () => {
+    let lambdaSAM: LambdaSAM;
+    beforeAll(async () => {
+      // Generate SAM for the worker lambda
+      lambdaSAM = await generateSAM({
+        lambdas: {
+          imageOptimizer: {
+            filename: 'dist.zip',
+            handler: 'handler.handler',
+            runtime: NODE_RUNTIME,
+            memorySize: 1024,
+            route,
+            method: 'get',
+            environment: {
+              TF_NEXTIMAGE_DOMAINS: JSON.stringify([hostIpAddress]),
+            },
+          },
+        },
+        cwd: pathToWorker,
+        onData: (data) => console.log(data.toString()),
+        onError: (data) => console.log(data.toString()),
+        cliOptions: { warmContainers: 'EAGER' },
+      });
+
+      await lambdaSAM.start();
+    });
+
+    afterAll(async () => {
+      await lambdaSAM.stop();
+    });
+    test.each([
+      "internet. (first call)",
+      "hitting filesystem cache. (2nd call)",
+    ])("Fetch external image by %s", async () => {
+      const [filePath, fixtureResponse] = acceptAllFixtures.find(f => f[1].ext === 'png') || []
+      if (!filePath || !fixtureResponse) throw new Error('Can not found png file path')
+
+      const publicPath = `http://${s3Endpoint}/${fixtureBucketName}/${filePath}`;
+      const [w,q] = ['2048','75']
+      const optimizerParams = new URLSearchParams({ url: publicPath, w, q })
+      const optimizerPrefix = `external_accept_all_w-${w}_q-${q}_`;
+      const snapshotFileName = path.join(
+        __dirname,
+        '__snapshots__/e2e/',
+        `${optimizerPrefix}${filePath.replace('/', '_')}.${fixtureResponse.ext}`
+      );
+
+      const response = await lambdaSAM.sendApiGwRequest(
+        `${route}?${optimizerParams.toString()}`
+      );
+      const text = await response.text();
+      const body = Buffer.from(text, 'base64');
+
+      expect(response.status).toBe(200);
+      expect(body).toMatchFile(snapshotFileName);
+      expect(response.headers.get('Content-Type')).toBe(
+        fixtureResponse['content-type']
+      );
+      expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
+
+      // Header settings needed for CloudFront compression
+      expect(response.headers.has('Content-Length')).toBeTruthy();
+      expect(response.headers.has('Content-Encoding')).toBeFalsy();
+    })
+  })
+
   test.todo('Run test against domain that is not on the list');
 });

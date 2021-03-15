@@ -12,6 +12,7 @@ import S3 from 'aws-sdk/clients/s3';
 
 import { imageOptimizer, S3Config } from './image-optimizer';
 import { normalizeHeaders } from './normalized-headers';
+import { createDeferred } from './utils';
 
 function generateS3Config(bucketName?: string): S3Config | undefined {
   let s3: S3;
@@ -81,6 +82,8 @@ export async function handler(
 
   const resBuffers: Buffer[] = [];
   const resMock: any = new Writable();
+  const defer = createDeferred();
+  let didCallEnd = false;
 
   resMock.write = (chunk: Buffer | string) => {
     resBuffers.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
@@ -97,6 +100,13 @@ export async function handler(
   resMock.setHeader = (name: string, value: string | string[]) =>
     (mockHeaders[name.toLowerCase()] = value);
   resMock._implicitHeader = () => {};
+
+  resMock.originalEnd = resMock.end;
+  resMock.on('close', () => defer.resolve());
+  resMock.end = (message: any) => {
+    didCallEnd = true;
+    resMock.originalEnd(message);
+  };
 
   const parsedUrl = parseUrl(reqMock.url, true);
   const result = await imageOptimizer(
@@ -122,6 +132,9 @@ export async function handler(
   } else {
     normalizedHeaders['cache-control'] = 'public, max-age=60';
   }
+
+  if (didCallEnd) defer.resolve();
+  await defer.promise;
 
   return {
     statusCode: resMock.statusCode || 200,
