@@ -1,5 +1,23 @@
 # Changelog
 
+## 10.0.5 (March 15, 2021)
+
+**Note 1:** From now on we aligning the versioning schema with the releases of Next.js.
+
+**Note 2:** When upgrading from a previous release, you may experience an error from Terraform:
+
+```
+Error: error updating CloudFront Distribution:
+InvalidArgument: The parameter ForwardedValues cannot be used when a cache policy is associated to the cache behavior.
+	status code: 400
+```
+
+This is a known bug in the Terraform AWS provider and may requires a manual upgrade in the AWS Console ([terraform-provider-aws#17626](https://github.com/hashicorp/terraform-provider-aws/issues/17626)).
+
+- Fixes wrong response for repeated requests from external source ([#12](https://github.com/dealmore/terraform-aws-next-js-image-optimization/issues/12), [#13](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/13))
+- Use Request and Cache Policies in CloudFront distribution ([#5](https://github.com/dealmore/terraform-aws-next-js-image-optimization/issues/5), [#9](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/9))
+- Upgrades Lambda runtime from `nodejs12.x` to `nodejs14.x`. ([#4](https://github.com/dealmore/terraform-aws-next-js-image-optimization/issues/4), [#8](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/8))
+
 ## 2.0.1 (March 08, 2021)
 
 - Bump internal module `terraform-aws-modules/apigateway-v2/aws` from `0.8.0` to `0.11.0` ([#16](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/16), [#18](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/18))  
