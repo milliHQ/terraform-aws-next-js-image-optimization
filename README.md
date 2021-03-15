@@ -13,6 +13,13 @@ If you need a complete hosting solution for Next.js with Terraform, please check
 - ✅ &nbsp;[Amazon CloudFront](https://aws.amazon.com/cloudfront/) powered image caching
 - ✅ &nbsp;Support for custom [Device Sizes](https://nextjs.org/docs/basic-features/image-optimization#device-sizes) & [Image Sizes](https://nextjs.org/docs/basic-features/image-optimization#image-sizes)
 
+## Architecture
+
+The image optimization module is designed as a full stack AWS app.
+It relies on multiple AWS services and connects them to work as a single application:
+
+![Architecture overview diagram](https://github.com/dealmore/terraform-aws-next-js-image-optimization/blob/main/docs/assets/architecture.png?raw=true)
+
 ## Usage
 
 ### 1. Deploy the module to AWS
