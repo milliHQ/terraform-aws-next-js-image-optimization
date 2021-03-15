@@ -150,23 +150,14 @@ module.exports = {
 
 ## Versioning
 
-We rely on the original Next.js image optimizer, so every version of the internal Lambda component [`@dealmore/tf-next-image-optimization`](https://www.npmjs.com/package/@dealmore/tf-next-image-optimization) follows the versioning schema of the official [Next.js package](https://www.npmjs.com/package/next).
+We rely internally on the original Next.js image optimizer.
+So the versioning of the module is aligned with the version of the corresponding Next.js release.
 
-By default we use the current major version `^10.0.5` of Next.js as base, so each deployment of the Terraform module pulls the latest package from this range.
+For example the [`v10.0.5`](https://github.com/dealmore/terraform-aws-next-js-image-optimization/releases/tag/v10.0.5) version of this Terraform module uses the image optimizer from the [Next.js 10.0.5 release](https://github.com/vercel/next.js/releases/tag/v10.0.5).
 
-However if you have problems with a specific version Next.js you can override this setting with a fixed version number or semver range:
+Due to compatibility issues we are not able to provide a matching version for every Next.js release.
 
-```diff
-# main.tf
-module "next_image_optimizer" {
-   source = "dealmore/next-js-image-optimization/aws"
-
-   next_image_domains = ["example.com", "sub.example.com"]
-+  next_image_version = "10.0.5"
-}
-```
-
-Please note that we only publish versions `>=10.0.5`, for a full list of available versions see this [npm page](https://www.npmjs.com/package/@dealmore/tf-next-image-optimization?activeTab=versions).
+Please note that we only publish versions `>=10.0.5`, for a full list of available versions see the published versions in the [Terraform Registry](https://registry.terraform.io/modules/dealmore/next-js-image-optimization/aws).
 
 ## Contributing
 
