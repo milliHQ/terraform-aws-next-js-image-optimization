@@ -6,3 +6,6 @@ node_modules
 **/.terraform/*
 *.tfstate
 *.tfstate.*
+
+# IntelliJ IDEA
+/.idea/

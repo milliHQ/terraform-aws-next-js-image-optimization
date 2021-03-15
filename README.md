@@ -13,6 +13,13 @@ If you need a complete hosting solution for Next.js with Terraform, please check
 - ✅ &nbsp;[Amazon CloudFront](https://aws.amazon.com/cloudfront/) powered image caching
 - ✅ &nbsp;Support for custom [Device Sizes](https://nextjs.org/docs/basic-features/image-optimization#device-sizes) & [Image Sizes](https://nextjs.org/docs/basic-features/image-optimization#image-sizes)
 
+## Architecture
+
+The image optimization module is designed as a full stack AWS app.
+It relies on multiple AWS services and connects them to work as a single application:
+
+![Architecture overview diagram](https://github.com/dealmore/terraform-aws-next-js-image-optimization/blob/main/docs/assets/architecture.png?raw=true)
+
 ## Usage
 
 ### 1. Deploy the module to AWS
@@ -123,7 +130,7 @@ module.exports = {
 | next\_image\_device\_sizes | Allowed device sizes that should be used for image optimization. | `list(number)` | `null` | no |
 | next\_image\_domains | Allowed origin domains that can be used for fetching images. | `list(string)` | `[]` | no |
 | next\_image\_image\_sizes | Allowed image sizes that should be used for image optimization. | `list(number)` | `null` | no |
-| next\_image\_version | Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"^10.0.5-beta"` | no |
+| next\_image\_version | Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"10.0.5"` | no |
 | source\_bucket\_id | When your static files are deployed to a Bucket (e.g. with Terraform Next.js) the optimizer can pull the source from the bucket rather than over the internet. | `string` | `null` | no |
 | tags | Tag metadata to label AWS resources that support tags. | `map(string)` | `{}` | no |
 
@@ -143,23 +150,14 @@ module.exports = {
 
 ## Versioning
 
-We rely on the original Next.js image optimizer, so every version of the internal Lambda component [`@dealmore/tf-next-image-optimization`](https://www.npmjs.com/package/@dealmore/tf-next-image-optimization) follows the versioning schema of the official [Next.js package](https://www.npmjs.com/package/next).
+We rely internally on the original Next.js image optimizer.
+So the versioning of the module is aligned with the version of the corresponding Next.js release.
 
-By default we use the current major version `^10.0.5` of Next.js as base, so each deployment of the Terraform module pulls the latest package from this range.
+For example the [`v10.0.5`](https://github.com/dealmore/terraform-aws-next-js-image-optimization/releases/tag/v10.0.5) version of this Terraform module uses the image optimizer from the [Next.js 10.0.5 release](https://github.com/vercel/next.js/releases/tag/v10.0.5).
 
-However if you have problems with a specific version Next.js you can override this setting with a fixed version number or semver range:
+Due to compatibility issues we are not able to provide a matching version for every Next.js release.
 
-```diff
-# main.tf
-module "next_image_optimizer" {
-   source = "dealmore/next-js-image-optimization/aws"
-
-   next_image_domains = ["example.com", "sub.example.com"]
-+  next_image_version = "10.0.5"
-}
-```
-
-Please note that we only publish versions `>=10.0.5`, for a full list of available versions see this [npm page](https://www.npmjs.com/package/@dealmore/tf-next-image-optimization?activeTab=versions).
+Please note that we only publish versions `>=10.0.5`, for a full list of available versions see the published versions in the [Terraform Registry](https://registry.terraform.io/modules/dealmore/next-js-image-optimization/aws).
 
 ## Contributing
 
