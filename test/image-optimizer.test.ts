@@ -73,6 +73,8 @@ async function runOptimizer(
     s3Config
   );
 
+  await defer.promise;
+
   return {
     result,
     headers: response._getHeaders(),
@@ -80,7 +82,7 @@ async function runOptimizer(
   };
 }
 
-describe('[unit]', () => {
+describe('unit', () => {
   const s3Endpoint = process.env.CI ? 's3:9000' : 'localhost:9000';
   const fixturesDir = path.resolve(__dirname, './fixtures');
   const optimizerParams = {

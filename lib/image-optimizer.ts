@@ -12,7 +12,7 @@ let originCacheControl: string | null;
  * fetch polyfill to intercept the request to the external resource
  * to get the Cache-Control header from the origin
  */
-async function fetchPolyfill(url: RequestInfo, init?: RequestInit) {
+function fetchPolyfill(url: RequestInfo, init?: RequestInit) {
   return nodeFetch(url, init).then((result) => {
     originCacheControl = result.headers.get('Cache-Control');
     return result;
