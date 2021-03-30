@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2019",
-    "lib": ["es2019"],
+    "lib": ["es2019", "DOM"],
     "outDir": "dist",
     "module": "commonjs",
     "moduleResolution": "node",
@@ -10,5 +10,6 @@
     "sourceMap": false,
     "experimentalDecorators": true,
     "esModuleInterop": true
-  }
+  },
+  "exclude": ["node_modules"]
 }

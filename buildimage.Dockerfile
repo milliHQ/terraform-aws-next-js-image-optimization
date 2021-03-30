@@ -4,11 +4,12 @@
 
 FROM amazon/aws-sam-cli-emulation-image-nodejs14.x
 
+# Install yarn
+RUN npm i -g yarn
+
 WORKDIR /app
 
-ADD tsconfig.json \
-    lib \
-    /app/
+COPY . .
 
-RUN npm i &&\
-    npm run build
+RUN yarn --frozen-lockfile &&\
+    yarn build

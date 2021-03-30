@@ -1,5 +1,8 @@
 *
 
+!package.json
+!yarn.lock
 !tsconfig.json
-!lib/package.json
+!scripts/*
+!lib/*.json
 !lib/**/*.ts
