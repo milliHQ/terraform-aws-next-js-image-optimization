@@ -7,6 +7,7 @@ import { s3PublicDir } from './utils/s3-public-dir';
 import { getLocalIpAddressFromHost } from './utils/host-ip-address';
 import { acceptAllFixtures } from './constants';
 
+const ONE_MINUTE_IN_MS = 60000;
 const NODE_RUNTIME = 'nodejs14.x';
 
 describe('[e2e]', () => {
@@ -107,7 +108,8 @@ describe('[e2e]', () => {
         // Header settings needed for CloudFront compression
         expect(response.headers.has('Content-Length')).toBeTruthy();
         expect(response.headers.has('Content-Encoding')).toBeFalsy();
-      }
+      },
+      ONE_MINUTE_IN_MS
     );
 
     test.each(acceptAllFixtures)(
@@ -154,7 +156,8 @@ describe('[e2e]', () => {
         // Header settings needed for CloudFront compression
         expect(response.headers.has('Content-Length')).toBeTruthy();
         expect(response.headers.has('Content-Encoding')).toBeFalsy();
-      }
+      },
+      ONE_MINUTE_IN_MS
     );
   });
 
@@ -201,28 +204,32 @@ describe('[e2e]', () => {
       await lambdaSAM.stop();
     });
 
-    test('Internal: Fetch image from S3', async () => {
-      const fixture = acceptAllFixtures[0];
-      const publicPath = `/${fixture[0]}`;
-      const optimizerParams = new URLSearchParams({
-        url: publicPath,
-        w: '2048',
-        q: '75',
-      });
+    test(
+      'Internal: Fetch image from S3',
+      async () => {
+        const fixture = acceptAllFixtures[0];
+        const publicPath = `/${fixture[0]}`;
+        const optimizerParams = new URLSearchParams({
+          url: publicPath,
+          w: '2048',
+          q: '75',
+        });
 
-      const response = await lambdaSAM.sendApiGwRequest(
-        `${route}?${optimizerParams.toString()}`
-      );
+        const response = await lambdaSAM.sendApiGwRequest(
+          `${route}?${optimizerParams.toString()}`
+        );
 
-      const body = await response
-        .text()
-        .then((text) => Buffer.from(text, 'base64'));
+        const body = await response
+          .text()
+          .then((text) => Buffer.from(text, 'base64'));
 
-      expect(response.ok).toBeTruthy();
-      expect(response.headers.get('content-type')).toBe(
-        fixture[1]['content-type']
-      );
-    });
+        expect(response.ok).toBeTruthy();
+        expect(response.headers.get('content-type')).toBe(
+          fixture[1]['content-type']
+        );
+      },
+      ONE_MINUTE_IN_MS
+    );
   });
 
   describe('From filesystem cache for external image', () => {
@@ -256,40 +263,48 @@ describe('[e2e]', () => {
       await lambdaSAM.stop();
     });
     test.each([
-      "internet. (first call)",
-      "hitting filesystem cache. (2nd call)",
-    ])("Fetch external image by %s", async () => {
-      const [filePath, fixtureResponse] = acceptAllFixtures.find(f => f[1].ext === 'png') || []
-      if (!filePath || !fixtureResponse) throw new Error('Can not found png file path')
+      'internet. (first call)',
+      'hitting filesystem cache. (2nd call)',
+    ])(
+      'Fetch external image by %s',
+      async () => {
+        const [filePath, fixtureResponse] =
+          acceptAllFixtures.find((f) => f[1].ext === 'png') || [];
+        if (!filePath || !fixtureResponse)
+          throw new Error('Can not found png file path');
 
-      const publicPath = `http://${s3Endpoint}/${fixtureBucketName}/${filePath}`;
-      const [w,q] = ['2048','75']
-      const optimizerParams = new URLSearchParams({ url: publicPath, w, q })
-      const optimizerPrefix = `external_accept_all_w-${w}_q-${q}_`;
-      const snapshotFileName = path.join(
-        __dirname,
-        '__snapshots__/e2e/',
-        `${optimizerPrefix}${filePath.replace('/', '_')}.${fixtureResponse.ext}`
-      );
+        const publicPath = `http://${s3Endpoint}/${fixtureBucketName}/${filePath}`;
+        const [w, q] = ['2048', '75'];
+        const optimizerParams = new URLSearchParams({ url: publicPath, w, q });
+        const optimizerPrefix = `external_accept_all_w-${w}_q-${q}_`;
+        const snapshotFileName = path.join(
+          __dirname,
+          '__snapshots__/e2e/',
+          `${optimizerPrefix}${filePath.replace('/', '_')}.${
+            fixtureResponse.ext
+          }`
+        );
 
-      const response = await lambdaSAM.sendApiGwRequest(
-        `${route}?${optimizerParams.toString()}`
-      );
-      const text = await response.text();
-      const body = Buffer.from(text, 'base64');
+        const response = await lambdaSAM.sendApiGwRequest(
+          `${route}?${optimizerParams.toString()}`
+        );
+        const text = await response.text();
+        const body = Buffer.from(text, 'base64');
 
-      expect(response.status).toBe(200);
-      expect(body).toMatchFile(snapshotFileName);
-      expect(response.headers.get('Content-Type')).toBe(
-        fixtureResponse['content-type']
-      );
-      expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
+        expect(response.status).toBe(200);
+        expect(body).toMatchFile(snapshotFileName);
+        expect(response.headers.get('Content-Type')).toBe(
+          fixtureResponse['content-type']
+        );
+        expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
 
-      // Header settings needed for CloudFront compression
-      expect(response.headers.has('Content-Length')).toBeTruthy();
-      expect(response.headers.has('Content-Encoding')).toBeFalsy();
-    })
-  })
+        // Header settings needed for CloudFront compression
+        expect(response.headers.has('Content-Length')).toBeTruthy();
+        expect(response.headers.has('Content-Encoding')).toBeFalsy();
+      },
+      ONE_MINUTE_IN_MS
+    );
+  });
 
   test.todo('Run test against domain that is not on the list');
 });
