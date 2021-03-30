@@ -9,8 +9,9 @@
   "scripts": {
     "build:tsc": "tsc --skipLibCheck",
     "build:bundle": "node ../scripts/bundle.js",
+    "build:licenses": "yarn licenses generate-disclaimer > third-party-licenses.txt",
     "build": "yarn build:tsc && yarn build:bundle",
-    "prepack": "cp ../LICENSE dist/third-party-licenses.txt ./",
+    "prepack": "cp ../LICENSE && yarn build:licenses",
     "postpack": "rm ./LICENSE ./third-party-licenses.txt"
   },
   "dependencies": {
