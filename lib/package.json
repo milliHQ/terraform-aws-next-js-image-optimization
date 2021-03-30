@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "aws-sdk": "*",
-    "next": "10.0.5",
+    "next": "10.0.6",
     "node-fetch": "2.6.1"
   },
   "devDependencies": {
