@@ -124,6 +124,17 @@ jobs:
 
       - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            .yarn
+            **/node_modules
+          key: e2e-${{ hashFiles('yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --check-files
+
       - name: Download build artifact
         uses: actions/download-artifact@v2
         with:
