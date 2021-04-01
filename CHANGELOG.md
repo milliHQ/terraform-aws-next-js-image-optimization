@@ -1,5 +1,10 @@
 # Changelog
 
+## 10.0.6 (April 01, 2021)
+
+- Uses Image Optimizer module of [Next.js 10.0.6](https://github.com/vercel/next.js/releases/tag/v10.0.6) ([#3](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/3))
+- Bundling of the image optimizer has changed from ncc to nft ([#23](https://github.com/dealmore/terraform-aws-next-js-image-optimization/issues/23), [#24](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/24))
+
 ## 10.0.5 (March 15, 2021)
 
 **Note 1:** From now on we aligning the versioning schema with the releases of Next.js.
