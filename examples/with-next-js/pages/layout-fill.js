@@ -1,5 +1,5 @@
-import Image from 'next/image'
-import ViewSource from '../components/view-source'
+import Image from 'next/image';
+import ViewSource from '../components/view-source';
 
 const Fill = () => (
   <div>
@@ -31,6 +31,6 @@ const Fill = () => (
       />
     </div>
   </div>
-)
+);
 
-export default Fill
+export default Fill;
