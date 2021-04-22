@@ -1,0 +1,7 @@
+# Vercel
+.vercel
+
+# Terraform
+.terraform
+*.tfstate
+*.tfstate.*

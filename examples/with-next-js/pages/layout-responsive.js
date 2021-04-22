@@ -1,5 +1,5 @@
-import Image from 'next/image'
-import ViewSource from '../components/view-source'
+import Image from 'next/image';
+import ViewSource from '../components/view-source';
 
 const Responsive = () => (
   <div>
@@ -13,6 +13,6 @@ const Responsive = () => (
       height={475}
     />
   </div>
-)
+);
 
-export default Responsive
+export default Responsive;

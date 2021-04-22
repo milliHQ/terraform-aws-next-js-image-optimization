@@ -10,7 +10,9 @@
     "build": "yarn workspace @dealmore/tf-next-image-optimization build",
     "build:local": "scripts/build-local.sh",
     "test": "jest --testPathIgnorePatterns e2e.*",
-    "test:e2e": "jest e2e.*"
+    "test:e2e": "jest e2e.*",
+    "lint:prettier": "prettier --check .",
+    "fix:prettier": "prettier --write ."
   },
   "devDependencies": {
     "@dealmore/sammy": "^1.5.0",
