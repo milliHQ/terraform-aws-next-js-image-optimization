@@ -21,6 +21,9 @@ export const acceptAllFixtures: Fixture[] = [
   ['webp/animated.webp', { ext: 'webp', 'content-type': 'image/webp' }],
 ];
 
+// Next.js image converter is not able to
+// - gif -> webp
+// - tiff -> webp
 export const acceptWebpFixtures: Fixture[] = [
   [
     'bmp/test.bmp',
@@ -29,11 +32,11 @@ export const acceptWebpFixtures: Fixture[] = [
       'content-type': 'image/bmp',
     },
   ],
-  ['gif/test.gif', { ext: 'webp', 'content-type': 'image/webp' }],
+  ['gif/test.gif', { ext: 'gif', 'content-type': 'image/gif' }],
   ['jpeg/test.jpg', { ext: 'webp', 'content-type': 'image/webp' }],
   ['png/test.png', { ext: 'webp', 'content-type': 'image/webp' }],
   ['svg/test.svg', { ext: 'svg', 'content-type': 'image/svg+xml' }],
-  ['tiff/test.tiff', { ext: 'webp', 'content-type': 'image/webp' }],
+  ['tiff/test.tiff', { ext: 'tiff', 'content-type': 'image/tiff' }],
   ['webp/test.webp', { ext: 'webp', 'content-type': 'image/webp' }],
   ['webp/animated.webp', { ext: 'webp', 'content-type': 'image/webp' }],
 ];
