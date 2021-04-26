@@ -1,5 +1,5 @@
-import Image from 'next/image'
-import ViewSource from '../components/view-source'
+import Image from 'next/image';
+import ViewSource from '../components/view-source';
 
 const Fixed = () => (
   <div>
@@ -13,6 +13,6 @@ const Fixed = () => (
       height={475}
     />
   </div>
-)
+);
 
-export default Fixed
+export default Fixed;

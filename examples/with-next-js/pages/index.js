@@ -1,9 +1,9 @@
-import styles from '../styles.module.css'
-import Image from 'next/image'
-import Link from 'next/link'
-import ViewSource from '../components/view-source'
+import styles from '../styles.module.css';
+import Image from 'next/image';
+import Link from 'next/link';
+import ViewSource from '../components/view-source';
 
-const Code = (p) => <code className={styles.inlineCode} {...p} />
+const Code = (p) => <code className={styles.inlineCode} {...p} />;
 
 const Index = () => (
   <div className={styles.container}>
@@ -102,6 +102,6 @@ const Index = () => (
       </p>
     </div>
   </div>
-)
+);
 
-export default Index
+export default Index;

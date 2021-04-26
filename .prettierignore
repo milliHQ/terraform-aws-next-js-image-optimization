@@ -1,0 +1,10 @@
+# Vercel
+.vercel
+
+# Terraform
+.terraform
+*.tfstate
+*.tfstate.*
+
+# Build output
+dist

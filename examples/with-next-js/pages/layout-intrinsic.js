@@ -1,5 +1,5 @@
-import Image from 'next/image'
-import ViewSource from '../components/view-source'
+import Image from 'next/image';
+import ViewSource from '../components/view-source';
 
 const Intrinsic = () => (
   <div>
@@ -13,6 +13,6 @@ const Intrinsic = () => (
       height={475}
     />
   </div>
-)
+);
 
-export default Intrinsic
+export default Intrinsic;
