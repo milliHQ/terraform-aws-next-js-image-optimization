@@ -6,6 +6,7 @@
     "type": "git",
     "url": "https://github.com/dealmore/terraform-aws-next-js-image-optimization.git"
   },
+  "main": "dist/image-optimizer.js",
   "scripts": {
     "build:tsc": "tsc --skipLibCheck",
     "build:bundle": "node ../scripts/bundle.js",

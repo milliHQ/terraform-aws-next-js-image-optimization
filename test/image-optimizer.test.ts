@@ -1,8 +1,5 @@
 /// <reference types="jest-file-snapshot" />
 
-import { createRequest, createResponse } from 'node-mocks-http';
-import { parse as parseUrl, URLSearchParams } from 'url';
-import { EventEmitter } from 'events';
 import {
   ImageConfig,
   imageConfigDefault,
@@ -10,77 +7,10 @@ import {
 import S3 from 'aws-sdk/clients/s3';
 import * as path from 'path';
 
-import { imageOptimizer, S3Config } from '../lib/image-optimizer';
-import { createDeferred } from '../lib/utils';
 import { s3PublicDir } from './utils/s3-public-dir';
 import { acceptAllFixtures, acceptWebpFixtures } from './constants';
-
-interface Options {
-  w?: string;
-  q?: string;
-}
-
-function generateParams(url: string, options: Options = {}) {
-  const encodedUrl = encodeURIComponent(url);
-  const params = new URLSearchParams();
-  params.append('url', url);
-  options.q && params.append('q', options.q);
-  options.w && params.append('w', options.w);
-
-  const parsedUrl = parseUrl(`/?${params.toString()}`, true);
-
-  return {
-    url: encodedUrl,
-    parsedUrl,
-    params: Object.fromEntries(params),
-  };
-}
-
-async function runOptimizer(
-  params: ReturnType<typeof generateParams>,
-  imageConfig: ImageConfig,
-  requestHeaders: Record<string, string>,
-  s3Config?: S3Config
-) {
-  // Mock request & response
-  const request = createRequest({
-    method: 'GET',
-    url: '/_next/image',
-    params: params.params,
-    headers: requestHeaders,
-  });
-
-  const response = createResponse({
-    eventEmitter: EventEmitter,
-  });
-
-  const defer = createDeferred();
-
-  response.on('data', () => {
-    response._getData();
-  });
-
-  response.on('end', () => {
-    response._getData();
-    defer.resolve();
-  });
-
-  const result = await imageOptimizer(
-    imageConfig,
-    request,
-    response,
-    params.parsedUrl,
-    s3Config
-  );
-
-  await defer.promise;
-
-  return {
-    result,
-    headers: response._getHeaders(),
-    body: response._getBuffer(),
-  };
-}
+import { generateParams } from './utils/generate-params';
+import { runOptimizerFork as runOptimizer } from './utils/run-optimizer';
 
 describe('unit', () => {
   const s3Endpoint = process.env.CI ? 's3:9000' : 'localhost:9000';
