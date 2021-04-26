@@ -4,14 +4,20 @@ import { ImageConfig } from 'next/dist/next-server/server/image-config';
 import fetch from 'node-fetch';
 import { createRequest, createResponse } from 'node-mocks-http';
 import { EventEmitter } from 'events';
+import S3 from 'aws-sdk/clients/s3';
 
-import { imageOptimizer, S3Config } from '../../lib/image-optimizer';
+import { imageOptimizer } from '../../lib/image-optimizer';
 import { createDeferred } from '../../lib/utils';
 import { GenerateParams } from './generate-params';
 
 interface ImageOptimizerResult {
   originCacheControl: string | null;
   finished: boolean;
+}
+
+interface S3Options {
+  options: S3.Types.ClientConfiguration;
+  bucket: string;
 }
 
 /**
@@ -21,7 +27,7 @@ export async function runOptimizerFork(
   params: GenerateParams,
   imageConfig: ImageConfig,
   requestHeaders: Record<string, string>,
-  s3Config?: S3Config
+  s3Config?: S3Options
 ) {
   let result: ImageOptimizerResult;
   const port = await getPort();
@@ -79,7 +85,7 @@ export async function runOptimizer(
   params: GenerateParams,
   imageConfig: ImageConfig,
   requestHeaders: Record<string, string>,
-  s3Config?: S3Config
+  s3Config?: S3Options
 ) {
   // Mock request & response
   const request = createRequest({
@@ -110,6 +116,11 @@ export async function runOptimizer(
     response,
     params.parsedUrl,
     s3Config
+      ? {
+          s3: new S3(s3Config.options),
+          bucket: s3Config.bucket,
+        }
+      : undefined
   );
 
   await defer.promise;

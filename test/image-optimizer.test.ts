@@ -26,17 +26,17 @@ describe('unit', () => {
   let s3: S3;
   let bucketName: string;
   const cacheControlHeader = 'public, max-age=123456';
+  const S3options: S3.Types.ClientConfiguration = {
+    accessKeyId: 'test',
+    secretAccessKey: 'testtest',
+    endpoint: s3Endpoint,
+    s3ForcePathStyle: true,
+    signatureVersion: 'v4',
+    sslEnabled: false,
+  };
 
   beforeAll(async () => {
     // Upload files to local s3 Server
-    const S3options: S3.Types.ClientConfiguration = {
-      accessKeyId: 'test',
-      secretAccessKey: 'testtest',
-      endpoint: s3Endpoint,
-      s3ForcePathStyle: true,
-      signatureVersion: 'v4',
-      sslEnabled: false,
-    };
     s3 = new S3(S3options);
 
     const upload = await s3PublicDir(s3, fixturesDir, cacheControlHeader);
@@ -54,7 +54,7 @@ describe('unit', () => {
       {
         accept: '*/*',
       },
-      { s3, bucket: bucketName }
+      { options: S3options, bucket: bucketName }
     );
 
     expect(result.finished).toBe(true);
@@ -110,7 +110,9 @@ describe('unit', () => {
       );
 
       expect(result.finished).toBe(true);
-      expect(body.toString('utf-8').length).toBe(0);
+      expect(body.toString()).toBe(
+        `"w" parameter (width) of ${nonDefaultImageSize} is not allowed`
+      );
       expect(headers['content-type']).toBeUndefined();
     }
   });
@@ -164,7 +166,9 @@ describe('unit', () => {
       );
 
       expect(result.finished).toBe(true);
-      expect(body.toString('utf-8').length).toBe(0);
+      expect(body.toString('utf-8')).toBe(
+        `"w" parameter (width) of ${nonDefaultDeviceSize} is not allowed`
+      );
       expect(headers['content-type']).toBeUndefined();
     }
   });

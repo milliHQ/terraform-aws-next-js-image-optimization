@@ -8,6 +8,7 @@
 
 const http = require('http');
 const { imageOptimizer } = require('@dealmore/tf-next-image-optimization');
+const S3 = require('aws-sdk/clients/s3');
 
 async function invoke({ port, imageConfig, parsedUrl, s3Config }) {
   const server = http.createServer(async (request, response) => {
@@ -17,6 +18,11 @@ async function invoke({ port, imageConfig, parsedUrl, s3Config }) {
       response,
       parsedUrl,
       s3Config
+        ? {
+            s3: new S3(s3Config.options),
+            bucket: s3Config.bucket,
+          }
+        : undefined
     );
 
     process.send({ type: 'RESULT', payload: result });
