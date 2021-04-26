@@ -5,3 +5,6 @@
 .terraform
 *.tfstate
 *.tfstate.*
+
+# Build output
+dist
