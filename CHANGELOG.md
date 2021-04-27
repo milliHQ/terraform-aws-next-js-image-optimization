@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.0.9 (April 27, 2021)
+
+- Uses Image Optimizer module of [Next.js 10.0.9](https://github.com/vercel/next.js/releases/tag/v10.0.9) ([#22](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/22))
+
 ## 10.0.8 (April 26, 2021)
 
 - Makes the module compatible with Terraform `0.15` ([#26](https://github.com/dealmore/terraform-aws-next-js-image-optimization/issues/26), [#29](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/29))
