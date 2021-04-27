@@ -44,7 +44,7 @@ resource "aws_cloudfront_distribution" "distribution" {
     compress               = true
 
     origin_request_policy_id = module.next_image_optimizer.cloudfront_origin_request_policy_id
-    cache_policy_id = module.next_image_optimizer.cloudfront_cache_policy_id
+    cache_policy_id          = module.next_image_optimizer.cloudfront_cache_policy_id
   }
 
   # This is a generic dynamic to create an origin
