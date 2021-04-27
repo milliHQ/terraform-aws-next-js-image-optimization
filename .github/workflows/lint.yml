@@ -7,8 +7,8 @@ on:
   pull_request:
 
 jobs:
-  lint:
-    name: Lint
+  lint-js:
+    name: Lint JavaScript
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,3 +27,14 @@ jobs:
 
       - name: Lint Prettier
         run: yarn lint:prettier
+
+  lint-tf:
+    name: Lint Terraform
+    runs-on: ubuntu-latest
+    container: hashicorp/terraform
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Lint Terraform
+        run: terraform fmt -check -recursive -diff
