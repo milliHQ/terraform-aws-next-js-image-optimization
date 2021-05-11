@@ -1,10 +1,14 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { imageOptimizer as nextImageOptimizer } from 'next/dist/next-server/server/image-optimizer';
 import { ImageConfig } from 'next/dist/next-server/server/image-config';
+import { NextConfig } from 'next/dist/next-server/server/config';
+import { imageOptimizer as nextImageOptimizer } from 'next/dist/next-server/server/image-optimizer';
+import Server from 'next/dist/next-server/server/next-server';
 import nodeFetch, { RequestInfo, RequestInit } from 'node-fetch';
 import { UrlWithParsedQuery } from 'url';
-import Server from 'next/dist/next-server/server/next-server';
 import S3 from 'aws-sdk/clients/s3';
+
+// Sets working dir of Next.js to /tmp (Lambda tmp dir)
+const distDir = '/tmp';
 
 let originCacheControl: string | null;
 
@@ -34,12 +38,13 @@ async function imageOptimizer(
   parsedUrl: UrlWithParsedQuery,
   s3Config?: S3Config
 ) {
+  // Create next config mock
+  const nextConfig = ({
+    images: imageConfig,
+  } as unknown) as NextConfig;
+
   // Create Next Server mock
-  const server = ({
-    nextConfig: {
-      images: imageConfig,
-    },
-    distDir: '/tmp',
+  const server = {
     getRequestHandler: () => async (
       { headers }: IncomingMessage,
       res: ServerResponse,
@@ -100,9 +105,16 @@ async function imageOptimizer(
         res.end(upstreamBuffer);
       }
     },
-  } as unknown) as Server;
+  } as Server;
 
-  const result = await nextImageOptimizer(server, req, res, parsedUrl);
+  const result = await nextImageOptimizer(
+    server,
+    req,
+    res,
+    parsedUrl,
+    nextConfig,
+    distDir
+  );
   return {
     ...result,
     originCacheControl,
