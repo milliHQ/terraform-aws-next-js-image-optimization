@@ -20,6 +20,12 @@ interface S3Options {
   bucket: string;
 }
 
+type ForkMessage =
+  | {
+      type: 'STARTED';
+    }
+  | { type: 'RESULT'; payload: ImageOptimizerResult };
+
 /**
  * Runs the image optimizer inside a forked process
  */
@@ -37,7 +43,7 @@ export async function runOptimizerFork(
 
   const deferServerStart = createDeferred();
   const deferResult = createDeferred();
-  imageOptimizerFork.on('message', (body) => {
+  imageOptimizerFork.on('message', (body: ForkMessage) => {
     if (body) {
       if (body.type === 'STARTED') {
         deferServerStart.resolve();
