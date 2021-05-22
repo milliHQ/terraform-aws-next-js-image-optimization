@@ -32,6 +32,6 @@
     "typescript": "^4.1.3"
   },
   "resolutions": {
-    "aws-sdk": "2.804.0"
+    "aws-sdk": "2.880.0"
   }
 }
