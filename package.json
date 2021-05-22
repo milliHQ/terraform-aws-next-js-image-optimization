@@ -18,7 +18,7 @@
     "@dealmore/sammy": "^1.5.0",
     "@types/jest": "^26.0.20",
     "@types/mime": "^2.0.3",
-    "@types/node": "^12.0.0",
+    "@types/node": "^14.0.0",
     "@types/node-fetch": "^2.5.10",
     "aws-sdk": "*",
     "get-port": "^5.1.1",
