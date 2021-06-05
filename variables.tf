@@ -87,6 +87,18 @@ variable "cloudfront_price_class" {
   default     = "PriceClass_100"
 }
 
+variable "cloudfront_enable_origin_shield" {
+  description = "Controls whether CloudFront Origin Shield should be enabled on the image optimizer lambdas."
+  type        = bool
+  default     = true
+}
+
+variable "cloudfront_origin_shield_region" {
+  description = "Override the region choosen for the CloudFront origin shield. Use `auto` to automatically determine the optimal region."
+  type        = string
+  default     = "auto"
+}
+
 variable "cloudfront_origin_id" {
   description = "Override the id for the custom CloudFront id."
   type        = string

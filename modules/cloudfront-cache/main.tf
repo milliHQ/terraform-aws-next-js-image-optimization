@@ -28,6 +28,16 @@ resource "aws_cloudfront_distribution" "distribution" {
       domain_name = origin.value["domain_name"]
       origin_id   = origin.value["origin_id"]
 
+      # Origin Shield
+      dynamic "origin_shield" {
+        for_each = lookup(origin.value, "origin_shield", null) != null ? [true] : []
+
+        content {
+          enabled              = lookup(origin.value["origin_shield"], "enabled", false)
+          origin_shield_region = lookup(origin.value["origin_shield"], "origin_shield_region", null)
+        }
+      }
+
       # S3 origin
       dynamic "s3_origin_config" {
         for_each = lookup(origin.value, "s3_origin_config", null) != null ? [true] : []
