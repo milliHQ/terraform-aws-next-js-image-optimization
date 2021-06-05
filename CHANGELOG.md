@@ -1,5 +1,10 @@
 # Changelog
 
+## 10.2.3 (June 05, 2021)
+
+- Improves caching of processed images by using [CloudFront Origin Shield](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html) ([#2](https://github.com/dealmore/terraform-aws-next-js-image-optimization/issues/2), [#41](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/41))
+- Uses Image Optimizer module of [Next.js 10.2.3](https://github.com/vercel/next.js/releases/tag/v10.2.3) ([#39](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/39))
+
 ## 10.2.2 (May 22, 2021)
 
 - Uses Image Optimizer module of [Next.js 10.2.2](https://github.com/vercel/next.js/releases/tag/v10.2.2) ([#35](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/35))
