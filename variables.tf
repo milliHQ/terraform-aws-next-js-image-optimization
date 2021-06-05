@@ -4,7 +4,7 @@
 variable "next_image_version" {
   description = "Next.js version from where you want to use the image optimizer from. Supports semver ranges."
   type        = string
-  default     = "10.2.2"
+  default     = "10.2.3"
 }
 
 variable "next_image_domains" {
@@ -85,6 +85,18 @@ variable "cloudfront_price_class" {
   description = "Price class for the CloudFront distributions (main & proxy config). One of PriceClass_All, PriceClass_200, PriceClass_100."
   type        = string
   default     = "PriceClass_100"
+}
+
+variable "cloudfront_enable_origin_shield" {
+  description = "Controls whether CloudFront Origin Shield should be enabled on the image optimizer lambdas."
+  type        = bool
+  default     = true
+}
+
+variable "cloudfront_origin_shield_region" {
+  description = "Override the region choosen for the CloudFront origin shield. Use `auto` to automatically determine the optimal region."
+  type        = string
+  default     = "auto"
 }
 
 variable "cloudfront_origin_id" {

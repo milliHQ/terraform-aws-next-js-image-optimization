@@ -83,7 +83,53 @@ module "api_gateway" {
 # CloudFront Integration
 ########################
 
+# Get the AWS region from the provider
+data "aws_region" "current" {}
+
 locals {
+  # Origin Shield mapping configuration
+  # See: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html
+  origin_shield_region_mapping = {
+    # Regions where Origin Shield is available
+    us-east-2      = "us-east-2"      # US East (Ohio)
+    us-east-1      = "us-east-1"      # US East (N. Virginia)
+    us-west-2      = "us-west-2"      # US West (Oregon)
+    ap-south-1     = "ap-south-1"     # Asia Pacific (Mumbai)
+    ap-northeast-2 = "ap-northeast-2" # Asia Pacific (Seoul)
+    ap-southeast-1 = "ap-southeast-1" # Asia Pacific (Singapore)
+    ap-southeast-2 = "ap-southeast-2" # Asia Pacific (Sydney)
+    ap-northeast-1 = "ap-northeast-1" # Asia Pacific (Tokyo)
+    eu-central-1   = "eu-central-1"   # Europe (Frankfurt)
+    eu-west-1      = "eu-west-1"      # Europe (Ireland)
+    eu-west-2      = "eu-west-2"      # Europe (London)
+    sa-east-1      = "sa-east-1"      # South America (São Paulo)
+
+    # Regions where Origin Shield is NOT avaible (choose closest region)
+    us-west-1    = "us-west-2"      # US West (N. California)
+    af-south-1   = "eu-west-1"      # Africa (Cape Town)
+    ap-east-1    = "ap-southeast-1" # Asia Pacific (Hong Kong)
+    ca-central-1 = "us-east-1"      # Canada (Central)
+    eu-south-1   = "eu-central-1"   # Europe (Milan)
+    eu-west-3    = "eu-west-2"      # Europe (Paris)
+    eu-north-1   = "eu-west-2"      # Europe (Stockholm)
+    me-south-1   = "ap-south-1"     # Middle East (Bahrain)
+  }
+
+  origin_shield_region = var.cloudfront_origin_shield_region == "auto" ? lookup(
+    local.origin_shield_region_mapping,
+    data.aws_region.current.name,
+    null
+  ) : var.cloudfront_origin_shield_region
+
+  origin_shield_enabled = var.cloudfront_enable_origin_shield && local.origin_shield_region != null
+
+  cloudfront_origin_shield_config = local.origin_shield_enabled ? {
+    origin_shield = {
+      enabled              = true
+      origin_shield_region = local.origin_shield_region
+    }
+  } : {}
+
   # Query string parameters used by image optimizer
   # Must be sorted to prevent unnessesary updates of the cloudFront distribution
   cloudfront_allowed_query_string_keys = sort(["url", "w", "q"])
@@ -91,17 +137,20 @@ locals {
   # Headers that are used by the image optimizer
   cloudfront_allowed_headers = sort(["accept", "referer"])
 
-  cloudfront_origin_image_optimizer = {
-    domain_name = trimprefix(module.api_gateway.this_apigatewayv2_api_api_endpoint, "https://")
-    origin_id   = var.cloudfront_origin_id
+  cloudfront_origin_image_optimizer = merge(
+    {
+      domain_name = trimprefix(module.api_gateway.this_apigatewayv2_api_api_endpoint, "https://")
+      origin_id   = var.cloudfront_origin_id
 
-    custom_origin_config = {
-      http_port              = "80"
-      https_port             = "443"
-      origin_protocol_policy = "https-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
-    }
-  }
+      custom_origin_config = {
+        http_port              = "80"
+        https_port             = "443"
+        origin_protocol_policy = "https-only"
+        origin_ssl_protocols   = ["TLSv1.2"]
+      }
+    },
+    local.cloudfront_origin_shield_config
+  )
 }
 
 resource "random_id" "policy_name" {
