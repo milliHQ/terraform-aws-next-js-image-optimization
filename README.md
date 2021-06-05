@@ -4,13 +4,14 @@
 
 A drop-in [image optimization loader](https://nextjs.org/docs/basic-features/image-optimization#loader) for the Next.js image component `next/image`.
 
-If you need a complete hosting solution for Next.js with Terraform, please check out our [Terraform Next.js module for AWS](https://registry.terraform.io/modules/dealmore/next-js/aws).
+> **Notice:** If you need a complete hosting solution for Next.js with Terraform, please check out our [Terraform Next.js module for AWS](https://registry.terraform.io/modules/dealmore/next-js/aws).
 
 ## Features
 
 - ✅ &nbsp;Terraform `v0.13+`
 - ✅ &nbsp;Serverless image processing powered by [AWS Lambda](https://aws.amazon.com/lambda/)
 - ✅ &nbsp;[Amazon CloudFront](https://aws.amazon.com/cloudfront/) powered image caching
+- ✅ &nbsp;Two-layer caching with [CloudFront Origin Shield](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html)
 - ✅ &nbsp;Support for custom [Device Sizes](https://nextjs.org/docs/basic-features/image-optimization#device-sizes) & [Image Sizes](https://nextjs.org/docs/basic-features/image-optimization#image-sizes)
 
 ## Architecture
@@ -90,6 +91,8 @@ module.exports = {
 }
 ```
 
+Then rebuild and redeploy your Next.js application to make use of the changed configuration.
+
 ## Examples
 
 - [Next.js + Vercel](https://github.com/dealmore/terraform-aws-next-js-image-optimization/tree/main/examples/with-next-js) - Use the image optimizer together with a Next.js app deployed on Vercel.
@@ -154,8 +157,6 @@ We rely internally on the original Next.js image optimizer.
 So the versioning of the module is aligned with the version of the corresponding Next.js release.
 
 For example the [`v10.0.5`](https://github.com/dealmore/terraform-aws-next-js-image-optimization/releases/tag/v10.0.5) version of this Terraform module uses the image optimizer from the [Next.js 10.0.5 release](https://github.com/vercel/next.js/releases/tag/v10.0.5).
-
-Due to compatibility issues we are not able to provide a matching version for every Next.js release.
 
 Please note that we only publish versions `>=10.0.5`, for a full list of available versions see the published versions in the [Terraform Registry](https://registry.terraform.io/modules/dealmore/next-js-image-optimization/aws).
 
