@@ -143,11 +143,13 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 
 | Name | Description |
 |------|-------------|
+| cloudfront\_cache\_behavior | Predefined CloudFront cache behavior. Can be used to embed the image optimizer into an existing CloudFront resource. |
 | cloudfront\_cache\_policy\_id | Cache policy id used for image optimization. |
 | cloudfront\_domain\_name | Domain of the internal CloudFront distribution. |
 | cloudfront\_hosted\_zone\_id | Zone id of the internal CloudFront distribution. |
+| cloudfront\_origin | Predefined CloudFront origin. Can be used to embed the image optimizer into an existing CloudFront resource. |
 | cloudfront\_origin\_id | Id of the custom origin used for image optimization. |
-| cloudfront\_origin\_image\_optimizer | Predefined CloudFront origin of the image optimizer. Can be used to embedd the image optimizer into an existing CloudFront resource. |
+| cloudfront\_origin\_image\_optimizer | Deprecated, please use cloudfront\_origin instead. |
 | cloudfront\_origin\_request\_policy\_id | Request policy id used for image optimization. |
 
 <!--- END_TF_DOCS --->
