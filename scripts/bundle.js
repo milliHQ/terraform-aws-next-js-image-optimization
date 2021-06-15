@@ -29,6 +29,15 @@ async function main() {
     'node_modules/next/node_modules/jest-worker/build/workers/threadChild.js'
   );
 
+  fileList.push(
+    ...glob.sync(
+      'node_modules/next/dist/next-server/server/lib/squoosh/**/*.{js,wasm}',
+      {
+        cwd: workspaceRoot,
+      }
+    )
+  );
+
   // Create zip file
   await new Promise((resolve, reject) => {
     const outputFile = fs.createWriteStream(
