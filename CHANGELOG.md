@@ -1,5 +1,17 @@
 # Changelog
 
+## 11.0.0 (June 15, 2021)
+
+The output `cloudfront_origin_image_optimizer` is now deprecated.
+Use `cloudfront_origin` instead.
+
+- Fixes image optimization for webp format ([#44](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/44))  
+  Thanks to [@vcnc-hex](https://github.com/vcnc-hex) for contributing!
+- Uses Image Optimizer module of [Next.js 11.0.0](https://github.com/vercel/next.js/releases/tag/v11.0.0) ([#45](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/45))
+- Add output for cache behavior ([#43](https://github.com/dealmore/terraform-aws-next-js-image-optimization/issues/43), [#48](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/48))
+- Bump AWS API Gateway Terraform module from 0.11.0 to 1.1.0 ([#47](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/47))
+- Bump AWS Lambda Terraform module from 1.47.0 to 2.4.0 ([#46](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/46))
+
 ## 10.2.3 (June 05, 2021)
 
 - Improves caching of processed images by using [CloudFront Origin Shield](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html) ([#2](https://github.com/dealmore/terraform-aws-next-js-image-optimization/issues/2), [#41](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/41))
