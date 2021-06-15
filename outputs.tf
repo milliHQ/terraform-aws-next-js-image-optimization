@@ -13,9 +13,19 @@ output "cloudfront_origin_id" {
   value       = var.cloudfront_origin_id
 }
 
+output "cloudfront_origin" {
+  description = "Predefined CloudFront origin. Can be used to embed the image optimizer into an existing CloudFront resource."
+  value       = local.cloudfront_origin
+}
+
 output "cloudfront_origin_image_optimizer" {
-  description = "Predefined CloudFront origin of the image optimizer. Can be used to embedd the image optimizer into an existing CloudFront resource."
-  value       = local.cloudfront_origin_image_optimizer
+  description = "Deprecated, please use cloudfront_origin instead."
+  value       = local.cloudfront_origin
+}
+
+output "cloudfront_cache_behavior" {
+  description = "Predefined CloudFront cache behavior. Can be used to embed the image optimizer into an existing CloudFront resource."
+  value       = local.cloudfront_cache_behavior
 }
 
 output "cloudfront_origin_request_policy_id" {

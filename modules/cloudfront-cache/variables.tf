@@ -10,12 +10,8 @@ variable "cloudfront_origin" {
   type = any
 }
 
-variable "cloudfront_origin_request_policy_id" {
-  type = string
-}
-
-variable "cloudfront_cache_policy_id" {
-  type = string
+variable "cloudfront_default_behavior" {
+  type = any
 }
 
 variable "deployment_name" {
