@@ -35,16 +35,21 @@ resource "aws_cloudfront_distribution" "distribution" {
   is_ipv6_enabled = true
   comment         = "next-image-optimizer-example-external-cf"
 
-  default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = module.next_image_optimizer.cloudfront_origin_id
+  # This is a generic dynamic to create the default cache behavior
+  dynamic "default_cache_behavior" {
+    for_each = [module.next_image_optimizer.cloudfront_cache_behavior]
 
-    viewer_protocol_policy = "redirect-to-https"
-    compress               = true
+    content {
+      allowed_methods  = default_cache_behavior.value["allowed_methods"]
+      cached_methods   = default_cache_behavior.value["cached_methods"]
+      target_origin_id = default_cache_behavior.value["target_origin_id"]
 
-    origin_request_policy_id = module.next_image_optimizer.cloudfront_origin_request_policy_id
-    cache_policy_id          = module.next_image_optimizer.cloudfront_cache_policy_id
+      viewer_protocol_policy = default_cache_behavior.value["viewer_protocol_policy"]
+      compress               = default_cache_behavior.value["compress"]
+
+      origin_request_policy_id = default_cache_behavior.value["origin_request_policy_id"]
+      cache_policy_id          = default_cache_behavior.value["cache_policy_id"]
+    }
   }
 
   # This is a generic dynamic to create an origin

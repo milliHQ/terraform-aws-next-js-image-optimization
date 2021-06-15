@@ -9,16 +9,20 @@ resource "aws_cloudfront_distribution" "distribution" {
   comment         = var.deployment_name
   price_class     = var.cloudfront_price_class
 
-  default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = lookup(var.cloudfront_origin, "origin_id", null)
+  dynamic "default_cache_behavior" {
+    for_each = [var.cloudfront_default_behavior]
 
-    viewer_protocol_policy = "redirect-to-https"
-    compress               = true
+    content {
+      allowed_methods  = default_cache_behavior.value["allowed_methods"]
+      cached_methods   = default_cache_behavior.value["cached_methods"]
+      target_origin_id = default_cache_behavior.value["target_origin_id"]
 
-    origin_request_policy_id = var.cloudfront_origin_request_policy_id
-    cache_policy_id          = var.cloudfront_cache_policy_id
+      viewer_protocol_policy = default_cache_behavior.value["viewer_protocol_policy"]
+      compress               = default_cache_behavior.value["compress"]
+
+      origin_request_policy_id = default_cache_behavior.value["origin_request_policy_id"]
+      cache_policy_id          = default_cache_behavior.value["cache_policy_id"]
+    }
   }
 
   dynamic "origin" {

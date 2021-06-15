@@ -87,6 +87,9 @@ module "api_gateway" {
 data "aws_region" "current" {}
 
 locals {
+  # Origin Shield
+  ###############
+
   # Origin Shield mapping configuration
   # See: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html
   origin_shield_region_mapping = {
@@ -104,7 +107,7 @@ locals {
     eu-west-2      = "eu-west-2"      # Europe (London)
     sa-east-1      = "sa-east-1"      # South America (São Paulo)
 
-    # Regions where Origin Shield is NOT avaible (choose closest region)
+    # Regions where Origin Shield is NOT available (choose closest region)
     us-west-1    = "us-west-2"      # US West (N. California)
     af-south-1   = "eu-west-1"      # Africa (Cape Town)
     ap-east-1    = "ap-southeast-1" # Asia Pacific (Hong Kong)
@@ -131,13 +134,16 @@ locals {
   } : {}
 
   # Query string parameters used by image optimizer
-  # Must be sorted to prevent unnessesary updates of the cloudFront distribution
+  # Must be sorted to prevent unnecessary updates of the cloudFront distribution
   cloudfront_allowed_query_string_keys = sort(["url", "w", "q"])
 
   # Headers that are used by the image optimizer
   cloudfront_allowed_headers = sort(["accept", "referer"])
 
-  cloudfront_origin_image_optimizer = merge(
+
+  # CloudFront origin
+  ###################
+  cloudfront_origin = merge(
     {
       domain_name = trimprefix(module.api_gateway.apigatewayv2_api_api_endpoint, "https://")
       origin_id   = var.cloudfront_origin_id
@@ -151,6 +157,19 @@ locals {
     },
     local.cloudfront_origin_shield_config
   )
+
+  # CloudFront cache behavior
+  ###########################
+  cloudfront_cache_behavior = {
+    path_pattern             = "/_next/image*"
+    allowed_methods          = ["GET", "HEAD"]
+    cached_methods           = ["GET", "HEAD"]
+    target_origin_id         = local.cloudfront_origin.origin_id
+    viewer_protocol_policy   = "redirect-to-https"
+    compress                 = true
+    origin_request_policy_id = aws_cloudfront_origin_request_policy.this.id
+    cache_policy_id          = aws_cloudfront_cache_policy.this.id
+  }
 }
 
 resource "random_id" "policy_name" {
@@ -219,10 +238,8 @@ module "cloudfront" {
 
   cloudfront_create_distribution = var.cloudfront_create_distribution
   cloudfront_price_class         = var.cloudfront_price_class
-  cloudfront_origin              = local.cloudfront_origin_image_optimizer
-
-  cloudfront_origin_request_policy_id = aws_cloudfront_origin_request_policy.this.id
-  cloudfront_cache_policy_id          = aws_cloudfront_cache_policy.this.id
+  cloudfront_origin              = local.cloudfront_origin
+  cloudfront_default_behavior    = local.cloudfront_cache_behavior
 
   deployment_name = var.deployment_name
   tags            = var.tags
