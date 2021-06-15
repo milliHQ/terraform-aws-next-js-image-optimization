@@ -42,7 +42,7 @@ module "image_optimizer" {
   allowed_triggers = {
     AllowExecutionFromAPIGateway = {
       service = "apigateway"
-      arn     = module.api_gateway.this_apigatewayv2_api_execution_arn
+      arn     = module.api_gateway.apigatewayv2_api_execution_arn
     }
   }
 
@@ -60,7 +60,7 @@ module "image_optimizer" {
 #########################
 module "api_gateway" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
-  version = "0.11.0"
+  version = "1.1.0"
 
   name          = var.deployment_name
   description   = "Managed by Terraform-next.js image optimizer"
@@ -139,7 +139,7 @@ locals {
 
   cloudfront_origin_image_optimizer = merge(
     {
-      domain_name = trimprefix(module.api_gateway.this_apigatewayv2_api_api_endpoint, "https://")
+      domain_name = trimprefix(module.api_gateway.apigatewayv2_api_api_endpoint, "https://")
       origin_id   = var.cloudfront_origin_id
 
       custom_origin_config = {
