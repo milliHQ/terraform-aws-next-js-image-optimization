@@ -5,7 +5,7 @@ import { URLSearchParams } from 'url';
 
 import { s3PublicDir } from './utils/s3-public-dir';
 import { getLocalIpAddressFromHost } from './utils/host-ip-address';
-import { acceptAllFixtures } from './constants';
+import { acceptAllFixtures, acceptWebpFixtures } from './constants';
 
 const ONE_MINUTE_IN_MS = 60000;
 const NODE_RUNTIME = 'nodejs14.x';
@@ -92,7 +92,12 @@ describe('[e2e]', () => {
         );
 
         const response = await lambdaSAM.sendApiGwRequest(
-          `${route}?${optimizerParams.toString()}`
+          `${route}?${optimizerParams.toString()}`,
+          {
+            headers: {
+              Accept: '*/*',
+            },
+          }
         );
         const body = await response
           .text()
@@ -137,6 +142,100 @@ describe('[e2e]', () => {
           {
             headers: {
               Accept: '*/*',
+              Referer: `http://${s3Endpoint}/`,
+            },
+          }
+        );
+
+        const body = await response
+          .text()
+          .then((text) => Buffer.from(text, 'base64'));
+
+        expect(response.status).toBe(200);
+        expect(body).toMatchFile(snapshotFileName);
+        expect(response.headers.get('Content-Type')).toBe(
+          fixtureResponse['content-type']
+        );
+        expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
+
+        // Header settings needed for CloudFront compression
+        expect(response.headers.has('Content-Length')).toBeTruthy();
+        expect(response.headers.has('Content-Encoding')).toBeFalsy();
+      },
+      ONE_MINUTE_IN_MS
+    );
+
+    test.each(acceptWebpFixtures)(
+      'External: Accept image/webp,*/*: %s',
+      async (filePath, fixtureResponse) => {
+        const publicPath = `http://${s3Endpoint}/${fixtureBucketName}/${filePath}`;
+        const optimizerParams = new URLSearchParams({
+          url: publicPath,
+          w: '2048',
+          q: '75',
+        });
+        const optimizerPrefix = `external_accept_webp_w-${optimizerParams.get(
+          'w'
+        )}_q-${optimizerParams.get('q')}_`;
+        const snapshotFileName = path.join(
+          __dirname,
+          '__snapshots__/e2e/',
+          `${optimizerPrefix}${filePath.replace('/', '_')}.${
+            fixtureResponse.ext
+          }`
+        );
+
+        const response = await lambdaSAM.sendApiGwRequest(
+          `${route}?${optimizerParams.toString()}`,
+          {
+            headers: {
+              Accept: 'image/webp,*/*',
+            },
+          }
+        );
+        const body = await response
+          .text()
+          .then((text) => Buffer.from(text, 'base64'));
+
+        expect(response.status).toBe(200);
+        expect(body).toMatchFile(snapshotFileName);
+        expect(response.headers.get('Content-Type')).toBe(
+          fixtureResponse['content-type']
+        );
+        expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
+
+        // Header settings needed for CloudFront compression
+        expect(response.headers.has('Content-Length')).toBeTruthy();
+        expect(response.headers.has('Content-Encoding')).toBeFalsy();
+      },
+      ONE_MINUTE_IN_MS
+    );
+
+    test.each(acceptWebpFixtures)(
+      'Internal: Accept image/webp,*/*: %s',
+      async (filePath, fixtureResponse) => {
+        const publicPath = `/${fixtureBucketName}/${filePath}`;
+        const optimizerParams = new URLSearchParams({
+          url: publicPath,
+          w: '2048',
+          q: '75',
+        });
+        const optimizerPrefix = `internal_accept_webp_w-${optimizerParams.get(
+          'w'
+        )}_q-${optimizerParams.get('q')}_`;
+        const snapshotFileName = path.join(
+          __dirname,
+          '__snapshots__/e2e/',
+          `${optimizerPrefix}${filePath.replace('/', '_')}.${
+            fixtureResponse.ext
+          }`
+        );
+
+        const response = await lambdaSAM.sendApiGwRequest(
+          `${route}?${optimizerParams.toString()}`,
+          {
+            headers: {
+              Accept: 'image/webp,*/*',
               Referer: `http://${s3Endpoint}/`,
             },
           }
@@ -216,7 +315,13 @@ describe('[e2e]', () => {
         });
 
         const response = await lambdaSAM.sendApiGwRequest(
-          `${route}?${optimizerParams.toString()}`
+          `${route}?${optimizerParams.toString()}`,
+          {
+            headers: {
+              Accept: '*/*',
+              Referer: `http://${s3Endpoint}/`,
+            },
+          }
         );
 
         const body = await response
@@ -286,7 +391,13 @@ describe('[e2e]', () => {
         );
 
         const response = await lambdaSAM.sendApiGwRequest(
-          `${route}?${optimizerParams.toString()}`
+          `${route}?${optimizerParams.toString()}`,
+          {
+            headers: {
+              Accept: '*/*',
+              Referer: `http://${s3Endpoint}/`,
+            },
+          }
         );
         const text = await response.text();
         const body = Buffer.from(text, 'base64');
