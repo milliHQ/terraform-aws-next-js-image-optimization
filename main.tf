@@ -18,7 +18,7 @@ resource "random_id" "function_name" {
 
 module "image_optimizer" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "1.47.0"
+  version = "2.4.0"
 
   function_name = random_id.function_name.hex
   description   = var.deployment_name
@@ -70,7 +70,7 @@ module "api_gateway" {
 
   integrations = {
     "GET /_next/{proxy+}" = {
-      lambda_arn             = module.image_optimizer.this_lambda_function_arn
+      lambda_arn             = module.image_optimizer.lambda_function_arn
       payload_format_version = "2.0"
       timeout_milliseconds   = var.lambda_timeout * 1000
     }
