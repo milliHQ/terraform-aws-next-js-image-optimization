@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.0.1 (July 06, 2021)
+
+- Uses Image Optimizer module of [Next.js 11.0.1](https://github.com/vercel/next.js/releases/tag/v11.0.1) ([#49](https://github.com/dealmore/terraform-aws-next-js-image-optimization/pull/49))
+
 ## 11.0.0 (June 15, 2021)
 
 The output `cloudfront_origin_image_optimizer` is now deprecated.
