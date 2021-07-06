@@ -99,9 +99,7 @@ describe('[e2e]', () => {
             },
           }
         );
-        const body = await response
-          .text()
-          .then((text) => Buffer.from(text, 'base64'));
+        const body = await response.text();
 
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
@@ -147,9 +145,7 @@ describe('[e2e]', () => {
           }
         );
 
-        const body = await response
-          .text()
-          .then((text) => Buffer.from(text, 'base64'));
+        const body = await response.text();
 
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
@@ -193,9 +189,7 @@ describe('[e2e]', () => {
             },
           }
         );
-        const body = await response
-          .text()
-          .then((text) => Buffer.from(text, 'base64'));
+        const body = await response.text();
 
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
@@ -241,9 +235,7 @@ describe('[e2e]', () => {
           }
         );
 
-        const body = await response
-          .text()
-          .then((text) => Buffer.from(text, 'base64'));
+        const body = await response.text();
 
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
@@ -324,9 +316,7 @@ describe('[e2e]', () => {
           }
         );
 
-        const body = await response
-          .text()
-          .then((text) => Buffer.from(text, 'base64'));
+        const body = await response.text();
 
         expect(response.ok).toBeTruthy();
         expect(response.headers.get('content-type')).toBe(
@@ -399,8 +389,7 @@ describe('[e2e]', () => {
             },
           }
         );
-        const text = await response.text();
-        const body = Buffer.from(text, 'base64');
+        const body = await response.text();
 
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
