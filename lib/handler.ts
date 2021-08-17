@@ -58,7 +58,7 @@ const deviceSizes = parseFromEnv(
 );
 const imageSizes = parseFromEnv(
   'TF_NEXTIMAGE_IMAGE_SIZES',
-  imageConfigDefault.deviceSizes
+  imageConfigDefault.imageSizes
 );
 const sourceBucket = process.env.TF_NEXTIMAGE_SOURCE_BUCKET ?? undefined;
 
