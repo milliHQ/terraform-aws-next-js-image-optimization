@@ -1,6 +1,6 @@
 import { fork } from 'child_process';
 import getPort from 'get-port';
-import { ImageConfig } from 'next/dist/next-server/server/image-config';
+import { ImageConfig } from 'next/dist/server/image-config';
 import fetch from 'node-fetch';
 import { createRequest, createResponse } from 'node-mocks-http';
 import { EventEmitter } from 'events';

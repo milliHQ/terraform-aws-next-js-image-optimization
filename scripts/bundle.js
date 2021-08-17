@@ -31,7 +31,7 @@ async function main() {
 
   fileList.push(
     ...glob.sync(
-      'node_modules/next/dist/next-server/server/lib/squoosh/**/*.{js,wasm}',
+      'node_modules/next/dist/server/lib/squoosh/**/*.{js,wasm}',
       {
         cwd: workspaceRoot,
       }

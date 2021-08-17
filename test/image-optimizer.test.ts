@@ -1,9 +1,6 @@
 /// <reference types="jest-file-snapshot" />
 
-import {
-  ImageConfig,
-  imageConfigDefault,
-} from 'next/dist/next-server/server/image-config';
+import { ImageConfig, imageConfigDefault } from 'next/dist/server/image-config';
 import S3 from 'aws-sdk/clients/s3';
 import * as path from 'path';
 
