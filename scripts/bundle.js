@@ -30,12 +30,9 @@ async function main() {
   );
 
   fileList.push(
-    ...glob.sync(
-      'node_modules/next/dist/server/lib/squoosh/**/*.{js,wasm}',
-      {
-        cwd: workspaceRoot,
-      }
-    )
+    ...glob.sync('node_modules/next/dist/server/lib/squoosh/**/*.{js,wasm}', {
+      cwd: workspaceRoot,
+    })
   );
 
   // Create zip file
