@@ -216,7 +216,7 @@ describe('unit', () => {
       expect(headers['content-type']).toBe(fixtureResponse['content-type']);
       expect(headers['etag']).toBeDefined();
       expect(headers['cache-control']).toBe(
-        'public, max-age=0, must-revalidate'
+        'public, max-age=123456, must-revalidate'
       );
 
       const optimizerPrefix = `external_accept_webp_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
