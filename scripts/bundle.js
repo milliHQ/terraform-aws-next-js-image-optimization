@@ -15,7 +15,16 @@ async function main() {
   // Get all files from build dir
   const buildFiles = glob.sync('**/*.js', { cwd: buildDir, absolute: true });
 
-  const { fileList } = await nodeFileTrace(buildFiles, {
+  // Squoosh files
+  const squooshFiles = glob.sync(
+    'node_modules/next/dist/server/lib/squoosh/**/*.js',
+    {
+      cwd: workspaceRoot,
+      absolute: true,
+    }
+  );
+
+  const { fileList } = await nodeFileTrace([...buildFiles, ...squooshFiles], {
     base: workspaceRoot,
     processCwd: process.cwd(),
     // aws-sdk is already provided in Lambda images
@@ -27,15 +36,6 @@ async function main() {
   // example is processed
   fileList.push(
     'node_modules/next/node_modules/jest-worker/build/workers/threadChild.js'
-  );
-
-  fileList.push(
-    ...glob.sync(
-      'node_modules/next/dist/next-server/server/lib/squoosh/**/*.{js,wasm}',
-      {
-        cwd: workspaceRoot,
-      }
-    )
   );
 
   // Create zip file

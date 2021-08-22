@@ -1,9 +1,6 @@
 /// <reference types="jest-file-snapshot" />
 
-import {
-  ImageConfig,
-  imageConfigDefault,
-} from 'next/dist/next-server/server/image-config';
+import { ImageConfig, imageConfigDefault } from 'next/dist/server/image-config';
 import S3 from 'aws-sdk/clients/s3';
 import * as path from 'path';
 
@@ -219,7 +216,7 @@ describe('unit', () => {
       expect(headers['content-type']).toBe(fixtureResponse['content-type']);
       expect(headers['etag']).toBeDefined();
       expect(headers['cache-control']).toBe(
-        'public, max-age=0, must-revalidate'
+        'public, max-age=123456, must-revalidate'
       );
 
       const optimizerPrefix = `external_accept_webp_w-${optimizerParams.w}_q-${optimizerParams.q}_`;

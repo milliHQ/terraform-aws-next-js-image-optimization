@@ -1,8 +1,8 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { ImageConfig } from 'next/dist/next-server/server/image-config';
-import { NextConfig } from 'next/dist/next-server/server/config';
-import { imageOptimizer as nextImageOptimizer } from 'next/dist/next-server/server/image-optimizer';
-import Server from 'next/dist/next-server/server/next-server';
+import { ImageConfig } from 'next/dist/server/image-config';
+import { NextConfig } from 'next/dist/server/config';
+import { imageOptimizer as nextImageOptimizer } from 'next/dist/server/image-optimizer';
+import Server from 'next/dist/server/next-server';
 import nodeFetch, { RequestInfo, RequestInit } from 'node-fetch';
 import { UrlWithParsedQuery } from 'url';
 import S3 from 'aws-sdk/clients/s3';

@@ -1,7 +1,4 @@
-import {
-  ImageConfig,
-  imageConfigDefault,
-} from 'next/dist/next-server/server/image-config';
+import { ImageConfig, imageConfigDefault } from 'next/dist/server/image-config';
 import { parse as parseUrl } from 'url';
 import {
   APIGatewayProxyEventV2,
