@@ -6,3 +6,4 @@ updates:
       interval: 'daily'
     allow:
       - dependency-name: 'next'
+      - dependency-name: 'sharp'
