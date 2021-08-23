@@ -99,7 +99,7 @@ describe('[e2e]', () => {
             },
           }
         );
-        const body = await response.text();
+        const body = await response.buffer();
 
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
@@ -145,7 +145,7 @@ describe('[e2e]', () => {
           }
         );
 
-        const body = await response.text();
+        const body = await response.buffer();
 
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
@@ -189,7 +189,7 @@ describe('[e2e]', () => {
             },
           }
         );
-        const body = await response.text();
+        const body = await response.buffer();
 
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
@@ -235,7 +235,7 @@ describe('[e2e]', () => {
           }
         );
 
-        const body = await response.text();
+        const body = await response.buffer();
 
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
@@ -298,7 +298,7 @@ describe('[e2e]', () => {
     test(
       'Internal: Fetch image from S3',
       async () => {
-        const fixture = acceptAllFixtures[0];
+        const fixture = acceptWebpFixtures[1];
         const publicPath = `/${fixture[0]}`;
         const optimizerParams = new URLSearchParams({
           url: publicPath,
@@ -310,13 +310,11 @@ describe('[e2e]', () => {
           `${route}?${optimizerParams.toString()}`,
           {
             headers: {
-              Accept: '*/*',
+              Accept: 'image/webp,*/*',
               Referer: `http://${s3Endpoint}/`,
             },
           }
         );
-
-        const body = await response.text();
 
         expect(response.ok).toBeTruthy();
         expect(response.headers.get('content-type')).toBe(
@@ -389,7 +387,7 @@ describe('[e2e]', () => {
             },
           }
         );
-        const body = await response.text();
+        const body = await response.buffer();
 
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);

@@ -15,28 +15,12 @@ async function main() {
   // Get all files from build dir
   const buildFiles = glob.sync('**/*.js', { cwd: buildDir, absolute: true });
 
-  // Squoosh files
-  const squooshFiles = glob.sync(
-    'node_modules/next/dist/server/lib/squoosh/**/*.js',
-    {
-      cwd: workspaceRoot,
-      absolute: true,
-    }
-  );
-
-  const { fileList } = await nodeFileTrace([...buildFiles, ...squooshFiles], {
+  const { fileList } = await nodeFileTrace(buildFiles, {
     base: workspaceRoot,
     processCwd: process.cwd(),
     // aws-sdk is already provided in Lambda images
     ignore: ['**/aws-sdk/**/*'],
   });
-
-  // Manually add node_modules/next/node_modules/jest-worker/build/workers/threadChild.js
-  // This is likely a bug in nft or Next.js codebase because this file is required when the png
-  // example is processed
-  fileList.push(
-    'node_modules/next/node_modules/jest-worker/build/workers/threadChild.js'
-  );
 
   // Create zip file
   await new Promise((resolve, reject) => {
