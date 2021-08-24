@@ -124,7 +124,7 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | cloudfront\_enable\_origin\_shield | Controls whether CloudFront Origin Shield should be enabled on the image optimizer lambdas. | `bool` | `true` | no |
 | cloudfront\_origin\_id | Override the id for the custom CloudFront id. | `string` | `"tf-next-image-optimizer"` | no |
 | cloudfront\_origin\_shield\_region | Override the region choosen for the CloudFront origin shield. Use `auto` to automatically determine the optimal region. | `string` | `"auto"` | no |
-| cloudfront\_price\_class | Price class for the CloudFront distributions (main & proxy config). One of PriceClass\_All, PriceClass\_200, PriceClass\_100. | `string` | `"PriceClass_100"` | no |
+| cloudfront\_price\_class | Price class for the CloudFront distribution. One of PriceClass\_All, PriceClass\_200, PriceClass\_100. | `string` | `"PriceClass_100"` | no |
 | debug\_use\_local\_packages | (Debug) Use local packages instead of downloading them from npm. | `bool` | `false` | no |
 | deployment\_name | Identifier for the deployment group (alphanumeric characters, underscores, hyphens, slashes, hash signs and dots are allowed). | `string` | `"tf-next-image"` | no |
 | lambda\_attach\_policy\_json | Controls whether lambda\_policy\_json should be added to IAM role for Lambda function. | `bool` | `false` | no |
