@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Update Terraform docs in README
-        uses: Dirrk/terraform-docs@v1.0.8
+        uses: terraform-docs/gh-actions@v0.10.0
         with:
           tf_docs_output_file: README.md
           tf_docs_git_push: 'true'
