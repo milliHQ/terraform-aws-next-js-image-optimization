@@ -82,7 +82,7 @@ variable "cloudfront_create_distribution" {
 }
 
 variable "cloudfront_price_class" {
-  description = "Price class for the CloudFront distributions (main & proxy config). One of PriceClass_All, PriceClass_200, PriceClass_100."
+  description = "Price class for the CloudFront distribution. One of PriceClass_All, PriceClass_200, PriceClass_100."
   type        = string
   default     = "PriceClass_100"
 }
