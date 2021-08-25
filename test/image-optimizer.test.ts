@@ -9,6 +9,9 @@ import { acceptAllFixtures, acceptWebpFixtures } from './constants';
 import { generateParams } from './utils/generate-params';
 import { runOptimizerFork as runOptimizer } from './utils/run-optimizer';
 
+// 10 seconds timeout
+jest.setTimeout(10_000);
+
 describe('unit', () => {
   const s3Endpoint = process.env.CI ? 's3:9000' : 'localhost:9000';
   const fixturesDir = path.resolve(__dirname, './fixtures');
