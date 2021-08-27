@@ -1,0 +1,7 @@
+formatter: 'markdown table'
+
+sections:
+  hide:
+    - 'data-sources'
+    - 'modules'
+    - 'resources'
