@@ -1,10 +1,10 @@
 {
-  "name": "@dealmore/tf-next-image-optimization",
+  "name": "@millihq/tf-next-image-optimization",
   "version": "11.0.1",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dealmore/terraform-aws-next-js-image-optimization.git"
+    "url": "https://github.com/milliHQ/terraform-aws-next-js-image-optimization.git"
   },
   "main": "dist/image-optimizer.js",
   "scripts": {

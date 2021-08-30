@@ -4,7 +4,7 @@ This example shows how to integrate the image optimizer into an existing CloudFr
 
 This can also be useful when you need advanced customization options for the CloudFront distribution, e.g. using a custom domain.
 
-> **Note:** The full example code is available on [GitHub](https://github.com/dealmore/terraform-aws-next-js-image-optimization/tree/main/examples/with-existing-cloudfront)
+> **Note:** The full example code is available on [GitHub](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/tree/main/examples/with-existing-cloudfront)
 
 ## Integration
 
@@ -13,7 +13,7 @@ However when using the module together with an external CloudFront resource, you
 
 ```diff
 module "next_image_optimizer" {
-   source = "dealmore/next-js-image-optimization/aws"
+   source = "milliHQ/next-js-image-optimization/aws"
 
 +  cloudfront_create_distribution = false
 }
@@ -26,7 +26,7 @@ The module has some preconfigured output values (`cloudfront_cache_behavior`, `c
 # Image Optimizer
 #################
 module "next_image_optimizer" {
-  source = "dealmore/next-js-image-optimization/aws"
+  source = "milliHQ/next-js-image-optimization/aws"
 
   # Prevent creation of the internal CloudFront distribution
   cloudfront_create_distribution = false

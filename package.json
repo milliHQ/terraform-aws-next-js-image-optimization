@@ -7,7 +7,7 @@
     "lib"
   ],
   "scripts": {
-    "build": "yarn workspace @dealmore/tf-next-image-optimization build",
+    "build": "yarn workspace @millihq/tf-next-image-optimization build",
     "build:local": "scripts/build-local.sh",
     "test": "yarn build && jest --testPathIgnorePatterns e2e.*",
     "test:e2e": "jest e2e.*",

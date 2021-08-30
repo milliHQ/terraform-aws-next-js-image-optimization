@@ -2,7 +2,7 @@
 
 This example shows how to use the image optimizer together with an existing Next.js deployment.
 
-> **Note:** The full example code is available on [GitHub](https://github.com/dealmore/terraform-aws-next-js-image-optimization/tree/main/examples/with-next-js)
+> **Note:** The full example code is available on [GitHub](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/tree/main/examples/with-next-js)
 
 ## 1. Deploy the image optimizer to AWS
 
@@ -27,7 +27,7 @@ provider "aws" {
 }
 
 module "next_image_optimizer" {
-  source = "dealmore/next-js-image-optimization/aws"
+  source = "milliHQ/next-js-image-optimization/aws"
 
   next_image_domains = ["assets.vercel.com"]
 }
