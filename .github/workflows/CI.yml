@@ -25,7 +25,7 @@ jobs:
       - name: Build
         run: |
           yarn --frozen-lockfile --cache-folder .yarn
-          yarn workspace @dealmore/tf-next-image-optimization build
+          yarn workspace @millihq/tf-next-image-optimization build
 
       - name: Artifact
         uses: actions/upload-artifact@v2
