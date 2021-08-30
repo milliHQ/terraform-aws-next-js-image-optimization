@@ -1,6 +1,30 @@
 # Changelog
 
-## 10.0.1 (July 06, 2021)
+## 11.1.0 (August 30, 2021)
+
+⚠️ **Namespace changed** ⚠️
+
+We [recently changed](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues/61) the namespace of this module from `dealmore` to `milliHQ`.
+Make sure to upgrade the source of the module accordingly:
+
+```diff
+module "next_image_optimizer" {
+-  source = "dealmore/next-js-image-optimization/aws"
++  source = "milliHQ/next-js-image-optimization/aws"
+}
+```
+
+---
+
+Beginning with this release we change the engine that is used to optimize the images from squoosh to Sharp.
+Sharp has a much better performance and is therefore better suited for the job.
+Please read the [Next.js RFC](https://github.com/vercel/next.js/discussions/27073) for more information.
+
+- Use sharp as image optimization engine ([#51](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues/51), [#57](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/57))
+- Fix typo for default image sizes ([#53](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues/53), [#56](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/56))
+- Uses Image Optimizer module of [Next.js 11.1.0](https://github.com/vercel/next.js/releases/tag/v11.1.0) ([#54](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/54))
+
+## 11.0.1 (July 06, 2021)
 
 - Uses Image Optimizer module of [Next.js 11.0.1](https://github.com/vercel/next.js/releases/tag/v11.0.1) ([#49](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/49))
 
