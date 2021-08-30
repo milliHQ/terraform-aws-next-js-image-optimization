@@ -1,6 +1,22 @@
 # Terraform Next.js Image Optimization module for AWS
 
-![CI](https://github.com/dealmore/terraform-aws-next-js-image-optimization/workflows/CI/badge.svg)
+[![CI](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/actions/workflows/CI.yml/badge.svg)](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/actions/workflows/CI.yml)
+
+---
+
+## ⚠️ **Namespace changed** ⚠️
+
+We [recently changed](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues/61) the namespace of this module from `dealmore` to `milliHQ`.
+Make sure to upgrade the source of the module accordingly:
+
+```diff
+module "next_image_optimizer" {
+-  source = "dealmore/next-js-image-optimization/aws"
++  source = "milliHQ/next-js-image-optimization/aws"
+}
+```
+
+---
 
 A drop-in [image optimization loader](https://nextjs.org/docs/basic-features/image-optimization#loader) for the Next.js image component `next/image`.
 
@@ -10,7 +26,8 @@ A drop-in [image optimization loader](https://nextjs.org/docs/basic-features/ima
 
 - ✅ &nbsp;Terraform `v0.13+`
 - ✅ &nbsp;Serverless image processing powered by [AWS Lambda](https://aws.amazon.com/lambda/)
-- ✅ &nbsp;[Amazon CloudFront](https://aws.amazon.com/cloudfront/) powered image caching
+- ✅ &nbsp;Performant optimization using [sharp](https://github.com/lovell/sharp) library
+- ✅ &nbsp;Image caching powered by [Amazon CloudFront](https://aws.amazon.com/cloudfront/)
 - ✅ &nbsp;Two-layer caching with [CloudFront Origin Shield](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html)
 - ✅ &nbsp;Support for custom [Device Sizes](https://nextjs.org/docs/basic-features/image-optimization#device-sizes) & [Image Sizes](https://nextjs.org/docs/basic-features/image-optimization#image-sizes)
 
@@ -19,7 +36,7 @@ A drop-in [image optimization loader](https://nextjs.org/docs/basic-features/ima
 The image optimization module is designed as a full stack AWS app.
 It relies on multiple AWS services and connects them to work as a single application:
 
-![Architecture overview diagram](https://github.com/dealmore/terraform-aws-next-js-image-optimization/blob/main/docs/assets/architecture.png?raw=true)
+![Architecture overview diagram](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/blob/main/docs/assets/architecture.png?raw=true)
 
 ## Usage
 
@@ -46,7 +63,7 @@ provider "aws" {
 }
 
 module "next_image_optimizer" {
-  source = "dealmore/next-js-image-optimization/aws"
+  source = "milliHQ/next-js-image-optimization/aws"
 
   next_image_domains = ["example.com", "sub.example.com"]
 }
@@ -95,8 +112,8 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 
 ## Examples
 
-- [Next.js + Vercel](https://github.com/dealmore/terraform-aws-next-js-image-optimization/tree/main/examples/with-next-js) - Use the image optimizer together with a Next.js app deployed on Vercel.
-- [Existing CloudFront](https://github.com/dealmore/terraform-aws-next-js-image-optimization/tree/main/examples/with-existing-cloudfront) - Embedd the image optimizer in an existing CloudFront distribution.
+- [Next.js + Vercel](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/tree/main/examples/with-next-js) - Use the image optimizer together with a Next.js app deployed on Vercel.
+- [Existing CloudFront](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/tree/main/examples/with-existing-cloudfront) - Embedd the image optimizer in an existing CloudFront distribution.
 
 <!-- prettier-ignore-start -->
 <!--- STOP: Auto generated values - Make no manual edits here --->
@@ -124,7 +141,7 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | cloudfront\_enable\_origin\_shield | Controls whether CloudFront Origin Shield should be enabled on the image optimizer lambdas. | `bool` | `true` | no |
 | cloudfront\_origin\_id | Override the id for the custom CloudFront id. | `string` | `"tf-next-image-optimizer"` | no |
 | cloudfront\_origin\_shield\_region | Override the region choosen for the CloudFront origin shield. Use `auto` to automatically determine the optimal region. | `string` | `"auto"` | no |
-| cloudfront\_price\_class | Price class for the CloudFront distributions (main & proxy config). One of PriceClass\_All, PriceClass\_200, PriceClass\_100. | `string` | `"PriceClass_100"` | no |
+| cloudfront\_price\_class | Price class for the CloudFront distribution. One of PriceClass\_All, PriceClass\_200, PriceClass\_100. | `string` | `"PriceClass_100"` | no |
 | debug\_use\_local\_packages | (Debug) Use local packages instead of downloading them from npm. | `bool` | `false` | no |
 | deployment\_name | Identifier for the deployment group (alphanumeric characters, underscores, hyphens, slashes, hash signs and dots are allowed). | `string` | `"tf-next-image"` | no |
 | lambda\_attach\_policy\_json | Controls whether lambda\_policy\_json should be added to IAM role for Lambda function. | `bool` | `false` | no |
@@ -135,7 +152,7 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | next\_image\_device\_sizes | Allowed device sizes that should be used for image optimization. | `list(number)` | `null` | no |
 | next\_image\_domains | Allowed origin domains that can be used for fetching images. | `list(string)` | `[]` | no |
 | next\_image\_image\_sizes | Allowed image sizes that should be used for image optimization. | `list(number)` | `null` | no |
-| next\_image\_version | Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"11.0.1"` | no |
+| next\_image\_version | Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"11.1.0"` | no |
 | source\_bucket\_id | When your static files are deployed to a Bucket (e.g. with Terraform Next.js) the optimizer can pull the source from the bucket rather than over the internet. | `string` | `null` | no |
 | tags | Tag metadata to label AWS resources that support tags. | `map(string)` | `{}` | no |
 
@@ -160,17 +177,17 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 We rely internally on the original Next.js image optimizer.
 So the versioning of the module is aligned with the version of the corresponding Next.js release.
 
-For example the [`v10.0.5`](https://github.com/dealmore/terraform-aws-next-js-image-optimization/releases/tag/v10.0.5) version of this Terraform module uses the image optimizer from the [Next.js 10.0.5 release](https://github.com/vercel/next.js/releases/tag/v10.0.5).
+For example the [`v10.0.5`](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/releases/tag/v10.0.5) version of this Terraform module uses the image optimizer from the [Next.js 10.0.5 release](https://github.com/vercel/next.js/releases/tag/v10.0.5).
 
-Please note that we only publish versions `>=10.0.5`, for a full list of available versions see the published versions in the [Terraform Registry](https://registry.terraform.io/modules/dealmore/next-js-image-optimization/aws).
+Please note that we only publish versions `>=10.0.5`, for a full list of available versions see the published versions in the [Terraform Registry](https://registry.terraform.io/modules/milliHQ/next-js-image-optimization/aws).
 
 ## Contributing
 
 Contributions are welcome!  
-If you want to improve this module, please take a look at our [contributing guide](https://github.com/dealmore/terraform-aws-next-js-image-optimization/blob/main/CONTRIBUTING.md).
+If you want to improve this module, please take a look at our [contributing guide](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/blob/main/CONTRIBUTING.md).
 
 ## License
 
-Apache-2.0 - see [LICENSE](https://github.com/dealmore/terraform-aws-next-js-image-optimization/blob/main/LICENSE) for details.
+Apache-2.0 - see [LICENSE](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/blob/main/LICENSE) for details.
 
 > **Note:** All sample projects in [`examples/*`](./examples) are licensed as MIT to comply with the official [Next.js examples](https://github.com/vercel/next.js/tree/canary/examples).

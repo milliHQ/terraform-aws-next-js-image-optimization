@@ -2,13 +2,14 @@
 # Worker Lambda
 ###############
 module "lambda_content" {
-  source  = "dealmore/download/npm"
-  version = "1.0.0"
+  source  = "milliHQ/download/npm"
+  version = "1.1.0"
 
-  module_name    = "@dealmore/tf-next-image-optimization"
+  module_name    = "@millihq/tf-next-image-optimization"
   module_version = var.next_image_version
   path_to_file   = "dist.zip"
   use_local      = var.debug_use_local_packages
+  local_cwd      = path.module
 }
 
 resource "random_id" "function_name" {

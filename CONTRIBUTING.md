@@ -2,7 +2,7 @@
 
 Contributions are welcome!
 
-As a general advice it is always a good idea to raise an [issue](https://github.com/dealmore/terraform-aws-next-js-image-optimization/issues) before creating a new pull request.
+As a general advice it is always a good idea to raise an [issue](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues) before creating a new pull request.
 This ensures that we don't have to reject pull requests that are not aligning with our roadmap and not wasting your valuable time.
 
 ## Contribution Prerequisites
@@ -27,7 +27,7 @@ For the worker component you should have installed:
 
 #### Codestyle
 
-We use a [GitHub Action](https://github.com/dealmore/terraform-aws-next-js-image-optimization/actions/workflows/lint.yml) to make sure that the committed code is properly formatted.
+We use a [GitHub Action](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/actions/workflows/lint.yml) to make sure that the committed code is properly formatted.
 Before submitting a PR, you should make sure that the code is properly formatted.
 
 You can do this by running the Terraform [`fmt` command](https://www.terraform.io/docs/cli/commands/fmt.html) in the root of the repository:
@@ -42,7 +42,7 @@ After cloning the repository, run `yarn` to fetch its dependencies.
 
 #### Codestyle
 
-We use a [GitHub Action](https://github.com/dealmore/terraform-aws-next-js-image-optimization/actions/workflows/lint.yml) to make sure that the committed code is properly formatted.
+We use a [GitHub Action](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/actions/workflows/lint.yml) to make sure that the committed code is properly formatted.
 Before submitting a PR, you should make sure that the code is properly formatted.
 
 You can do this by running the `fix:prettier` command from the root of the repository:
@@ -59,7 +59,7 @@ The Terraform module is **not** covered by automatic tests.
 ## Testing Terraform module
 
 Since the Terraform module itself is not covered by automatic tests, testing has to be done manually.
-The repository contains some examples in the [`examples/*`](https://github.com/dealmore/terraform-aws-next-js-image-optimization/tree/main/examples) folder, that can be used to run a quick acceptance test on your own AWS account.
+The repository contains some examples in the [`examples/*`](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/tree/main/examples) folder, that can be used to run a quick acceptance test on your own AWS account.
 
 You may need to change a few settings in the `main.tf` file in the root of the example.
 
@@ -69,7 +69,7 @@ To use the local development version instead of downloading it from the Terrafor
 
 ```diff
 module "next_image_optimizer" {
-- source = "dealmore/next-js-image-optimization/aws"
+- source = "milliHQ/next-js-image-optimization/aws"
 + source = "../.."
   ...
 }

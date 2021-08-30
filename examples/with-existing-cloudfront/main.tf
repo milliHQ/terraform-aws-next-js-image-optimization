@@ -16,7 +16,7 @@ provider "aws" {
 # Image Optimizer
 #################
 module "next_image_optimizer" {
-  source = "dealmore/next-js-image-optimization/aws"
+  source = "milliHQ/next-js-image-optimization/aws"
 
   # Prevent creation of the internal CloudFront distribution
   cloudfront_create_distribution = false

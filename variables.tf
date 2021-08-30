@@ -4,7 +4,7 @@
 variable "next_image_version" {
   description = "Next.js version from where you want to use the image optimizer from. Supports semver ranges."
   type        = string
-  default     = "11.0.1"
+  default     = "11.1.0"
 }
 
 variable "next_image_domains" {
@@ -82,7 +82,7 @@ variable "cloudfront_create_distribution" {
 }
 
 variable "cloudfront_price_class" {
-  description = "Price class for the CloudFront distributions (main & proxy config). One of PriceClass_All, PriceClass_200, PriceClass_100."
+  description = "Price class for the CloudFront distribution. One of PriceClass_All, PriceClass_200, PriceClass_100."
   type        = string
   default     = "PriceClass_100"
 }

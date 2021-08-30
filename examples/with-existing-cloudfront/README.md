@@ -1,8 +1,10 @@
 # Example with existing CloudFront distribution
 
-This example shows how to integrate the image optimizer into an existing CloudFront distribution (Without creating a new one).
+This example shows how to integrate the image optimizer into an existing CloudFront distribution (without creating a new one).
 
-> **Note:** The full example code is available on [GitHub](https://github.com/dealmore/terraform-aws-next-js-image-optimization/tree/main/examples/with-existing-cloudfront)
+This can also be useful when you need advanced customization options for the CloudFront distribution, e.g. using a custom domain.
+
+> **Note:** The full example code is available on [GitHub](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/tree/main/examples/with-existing-cloudfront)
 
 ## Integration
 
@@ -11,20 +13,20 @@ However when using the module together with an external CloudFront resource, you
 
 ```diff
 module "next_image_optimizer" {
-   source = "dealmore/next-js-image-optimization/aws"
+   source = "milliHQ/next-js-image-optimization/aws"
 
 +  cloudfront_create_distribution = false
 }
 ```
 
-The module has some preconfigured output values (`cloudfront_allowed_query_string_keys`, `cloudfront_origin_request_policy_id` and `cloudfront_cache_policy_id`) that make it easy to integrate the module with an existing CloudFront resource.
+The module has some preconfigured output values (`cloudfront_cache_behavior`, `cloudfront_allowed_query_string_keys`, `cloudfront_origin_request_policy_id` and `cloudfront_cache_policy_id`) that make it easy to integrate the module with an existing CloudFront resource.
 
 ```tf
 #################
 # Image Optimizer
 #################
 module "next_image_optimizer" {
-  source = "dealmore/next-js-image-optimization/aws"
+  source = "milliHQ/next-js-image-optimization/aws"
 
   # Prevent creation of the internal CloudFront distribution
   cloudfront_create_distribution = false
@@ -43,16 +45,20 @@ resource "aws_cloudfront_distribution" "distribution" {
   is_ipv6_enabled = true
   comment         = "next-image-optimizer-example-external-cf"
 
-  default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = module.next_image_optimizer.cloudfront_origin_id
+  dynamic "default_cache_behavior" {
+    for_each = [module.next_image_optimizer.cloudfront_cache_behavior]
 
-    viewer_protocol_policy = "redirect-to-https"
-    compress               = true
+    content {
+      allowed_methods  = default_cache_behavior.value["allowed_methods"]
+      cached_methods   = default_cache_behavior.value["cached_methods"]
+      target_origin_id = default_cache_behavior.value["target_origin_id"]
 
-    origin_request_policy_id = module.next_image_optimizer.cloudfront_origin_request_policy_id
-    cache_policy_id = module.next_image_optimizer.cloudfront_cache_policy_id
+      viewer_protocol_policy = default_cache_behavior.value["viewer_protocol_policy"]
+      compress               = default_cache_behavior.value["compress"]
+
+      origin_request_policy_id = default_cache_behavior.value["origin_request_policy_id"]
+      cache_policy_id          = default_cache_behavior.value["cache_policy_id"]
+    }
   }
 
   # This is a generic dynamic to create an origin

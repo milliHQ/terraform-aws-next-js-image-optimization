@@ -22,22 +22,6 @@ async function main() {
     ignore: ['**/aws-sdk/**/*'],
   });
 
-  // Manually add node_modules/next/node_modules/jest-worker/build/workers/threadChild.js
-  // This is likely a bug in nft or Next.js codebase because this file is required when the png
-  // example is processed
-  fileList.push(
-    'node_modules/next/node_modules/jest-worker/build/workers/threadChild.js'
-  );
-
-  fileList.push(
-    ...glob.sync(
-      'node_modules/next/dist/next-server/server/lib/squoosh/**/*.{js,wasm}',
-      {
-        cwd: workspaceRoot,
-      }
-    )
-  );
-
   // Create zip file
   await new Promise((resolve, reject) => {
     const outputFile = fs.createWriteStream(
