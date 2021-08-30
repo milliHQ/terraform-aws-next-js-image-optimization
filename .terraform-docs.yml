@@ -5,3 +5,6 @@ sections:
     - 'data-sources'
     - 'modules'
     - 'resources'
+
+settings:
+  anchor: false
