@@ -152,7 +152,7 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | next\_image\_device\_sizes | Allowed device sizes that should be used for image optimization. | `list(number)` | `null` | no |
 | next\_image\_domains | Allowed origin domains that can be used for fetching images. | `list(string)` | `[]` | no |
 | next\_image\_image\_sizes | Allowed image sizes that should be used for image optimization. | `list(number)` | `null` | no |
-| next\_image\_version | Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"11.0.1"` | no |
+| next\_image\_version | Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"11.1.0"` | no |
 | source\_bucket\_id | When your static files are deployed to a Bucket (e.g. with Terraform Next.js) the optimizer can pull the source from the bucket rather than over the internet. | `string` | `null` | no |
 | tags | Tag metadata to label AWS resources that support tags. | `map(string)` | `{}` | no |
 
