@@ -1,3 +1,5 @@
+# Reenable dependabot after repo transfer
+# https://github.com/dependabot/dependabot-core/issues/1923
 version: 2
 updates:
   - package-ecosystem: 'npm'
