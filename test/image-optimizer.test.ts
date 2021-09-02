@@ -9,8 +9,9 @@ import { acceptAllFixtures, acceptWebpFixtures } from './constants';
 import { generateParams } from './utils/generate-params';
 import { runOptimizerFork as runOptimizer } from './utils/run-optimizer';
 
-// 10 seconds timeout
-jest.setTimeout(10_000);
+// 1 min timeout, since first request for S3 image can be pretty slow on local
+// machines
+jest.setTimeout(60_000);
 
 describe('unit', () => {
   const s3Endpoint = process.env.CI ? 's3:9000' : 'localhost:9000';
@@ -189,6 +190,15 @@ describe('unit', () => {
 
       expect(result.finished).toBe(true);
       expect(headers['content-type']).toBe(fixtureResponse['content-type']);
+
+      // Check that Content-Security-Policy header is present to prevent potential
+      // XSS attack
+      // Fixed in Next.js 11.1.1
+      // https://github.com/vercel/next.js/security/advisories/GHSA-9gr3-7897-pp7m
+      // https://nvd.nist.gov/vuln/detail/CVE-2021-39178
+      expect(headers['content-security-policy']).toBe(
+        `script-src 'none'; sandbox;`
+      );
 
       const optimizerPrefix = `external_accept_all_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
       const snapshotFileName = path.join(
