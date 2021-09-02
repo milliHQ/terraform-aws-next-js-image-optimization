@@ -1,5 +1,12 @@
 # Changelog
 
+## 11.1.1 (September 02, 2021)
+
+The upgrade to Next.js 11.1.1 fixes a potential vulnerability which allowed an XSS-attack.
+For more information see the [Security Advisory](https://github.com/vercel/next.js/security/advisories/GHSA-9gr3-7897-pp7m).
+
+- Uses Image Optimizer module of [Next.js 11.1.1](https://github.com/vercel/next.js/releases/tag/v11.1.1) ([#64](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/64))
+
 ## 11.1.0 (August 30, 2021)
 
 ⚠️ **Namespace changed** ⚠️
