@@ -26,6 +26,12 @@ type ForkMessage =
     }
   | { type: 'RESULT'; payload: ImageOptimizerResult };
 
+type RunOptimizerReturnType = Promise<{
+  result: ImageOptimizerResult;
+  headers: Record<string, string>;
+  body: Buffer;
+}>;
+
 /**
  * Runs the image optimizer inside a forked process
  */
@@ -34,7 +40,7 @@ export async function runOptimizerFork(
   imageConfig: ImageConfig,
   requestHeaders: Record<string, string>,
   s3Config?: S3Options
-) {
+): RunOptimizerReturnType {
   let result: ImageOptimizerResult;
   const port = await getPort();
   const imageOptimizerFork = fork('./run-optimizer.fork.js', {
@@ -78,6 +84,9 @@ export async function runOptimizerFork(
   imageOptimizerFork.kill();
 
   return {
+    // Tolerable eslint disable because the function is only used in test
+    // environnement
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     result: result!,
     headers: Object.fromEntries(response.headers),
     body: await response.buffer(),
@@ -92,7 +101,7 @@ export async function runOptimizer(
   imageConfig: ImageConfig,
   requestHeaders: Record<string, string>,
   s3Config?: S3Options
-) {
+): RunOptimizerReturnType {
   // Mock request & response
   const request = createRequest({
     method: 'GET',

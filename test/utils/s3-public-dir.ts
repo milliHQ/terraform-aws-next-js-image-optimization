@@ -53,7 +53,7 @@ export async function s3PublicDir(
   s3: S3,
   dirPath: string,
   cacheControl?: string
-) {
+): Promise<{ bucketName: string; files: string[] }> {
   const bucketName = randomBytes(8).toString('hex');
 
   // Configure the bucket so that the objects can be accessed publicly

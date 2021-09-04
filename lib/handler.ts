@@ -4,12 +4,16 @@ process.env.NEXT_SHARP_PATH = require.resolve('sharp');
 
 import { ImageConfig, imageConfigDefault } from 'next/dist/server/image-config';
 import { parse as parseUrl } from 'url';
-import {
+import type {
   APIGatewayProxyEventV2,
   APIGatewayProxyStructuredResultV2,
+  // Disable is tolerable since we only import the types here, not the module
+  // itself
+  // eslint-disable-next-line import/no-unresolved
 } from 'aws-lambda';
 import { Writable } from 'stream';
 import S3 from 'aws-sdk/clients/s3';
+import { IncomingMessage } from 'http';
 
 import { imageOptimizer, S3Config } from './image-optimizer';
 import { normalizeHeaders } from './normalized-headers';
@@ -37,8 +41,9 @@ function generateS3Config(bucketName?: string): S3Config | undefined {
 
 function parseFromEnv<T>(key: string, defaultValue: T) {
   try {
-    if (key in process.env) {
-      return JSON.parse(process.env[key]!) as T;
+    const envValue = process.env[key];
+    if (typeof envValue === 'string') {
+      return JSON.parse(envValue) as T;
     }
 
     return defaultValue;
@@ -51,7 +56,7 @@ function parseFromEnv<T>(key: string, defaultValue: T) {
 
 const domains = parseFromEnv(
   'TF_NEXTIMAGE_DOMAINS',
-  imageConfigDefault.domains!
+  imageConfigDefault.domains ?? []
 );
 const deviceSizes = parseFromEnv(
   'TF_NEXTIMAGE_DEVICE_SIZES',
@@ -75,7 +80,7 @@ export async function handler(
 ): Promise<APIGatewayProxyStructuredResultV2> {
   const s3Config = generateS3Config(sourceBucket);
 
-  const reqMock: any = {
+  const reqMock = {
     headers: normalizeHeaders(event.headers),
     method: event.requestContext.http.method,
     url: `/?${event.rawQueryString}`,
@@ -100,11 +105,13 @@ export async function handler(
   resMock.getHeaderNames = () => Object.keys(mockHeaders);
   resMock.setHeader = (name: string, value: string | string[]) =>
     (mockHeaders[name.toLowerCase()] = value);
+  // Empty function is tolerable here since it is part of a mock
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   resMock._implicitHeader = () => {};
 
   resMock.originalEnd = resMock.end;
   resMock.on('close', () => defer.resolve());
-  resMock.end = (message: any) => {
+  resMock.end = (message: string) => {
     didCallEnd = true;
     resMock.originalEnd(message);
   };
@@ -112,7 +119,7 @@ export async function handler(
   const parsedUrl = parseUrl(reqMock.url, true);
   const result = await imageOptimizer(
     imageConfig,
-    reqMock,
+    reqMock as IncomingMessage,
     resMock,
     parsedUrl,
     s3Config
