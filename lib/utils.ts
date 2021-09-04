@@ -4,7 +4,7 @@ export interface Deferred<T = never> {
   reject: (reason?: any) => void;
 }
 
-export function createDeferred<T>() {
+export function createDeferred<T>(): Deferred<T> {
   let r;
   let j;
 

@@ -3,33 +3,57 @@ import { ImageConfig } from 'next/dist/server/image-config';
 import { NextConfig } from 'next/dist/server/config';
 import { imageOptimizer as nextImageOptimizer } from 'next/dist/server/image-optimizer';
 import Server from 'next/dist/server/next-server';
-import nodeFetch, { RequestInfo, RequestInit } from 'node-fetch';
+import nodeFetch from 'node-fetch';
 import { UrlWithParsedQuery } from 'url';
 import S3 from 'aws-sdk/clients/s3';
 
-// Sets working dir of Next.js to /tmp (Lambda tmp dir)
-const distDir = '/tmp';
+/* -----------------------------------------------------------------------------
+ * Types
+ * ---------------------------------------------------------------------------*/
 
-let originCacheControl: string | null;
+type NodeFetch = typeof nodeFetch;
 
-/**
- * fetch polyfill to intercept the request to the external resource
- * to get the Cache-Control header from the origin
- */
-function fetchPolyfill(url: RequestInfo, init?: RequestInit) {
-  return nodeFetch(url, init).then((result) => {
-    originCacheControl = result.headers.get('Cache-Control');
-    return result;
-  });
-}
-
-// Polyfill fetch used by nextImageOptimizer
-global.fetch = fetchPolyfill;
+type OriginCacheControl = string | null;
 
 interface S3Config {
   s3: S3;
   bucket: string;
 }
+
+type ImageOptimizerResult = {
+  finished: boolean;
+  originCacheControl: OriginCacheControl;
+};
+
+/* -----------------------------------------------------------------------------
+ * globals
+ * ---------------------------------------------------------------------------*/
+
+// Sets working dir of Next.js to /tmp (Lambda tmp dir)
+const distDir = '/tmp';
+
+let originCacheControl: OriginCacheControl;
+
+/**
+ * fetch polyfill to intercept the request to the external resource
+ * to get the Cache-Control header from the origin
+ */
+const fetchPolyfill: NodeFetch = (url, init) => {
+  return nodeFetch(url, init).then((result) => {
+    originCacheControl = result.headers.get('Cache-Control');
+    return result;
+  });
+};
+
+fetchPolyfill.isRedirect = nodeFetch.isRedirect;
+
+// Polyfill fetch is used by nextImageOptimizer
+// @ts-ignore
+global.fetch = fetchPolyfill;
+
+/* -----------------------------------------------------------------------------
+ * imageOptimizer
+ * ---------------------------------------------------------------------------*/
 
 async function imageOptimizer(
   imageConfig: ImageConfig,
@@ -37,7 +61,7 @@ async function imageOptimizer(
   res: ServerResponse,
   parsedUrl: UrlWithParsedQuery,
   s3Config?: S3Config
-) {
+): Promise<ImageOptimizerResult> {
   // Create next config mock
   const nextConfig = ({
     images: imageConfig,
@@ -79,9 +103,6 @@ async function imageOptimizer(
 
         res.end(object.Body);
       } else if (headers.referer) {
-        let upstreamBuffer: Buffer;
-        let upstreamType: string | null;
-
         const { referer } = headers;
         const trimmedReferer = referer.endsWith('/')
           ? referer.substring(0, referer.length - 1)
@@ -94,14 +115,14 @@ async function imageOptimizer(
         }
 
         res.statusCode = upstreamRes.status;
-        upstreamBuffer = Buffer.from(await upstreamRes.arrayBuffer());
-        upstreamType = upstreamRes.headers.get('Content-Type');
+        const upstreamType = upstreamRes.headers.get('Content-Type');
         originCacheControl = upstreamRes.headers.get('Cache-Control');
 
         if (upstreamType) {
           res.setHeader('Content-Type', upstreamType);
         }
 
+        const upstreamBuffer = Buffer.from(await upstreamRes.arrayBuffer());
         res.end(upstreamBuffer);
       }
     },
@@ -121,4 +142,5 @@ async function imageOptimizer(
   };
 }
 
-export { S3Config, imageOptimizer };
+export type { S3Config };
+export { imageOptimizer };

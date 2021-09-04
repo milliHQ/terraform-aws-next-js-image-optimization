@@ -4,7 +4,7 @@ export interface Deferred<T = never> {
   reject: (reason?: any) => void;
 }
 
-export function createDeferred<T>() {
+export function createDeferred<T>(): Deferred<T> {
   let r;
   let j;
 
@@ -18,7 +18,9 @@ export function createDeferred<T>() {
   return ({ promise, resolve: r, reject: j } as unknown) as Deferred<T>;
 }
 
-export const delay = (ms: number) =>
+type Delay = (ms: number) => Promise<void>;
+
+export const delay: Delay = (ms: number) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
