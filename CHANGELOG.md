@@ -1,8 +1,14 @@
 # Changelog
 
+## 11.1.2 (September 14, 2021)
+
+- Uses Image Optimizer module of [Next.js 11.1.2](https://github.com/vercel/next.js/releases/tag/v11.1.2) ([#63](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/63))
+- Updates sharp to [`v0.29.1`](https://github.com/lovell/sharp/releases/tag/v0.29.1) ([#66](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/66))
+- Bump terraform-aws-lambda module to [2.17.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/releases/tag/v2.17.0) ([#67](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/67))
+
 ## 11.1.1 (September 02, 2021)
 
-The upgrade to Next.js 11.1.1 fixes a potential vulnerability which allowed an XSS-attack.
+The upgrade to Next.js 11.1.1 fixes a potential vulnerability which allowed a XSS-attack.
 For more information see the [Security Advisory](https://github.com/vercel/next.js/security/advisories/GHSA-9gr3-7897-pp7m).
 
 - Uses Image Optimizer module of [Next.js 11.1.1](https://github.com/vercel/next.js/releases/tag/v11.1.1) ([#64](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/64))
