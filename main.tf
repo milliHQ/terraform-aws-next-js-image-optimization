@@ -19,7 +19,7 @@ resource "random_id" "function_name" {
 
 module "image_optimizer" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "2.4.0"
+  version = "2.17.0"
 
   function_name = random_id.function_name.hex
   description   = var.deployment_name
