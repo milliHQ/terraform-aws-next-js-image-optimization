@@ -2,32 +2,16 @@
 
 [![CI](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/actions/workflows/CI.yml/badge.svg)](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/actions/workflows/CI.yml)
 
----
-
-## ⚠️ **Namespace changed** ⚠️
-
-We [recently changed](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues/61) the namespace of this module from `dealmore` to `milliHQ`.
-Make sure to upgrade the source of the module accordingly:
-
-```diff
-module "next_image_optimizer" {
--  source = "dealmore/next-js-image-optimization/aws"
-+  source = "milliHQ/next-js-image-optimization/aws"
-}
-```
-
----
-
 A drop-in [image optimization loader](https://nextjs.org/docs/basic-features/image-optimization#loader) for the Next.js image component `next/image`.
 
-> **Notice:** If you need a complete hosting solution for Next.js with Terraform, please check out our [Terraform Next.js module for AWS](https://registry.terraform.io/modules/dealmore/next-js/aws).
+> **Notice:** If you look for a complete solution to host a Next.js application with Terraform on AWS, please check out our [Terraform Next.js module for AWS](https://registry.terraform.io/modules/milliHQ/next-js/aws).
 
 ## Features
 
 - ✅ &nbsp;Terraform `v0.13+`
 - ✅ &nbsp;Serverless image processing powered by [AWS Lambda](https://aws.amazon.com/lambda/)
-- ✅ &nbsp;Performant optimization using [sharp](https://github.com/lovell/sharp) library
-- ✅ &nbsp;Image caching powered by [Amazon CloudFront](https://aws.amazon.com/cloudfront/)
+- ✅ &nbsp;Powerful optimization using the [sharp](https://github.com/lovell/sharp) processing library
+- ✅ &nbsp;Performant image caching powered by [Amazon CloudFront](https://aws.amazon.com/cloudfront/)
 - ✅ &nbsp;Two-layer caching with [CloudFront Origin Shield](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html)
 - ✅ &nbsp;Support for custom [Device Sizes](https://nextjs.org/docs/basic-features/image-optimization#device-sizes) & [Image Sizes](https://nextjs.org/docs/basic-features/image-optimization#image-sizes)
 
@@ -112,8 +96,10 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 
 ## Examples
 
-- [Next.js + Vercel](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/tree/main/examples/with-next-js) - Use the image optimizer together with a Next.js app deployed on Vercel.
-- [Existing CloudFront](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/tree/main/examples/with-existing-cloudfront) - Embedd the image optimizer in an existing CloudFront distribution.
+- [Next.js + Vercel](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/tree/main/examples/with-next-js)  
+  Use the image optimizer together with a Next.js app deployed on Vercel.
+- [Existing CloudFront](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/tree/main/examples/with-existing-cloudfront)  
+  Use the image optimizer with an existing CloudFront distribution.
 
 <!-- prettier-ignore-start -->
 <!--- STOP: Auto generated values - Make no manual edits here --->
@@ -174,7 +160,7 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 
 ## Versioning
 
-We rely internally on the original Next.js image optimizer.
+The module internally relies on the original Next.js image optimizer.
 So the versioning of the module is aligned with the version of the corresponding Next.js release.
 
 For example the [`v10.0.5`](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/releases/tag/v10.0.5) version of this Terraform module uses the image optimizer from the [Next.js 10.0.5 release](https://github.com/vercel/next.js/releases/tag/v10.0.5).
