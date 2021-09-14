@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint-js:
-    name: Lint JavaScript
+    name: Lint Type- & JavaScript
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,6 +27,9 @@ jobs:
 
       - name: Lint Prettier
         run: yarn lint:prettier
+
+      - name: Lint ESLint
+        run: yarn lint:eslint
 
   lint-tf:
     name: Lint Terraform
