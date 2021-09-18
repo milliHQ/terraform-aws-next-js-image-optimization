@@ -3,7 +3,7 @@
 ###############
 module "lambda_content" {
   source  = "milliHQ/download/npm"
-  version = "1.1.0"
+  version = "2.0.0"
 
   module_name    = "@millihq/tf-next-image-optimization"
   module_version = var.next_image_version
