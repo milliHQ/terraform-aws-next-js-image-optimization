@@ -1,6 +1,7 @@
 ###############
 # Worker Lambda
 ###############
+
 module "lambda_content" {
   source  = "milliHQ/download/npm"
   version = "2.0.0"
@@ -12,17 +13,12 @@ module "lambda_content" {
   local_cwd      = path.module
 }
 
-resource "random_id" "function_name" {
-  prefix      = "${var.deployment_name}-"
-  byte_length = 4
-}
-
 module "image_optimizer" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "2.17.0"
 
-  function_name = random_id.function_name.hex
-  description   = var.deployment_name
+  function_name = var.deployment_name
+  description   = "Managed by Terraform Next.js image optimizer"
   handler       = "handler.handler"
   runtime       = "nodejs14.x"
   memory_size   = var.lambda_memory_size
@@ -59,12 +55,13 @@ module "image_optimizer" {
 #########################
 # API Gateway integration
 #########################
+
 module "api_gateway" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
   version = "1.1.0"
 
   name          = var.deployment_name
-  description   = "Managed by Terraform-next.js image optimizer"
+  description   = "Managed by Terraform Next.js image optimizer"
   protocol_type = "HTTP"
 
   create_api_domain_name = false
@@ -173,14 +170,9 @@ locals {
   }
 }
 
-resource "random_id" "policy_name" {
-  prefix      = "${var.deployment_name}-"
-  byte_length = 4
-}
-
 resource "aws_cloudfront_origin_request_policy" "this" {
-  name    = "${random_id.policy_name.hex}-request"
-  comment = "Managed by Terraform-next.js image optimizer"
+  name    = "${var.deployment_name}_request"
+  comment = "Managed by Terraform Next.js image optimizer"
 
   cookies_config {
     cookie_behavior = "none"
@@ -202,8 +194,8 @@ resource "aws_cloudfront_origin_request_policy" "this" {
 }
 
 resource "aws_cloudfront_cache_policy" "this" {
-  name    = "${random_id.policy_name.hex}-cache"
-  comment = "Managed by Terraform-next.js image optimizer"
+  name    = "${var.deployment_name}_image-cache"
+  comment = "Managed by Terraform Next.js image optimizer"
 
   # Default values (Should be provided by origin)
   min_ttl     = 0

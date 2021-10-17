@@ -110,9 +110,14 @@ variable "cloudfront_origin_id" {
 ##########
 
 variable "deployment_name" {
-  description = "Identifier for the deployment group (alphanumeric characters, underscores, hyphens, slashes, hash signs and dots are allowed)."
+  description = "Identifier for the deployment group (only lowercase alphanumeric characters and hyphens are allowed)."
   type        = string
   default     = "tf-next-image"
+
+  validation {
+    condition     = can(regex("[a-z0-9-]+", var.deployment_name))
+    error_message = "Only lowercase alphanumeric characters and hyphens allowed."
+  }
 }
 
 variable "tags" {
