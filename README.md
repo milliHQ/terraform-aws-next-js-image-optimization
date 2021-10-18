@@ -110,14 +110,12 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 |------|---------|
 | terraform | >= 0.13 |
 | aws | >= 3.43.0 |
-| random | >= 2.3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | aws | >= 3.43.0 |
-| random | >= 2.3.0 |
 
 ## Inputs
 
@@ -129,7 +127,7 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | cloudfront\_origin\_shield\_region | Override the region choosen for the CloudFront origin shield. Use `auto` to automatically determine the optimal region. | `string` | `"auto"` | no |
 | cloudfront\_price\_class | Price class for the CloudFront distribution. One of PriceClass\_All, PriceClass\_200, PriceClass\_100. | `string` | `"PriceClass_100"` | no |
 | debug\_use\_local\_packages | (Debug) Use local packages instead of downloading them from npm. | `bool` | `false` | no |
-| deployment\_name | Identifier for the deployment group (alphanumeric characters, underscores, hyphens, slashes, hash signs and dots are allowed). | `string` | `"tf-next-image"` | no |
+| deployment\_name | Identifier for the deployment group (only lowercase alphanumeric characters and hyphens are allowed). | `string` | `"tf-next-image"` | no |
 | lambda\_attach\_policy\_json | Controls whether lambda\_policy\_json should be added to IAM role for Lambda function. | `bool` | `false` | no |
 | lambda\_memory\_size | Amount of memory in MB the worker Lambda Function can use. Valid value between 128 MB to 10,240 MB, in 1 MB increments. | `number` | `1024` | no |
 | lambda\_policy\_json | Additional policy document as JSON to attach to the Lambda Function role. | `string` | `""` | no |
