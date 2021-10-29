@@ -170,6 +170,11 @@ Please note that we only publish versions `>=10.0.5`, for a full list of availab
 Contributions are welcome!  
 If you want to improve this module, please take a look at our [contributing guide](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/blob/main/CONTRIBUTING.md).
 
+## About
+
+This project is maintained by [milliVolt infrastructure](https://milli.is).  
+We build custom infrastructure solutions for any cloud provider.
+
 ## License
 
 Apache-2.0 - see [LICENSE](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/blob/main/LICENSE) for details.
