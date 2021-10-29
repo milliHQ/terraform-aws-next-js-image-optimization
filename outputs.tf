@@ -18,11 +18,6 @@ output "cloudfront_origin" {
   value       = local.cloudfront_origin
 }
 
-output "cloudfront_origin_image_optimizer" {
-  description = "Deprecated, please use cloudfront_origin instead."
-  value       = local.cloudfront_origin
-}
-
 output "cloudfront_cache_behavior" {
   description = "Predefined CloudFront cache behavior. Can be used to embed the image optimizer into an existing CloudFront resource."
   value       = local.cloudfront_cache_behavior
