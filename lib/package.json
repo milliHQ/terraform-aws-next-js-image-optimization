@@ -20,7 +20,7 @@
     "next": "12.0.0",
     "node-fetch": "2.6.1",
     "react": "17.0.2",
-    "sharp": "0.29.2"
+    "sharp": "0.29.3"
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.56",
