@@ -97,14 +97,14 @@ export async function handler(
   resMock._write = (chunk: Buffer | string) => {
     resMock.write(chunk);
   };
-  const mockHeaders: Record<string, string | string[]> = {};
+  const mockHeaders: Map<string, string | string[]> = new Map();
   resMock.writeHead = (_status: any, _headers: any) =>
     Object.assign(mockHeaders, _headers);
-  resMock.getHeader = (name: string) => mockHeaders[name.toLowerCase()];
+  resMock.getHeader = (name: string) => mockHeaders.get(name.toLowerCase());
   resMock.getHeaders = () => mockHeaders;
   resMock.getHeaderNames = () => Object.keys(mockHeaders);
   resMock.setHeader = (name: string, value: string | string[]) =>
-    (mockHeaders[name.toLowerCase()] = value);
+    mockHeaders.set(name.toLowerCase(), value);
   // Empty function is tolerable here since it is part of a mock
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   resMock._implicitHeader = () => {};
@@ -117,7 +117,7 @@ export async function handler(
   };
 
   const parsedUrl = parseUrl(reqMock.url, true);
-  const result = await imageOptimizer(
+  await imageOptimizer(
     imageConfig,
     reqMock as IncomingMessage,
     resMock,
@@ -135,11 +135,7 @@ export async function handler(
     normalizedHeaders[headerKey] = headerValue;
   }
 
-  if (result.originCacheControl) {
-    normalizedHeaders['cache-control'] = result.originCacheControl;
-  } else {
-    normalizedHeaders['cache-control'] = 'public, max-age=60';
-  }
+  normalizedHeaders['cache-control'] = resMock.getHeader('cache-control');
 
   if (didCallEnd) defer.resolve();
   await defer.promise;
