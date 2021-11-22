@@ -1,15 +1,3 @@
 {
-  "compilerOptions": {
-    "target": "es2019",
-    "lib": ["es2019", "DOM"],
-    "outDir": "dist",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "strict": true,
-    "declaration": false,
-    "sourceMap": false,
-    "experimentalDecorators": true,
-    "esModuleInterop": true
-  },
-  "exclude": ["node_modules"]
+  "extends": "@tsconfig/node14/tsconfig.json"
 }

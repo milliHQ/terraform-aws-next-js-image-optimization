@@ -9,9 +9,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: registry.gitlab.com/dealmore/dealmore-build-images/lambda:nodejs14.x
+    container: public.ecr.aws/sam/build-nodejs14.x:latest
+      steps:
 
-    steps:
+      - name: Install yarn
+        run: npm install --global yarn@1.22.17
+
       - uses: actions/checkout@v2
 
       - name: Cache
@@ -38,7 +41,7 @@ jobs:
 
   test-integration:
     runs-on: ubuntu-latest
-    container: registry.gitlab.com/dealmore/dealmore-build-images/lambda:nodejs14.x
+    container: public.ecr.aws/sam/build-nodejs14.x:latest
 
     services:
       s3:
@@ -48,6 +51,9 @@ jobs:
           MINIO_SECRET_KEY: testtest
 
     steps:
+      - name: Install yarn
+        run: npm install --global yarn@1.22.17
+
       - uses: actions/checkout@v2
 
       - name: Cache
