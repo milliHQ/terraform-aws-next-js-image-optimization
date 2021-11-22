@@ -10,8 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: public.ecr.aws/sam/build-nodejs14.x:latest
-      steps:
-
+    steps:
       - name: Install yarn
         run: npm install --global yarn@1.22.17
 
