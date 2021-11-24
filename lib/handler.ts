@@ -126,7 +126,7 @@ export async function handler(
   );
 
   const normalizedHeaders: Record<string, string> = {};
-  for (const [headerKey, headerValue] of Object.entries(mockHeaders)) {
+  for (const [headerKey, headerValue] of mockHeaders.entries()) {
     if (Array.isArray(headerValue)) {
       normalizedHeaders[headerKey] = headerValue.join(', ');
       continue;
@@ -134,8 +134,6 @@ export async function handler(
 
     normalizedHeaders[headerKey] = headerValue;
   }
-
-  normalizedHeaders['cache-control'] = resMock.getHeader('cache-control');
 
   if (didCallEnd) defer.resolve();
   await defer.promise;
