@@ -136,7 +136,13 @@ locals {
   cloudfront_allowed_query_string_keys = sort(["url", "w", "q"])
 
   # Headers that are used by the image optimizer
-  cloudfront_allowed_headers = sort(["accept", "referer"])
+  # - Accept:  Header is used to determine the supported image formats from the
+  #            client.
+  # - Referer: Header is used to determine the host for absolute image paths,
+  #            e.g. example.com/_next/image?url=/image.png, would fetch the
+  #            image from example.com/image.png.name
+  #            Not used if the images are fetched from S3 bucket.
+  cloudfront_allowed_headers = var.source_bucket_id != null ? ["accept"] : sort(["accept", "referer"])
 
 
   # CloudFront origin
