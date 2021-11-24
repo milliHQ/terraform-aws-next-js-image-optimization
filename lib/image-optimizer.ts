@@ -13,37 +13,10 @@ import S3 from 'aws-sdk/clients/s3';
  * Types
  * ---------------------------------------------------------------------------*/
 
-type NodeFetch = typeof nodeFetch;
-
-type OriginCacheControl = string | null;
-
 interface S3Config {
   s3: S3;
   bucket: string;
 }
-
-/* -----------------------------------------------------------------------------
- * globals
- * ---------------------------------------------------------------------------*/
-
-// let originCacheControl: OriginCacheControl;
-
-// /**
-//  * fetch polyfill to intercept the request to the external resource
-//  * to get the Cache-Control header from the origin
-//  */
-// const fetchPolyfill: NodeFetch = (url, init) => {
-//   return nodeFetch(url, init).then((result) => {
-//     originCacheControl = result.headers.get('Cache-Control');
-//     return result;
-//   });
-// };
-
-// fetchPolyfill.isRedirect = nodeFetch.isRedirect;
-
-// // Polyfill fetch is used by nextImageOptimizer
-// // @ts-ignore
-// global.fetch = fetchPolyfill;
 
 /* -----------------------------------------------------------------------------
  * imageOptimizer
