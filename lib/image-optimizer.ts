@@ -1,55 +1,22 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { ImageConfig } from 'next/dist/server/image-config';
-import { NextConfig } from 'next/dist/server/config';
-import { imageOptimizer as nextImageOptimizer } from 'next/dist/server/image-optimizer';
-import Server from 'next/dist/server/next-server';
-import nodeFetch from 'node-fetch';
 import { UrlWithParsedQuery } from 'url';
+
+import {
+  imageOptimizer as pixel,
+  ImageOptimizerOptions,
+} from '@millihq/pixel-core';
+import { ImageConfig } from 'next/dist/server/image-config';
+import nodeFetch from 'node-fetch';
 import S3 from 'aws-sdk/clients/s3';
 
 /* -----------------------------------------------------------------------------
  * Types
  * ---------------------------------------------------------------------------*/
 
-type NodeFetch = typeof nodeFetch;
-
-type OriginCacheControl = string | null;
-
 interface S3Config {
   s3: S3;
   bucket: string;
 }
-
-type ImageOptimizerResult = {
-  finished: boolean;
-  originCacheControl: OriginCacheControl;
-};
-
-/* -----------------------------------------------------------------------------
- * globals
- * ---------------------------------------------------------------------------*/
-
-// Sets working dir of Next.js to /tmp (Lambda tmp dir)
-const distDir = '/tmp';
-
-let originCacheControl: OriginCacheControl;
-
-/**
- * fetch polyfill to intercept the request to the external resource
- * to get the Cache-Control header from the origin
- */
-const fetchPolyfill: NodeFetch = (url, init) => {
-  return nodeFetch(url, init).then((result) => {
-    originCacheControl = result.headers.get('Cache-Control');
-    return result;
-  });
-};
-
-fetchPolyfill.isRedirect = nodeFetch.isRedirect;
-
-// Polyfill fetch is used by nextImageOptimizer
-// @ts-ignore
-global.fetch = fetchPolyfill;
 
 /* -----------------------------------------------------------------------------
  * imageOptimizer
@@ -61,19 +28,31 @@ async function imageOptimizer(
   res: ServerResponse,
   parsedUrl: UrlWithParsedQuery,
   s3Config?: S3Config
-): Promise<ImageOptimizerResult> {
-  // Create next config mock
-  const nextConfig = ({
-    images: imageConfig,
-  } as unknown) as NextConfig;
+): ReturnType<typeof pixel> {
+  const options: ImageOptimizerOptions = {
+    /**
+     * Use default temporary folder from AWS Lambda
+     */
+    distDir: '/tmp',
 
-  // Create Next Server mock
-  const server = {
-    getRequestHandler: () => async (
+    imageConfig: {
+      ...imageConfig,
+      loader: 'default',
+    },
+
+    /**
+     * Is called when the path is an absolute URI, e.g. `/my/image.png`.
+     *
+     * @param req - Incoming client request
+     * @param res - Outgoing mocked response
+     * @param url - Parsed url object from the client request,
+     *              e.g. `/my/image.png`
+     */
+    async requestHandler(
       { headers }: IncomingMessage,
       res: ServerResponse,
       url: UrlWithParsedQuery
-    ) => {
+    ) {
       if (s3Config) {
         // S3 expects keys without leading `/`
         const trimmedKey = url.href.startsWith('/')
@@ -98,10 +77,12 @@ async function imageOptimizer(
         }
 
         if (object.CacheControl) {
-          originCacheControl = object.CacheControl;
+          res.setHeader('Cache-Control', object.CacheControl);
+          // originCacheControl = object.CacheControl;
         }
 
-        res.end(object.Body);
+        res.write(object.Body);
+        res.end();
       } else if (headers.referer) {
         const { referer } = headers;
         const trimmedReferer = referer.endsWith('/')
@@ -116,30 +97,24 @@ async function imageOptimizer(
 
         res.statusCode = upstreamRes.status;
         const upstreamType = upstreamRes.headers.get('Content-Type');
-        originCacheControl = upstreamRes.headers.get('Cache-Control');
+        const originCacheControl = upstreamRes.headers.get('Cache-Control');
 
         if (upstreamType) {
           res.setHeader('Content-Type', upstreamType);
         }
 
+        if (originCacheControl) {
+          res.setHeader('Cache-Control', originCacheControl);
+        }
+
         const upstreamBuffer = Buffer.from(await upstreamRes.arrayBuffer());
-        res.end(upstreamBuffer);
+        res.write(upstreamBuffer);
+        res.end();
       }
     },
-  } as Server;
-
-  const result = await nextImageOptimizer(
-    server,
-    req,
-    res,
-    parsedUrl,
-    nextConfig,
-    distDir
-  );
-  return {
-    ...result,
-    originCacheControl,
   };
+
+  return pixel(req, res, parsedUrl, options);
 }
 
 export type { S3Config };

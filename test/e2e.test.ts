@@ -16,7 +16,7 @@ describe('[e2e]', () => {
   const s3Endpoint = `${hostIpAddress}:9000`;
   const pathToWorker = path.resolve(__dirname, '../lib');
   const fixturesDir = path.resolve(__dirname, './fixtures');
-  const cacheControlHeader = 'public, max-age=123456';
+  const cacheControlHeader = 'public, max-age=123456, must-revalidate';
   let fixtureBucketName: string;
   let s3: S3;
 
