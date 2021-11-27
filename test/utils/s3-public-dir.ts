@@ -1,8 +1,9 @@
-import S3 from 'aws-sdk/clients/s3';
 import { randomBytes } from 'crypto';
 import { promises as fs, createReadStream } from 'fs';
 import * as path from 'path';
-import { getType } from 'mime';
+
+import S3 from 'aws-sdk/clients/s3';
+import { lookup as lookupMimeType } from 'mime-types';
 
 // Upload the content of the dirPath to the bucket
 // https://stackoverflow.com/a/46213474/831465
@@ -30,13 +31,15 @@ async function uploadDir(
       .map((filePath) => {
         // Restore the relative structure
         const objectKey = path.relative(s3Path, filePath);
+        const contentType = lookupMimeType(filePath);
         return s3
           .putObject({
             Key: objectKey,
             Bucket: bucketName,
             Body: createReadStream(filePath),
             CacheControl: cacheControl,
-            ContentType: getType(filePath) ?? undefined,
+            ContentType:
+              typeof contentType === 'string' ? contentType : undefined,
           })
           .promise();
       })
