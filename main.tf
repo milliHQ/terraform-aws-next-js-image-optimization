@@ -26,9 +26,10 @@ module "image_optimizer" {
   publish       = true
 
   environment_variables = {
-    NODE_ENV                   = "production",
+    NODE_ENV                   = "production"
     TF_NEXTIMAGE_DOMAINS       = jsonencode(var.next_image_domains)
     TF_NEXTIMAGE_DEVICE_SIZES  = var.next_image_device_sizes != null ? jsonencode(var.next_image_device_sizes) : null
+    TF_NEXTIMAGE_FORMATS       = jsonencode(var.next_image_formats)
     TF_NEXTIMAGE_IMAGE_SIZES   = var.next_image_image_sizes != null ? jsonencode(var.next_image_image_sizes) : null
     TF_NEXTIMAGE_SOURCE_BUCKET = var.source_bucket_id
   }

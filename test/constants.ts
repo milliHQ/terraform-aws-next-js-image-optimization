@@ -26,3 +26,16 @@ export const acceptWebpFixtures: Fixture[] = [
   ['webp/test.webp', 'image/webp'],
   ['webp/animated.webp', 'image/webp'],
 ];
+
+export const acceptAvifFixtures: Fixture[] = [
+  // inputFilename | outputContentType
+  ['avif/test.avif', 'image/avif'],
+  ['bmp/test.bmp', 'image/bmp'],
+  ['gif/test.gif', 'image/avif'],
+  ['jpeg/test.jpg', 'image/avif'],
+  ['png/test.png', 'image/avif'],
+  ['svg/test.svg', 'image/svg+xml'],
+  ['tiff/test.tiff', 'image/avif'],
+  ['webp/test.webp', 'image/avif'],
+  ['webp/animated.webp', 'image/webp'],
+];

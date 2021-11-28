@@ -7,7 +7,11 @@ import { extension as extensionMimeType } from 'mime-types';
 
 import { s3PublicDir } from './utils/s3-public-dir';
 import { getLocalIpAddressFromHost } from './utils/host-ip-address';
-import { acceptAllFixtures, acceptWebpFixtures } from './constants';
+import {
+  acceptAllFixtures,
+  acceptAvifFixtures,
+  acceptWebpFixtures,
+} from './constants';
 
 const ONE_MINUTE_IN_MS = 60000;
 const NODE_RUNTIME = 'nodejs14.x';
@@ -312,6 +316,80 @@ describe('[e2e]', () => {
 
         expect(response.ok).toBeTruthy();
         expect(response.headers.get('content-type')).toBe(fixture[1]);
+      },
+      ONE_MINUTE_IN_MS
+    );
+  });
+
+  describe('Accept Avif format', () => {
+    let lambdaSAM: LambdaSAM;
+
+    beforeAll(async () => {
+      // Generate SAM for the worker lambda
+      lambdaSAM = await generateSAM({
+        lambdas: {
+          imageOptimizer: {
+            filename: 'dist.zip',
+            handler: 'handler.handler',
+            runtime: NODE_RUNTIME,
+            memorySize: 1024,
+            route,
+            method: 'get',
+            environment: {
+              TF_NEXTIMAGE_SOURCE_BUCKET: fixtureBucketName,
+              TF_NEXTIMAGE_FORMATS: JSON.stringify([
+                'image/avif',
+                'image/webp',
+              ]),
+              __DEBUG__USE_LOCAL_BUCKET: JSON.stringify({
+                accessKeyId: 'test',
+                secretAccessKey: 'testtest',
+                endpoint: s3Endpoint,
+                s3ForcePathStyle: true,
+                signatureVersion: 'v4',
+                sslEnabled: false,
+              }),
+            },
+          },
+        },
+        cwd: pathToWorker,
+        onData(data) {
+          console.log(data.toString());
+        },
+        onError(data) {
+          console.log(data.toString());
+        },
+      });
+
+      await lambdaSAM.start();
+    });
+
+    afterAll(async () => {
+      await lambdaSAM.stop();
+    });
+
+    test.each(acceptAvifFixtures)(
+      'Accept image/avif,*/*: %s',
+      async (filePath, outputContentType) => {
+        const publicPath = `/${filePath}`;
+        const optimizerParams = new URLSearchParams({
+          url: publicPath,
+          w: '128',
+          q: '75',
+        });
+
+        const response = await lambdaSAM.sendApiGwRequest(
+          `${route}?${optimizerParams.toString()}`,
+          {
+            headers: {
+              Accept: 'image/avif,*/*',
+              Referer: `http://${s3Endpoint}/`,
+            },
+          }
+        );
+
+        expect(response.ok).toBeTruthy();
+        expect(response.headers.get('content-type')).toBe(outputContentType);
       },
       ONE_MINUTE_IN_MS
     );

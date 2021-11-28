@@ -62,6 +62,10 @@ const deviceSizes = parseFromEnv(
   'TF_NEXTIMAGE_DEVICE_SIZES',
   imageConfigDefault.deviceSizes
 );
+const formats = parseFromEnv(
+  'TF_NEXTIMAGE_FORMATS',
+  imageConfigDefault.formats
+);
 const imageSizes = parseFromEnv(
   'TF_NEXTIMAGE_IMAGE_SIZES',
   imageConfigDefault.imageSizes
@@ -72,6 +76,7 @@ const imageConfig: ImageConfig = {
   ...imageConfigDefault,
   domains,
   deviceSizes,
+  formats,
   imageSizes,
 };
 
