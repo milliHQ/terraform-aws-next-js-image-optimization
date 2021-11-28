@@ -796,10 +796,10 @@
     semver "^7.3.4"
     tar "^6.1.0"
 
-"@millihq/pixel-core@^1.0.0-canary.1":
-  version "1.0.0-canary.1"
-  resolved "https://registry.yarnpkg.com/@millihq/pixel-core/-/pixel-core-1.0.0-canary.1.tgz#ce4affa4a42b819a9ef7bf426b519db3bce6b2af"
-  integrity sha512-aBeMxUyDew5eeyam2Rfi7NAcBws/uygwzQ6UVL55ZvITkl+13uzajkPo0APVFETscFrHoYE9AWpdQkOrJ2HdQw==
+"@millihq/pixel-core@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@millihq/pixel-core/-/pixel-core-1.0.0.tgz#4ef7d4b735103fca5cf0034000d830740f2724dd"
+  integrity sha512-Kd9xZfaCLbLv8Oem0YW8ErVI2dy1fNVHt+OHZ07NIqYX0FpRbxCWAkENGMlz/6FAK6O+pO2jG/Hd3LXbD0LCdg==
   dependencies:
     node-fetch "^2.0.0"
 
