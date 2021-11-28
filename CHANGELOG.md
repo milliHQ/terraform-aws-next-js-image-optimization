@@ -1,5 +1,44 @@
 # Changelog
 
+## 12.0.0 (November 28, 2021)
+
+This release introduces a new package called [Pixel](https://github.com/milliHQ/pixel) that abstracts the image optimization stuff and makes it usable with platforms other than AWS Lambda.
+We plan to offer multiple flavors of it, like express middleware or docker images.
+
+⚠️ **Breaking Changes** ⚠️
+
+We have [removed](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues/78) the output variable `cloudfront_origin_image_optimizer` that was deprecated since the v11.0.0 release.
+To upgrade, please use the output variable `cloudfront_origin` from now on.
+
+E.g. when using the ["With existing CloudFront distribution example"](https://registry.terraform.io/modules/milliHQ/next-js-image-optimization/aws/latest/examples/with-existing-cloudfront) you should make the following changes:
+
+```diff
+module "next_image_optimizer" {
+  source = "milliHQ/next-js-image-optimization/aws"
+  ...
+}
+
+resource "aws_cloudfront_distribution" "distribution" {
+  ...
+
+  dynamic "origin" {
+-   for_each = [module.next_image_optimizer.cloudfront_origin_image_optimizer]
++   for_each = [module.next_image_optimizer.cloudfront_origin]
+   ...
+  }
+}
+```
+
+---
+
+- Uses Image Optimizer module of [Next.js 12.0.0](https://github.com/vercel/next.js/releases/tag/v12.0.0) ([#80](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/80))
+- Add support for AVIF ([#73](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues/73), [#92](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/92))
+- Fixes "Error while trying to add new domain" bug ([#68](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues/68), [#69](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/69))
+- Remove random strings from resource names ([#72](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues/72), [#77](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/77))
+- Bump sharp from 0.29.1 to 0.29.3 ([#79](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/79), [#85](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/85))
+- Remove deprecated output `cloudfront_origin_image_optimizer` ([#78](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues/78), [#82](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/82))
+- Remove referer header from cache key when S3 is used ([#87](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues/87), [#91](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/91))
+
 ## 11.1.2 (September 14, 2021)
 
 - Uses Image Optimizer module of [Next.js 11.1.2](https://github.com/vercel/next.js/releases/tag/v11.1.2) ([#63](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/63))

@@ -16,9 +16,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: dealmore/gh-action-release-branch@v1.1.0
+      - uses: milliHQ/gh-action-release-branch@v2.0.0
         with:
-          upstream-branch: main
           release-branch: release
           release-tag: ${{ github.event.inputs.tag }}
-          exclude: '["lib/**/*", "test/**/*", "package.json", "yarn.lock"]'
+          exclude: |
+            .vscode/**/*
+            lib/**/*
+            scripts/**/*
+            test/**/*
+            docker-compose.yml
+            buildimage.Dockerfile
+            jest.config.js
+            package.json
+            tsconfig.json
+            yarn.lock

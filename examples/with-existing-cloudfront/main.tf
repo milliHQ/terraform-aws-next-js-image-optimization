@@ -54,7 +54,7 @@ resource "aws_cloudfront_distribution" "distribution" {
 
   # This is a generic dynamic to create an origin
   dynamic "origin" {
-    for_each = [module.next_image_optimizer.cloudfront_origin_image_optimizer]
+    for_each = [module.next_image_optimizer.cloudfront_origin]
 
     content {
       domain_name = origin.value["domain_name"]

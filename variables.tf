@@ -4,7 +4,7 @@
 variable "next_image_version" {
   description = "Next.js version from where you want to use the image optimizer from. Supports semver ranges."
   type        = string
-  default     = "11.1.2"
+  default     = "12.0.0"
 }
 
 variable "next_image_domains" {
@@ -17,6 +17,12 @@ variable "next_image_device_sizes" {
   description = "Allowed device sizes that should be used for image optimization."
   type        = list(number)
   default     = null
+}
+
+variable "next_image_formats" {
+  description = "If the Accept head matches more than one of the configured formats, the first match in the array is used. Therefore, the array order matters. If there is no match, the Image Optimization API will fallback to the original image's format."
+  type        = list(string)
+  default     = ["image/webp"]
 }
 
 variable "next_image_image_sizes" {
@@ -110,9 +116,14 @@ variable "cloudfront_origin_id" {
 ##########
 
 variable "deployment_name" {
-  description = "Identifier for the deployment group (alphanumeric characters, underscores, hyphens, slashes, hash signs and dots are allowed)."
+  description = "Identifier for the deployment group (only lowercase alphanumeric characters and hyphens are allowed)."
   type        = string
   default     = "tf-next-image"
+
+  validation {
+    condition     = can(regex("[a-z0-9-]+", var.deployment_name))
+    error_message = "Only lowercase alphanumeric characters and hyphens allowed."
+  }
 }
 
 variable "tags" {

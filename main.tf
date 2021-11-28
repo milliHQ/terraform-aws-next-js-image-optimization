@@ -1,9 +1,10 @@
 ###############
 # Worker Lambda
 ###############
+
 module "lambda_content" {
   source  = "milliHQ/download/npm"
-  version = "1.1.0"
+  version = "2.0.0"
 
   module_name    = "@millihq/tf-next-image-optimization"
   module_version = var.next_image_version
@@ -12,17 +13,12 @@ module "lambda_content" {
   local_cwd      = path.module
 }
 
-resource "random_id" "function_name" {
-  prefix      = "${var.deployment_name}-"
-  byte_length = 4
-}
-
 module "image_optimizer" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "2.17.0"
 
-  function_name = random_id.function_name.hex
-  description   = var.deployment_name
+  function_name = var.deployment_name
+  description   = "Managed by Terraform Next.js image optimizer"
   handler       = "handler.handler"
   runtime       = "nodejs14.x"
   memory_size   = var.lambda_memory_size
@@ -30,9 +26,10 @@ module "image_optimizer" {
   publish       = true
 
   environment_variables = {
-    NODE_ENV                   = "production",
+    NODE_ENV                   = "production"
     TF_NEXTIMAGE_DOMAINS       = jsonencode(var.next_image_domains)
     TF_NEXTIMAGE_DEVICE_SIZES  = var.next_image_device_sizes != null ? jsonencode(var.next_image_device_sizes) : null
+    TF_NEXTIMAGE_FORMATS       = jsonencode(var.next_image_formats)
     TF_NEXTIMAGE_IMAGE_SIZES   = var.next_image_image_sizes != null ? jsonencode(var.next_image_image_sizes) : null
     TF_NEXTIMAGE_SOURCE_BUCKET = var.source_bucket_id
   }
@@ -59,12 +56,13 @@ module "image_optimizer" {
 #########################
 # API Gateway integration
 #########################
+
 module "api_gateway" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
   version = "1.1.0"
 
   name          = var.deployment_name
-  description   = "Managed by Terraform-next.js image optimizer"
+  description   = "Managed by Terraform Next.js image optimizer"
   protocol_type = "HTTP"
 
   create_api_domain_name = false
@@ -139,7 +137,13 @@ locals {
   cloudfront_allowed_query_string_keys = sort(["url", "w", "q"])
 
   # Headers that are used by the image optimizer
-  cloudfront_allowed_headers = sort(["accept", "referer"])
+  # - Accept:  Header is used to determine the supported image formats from the
+  #            client.
+  # - Referer: Header is used to determine the host for absolute image paths,
+  #            e.g. example.com/_next/image?url=/image.png, would fetch the
+  #            image from example.com/image.png.name
+  #            Not used if the images are fetched from S3 bucket.
+  cloudfront_allowed_headers = var.source_bucket_id != null ? ["accept"] : sort(["accept", "referer"])
 
 
   # CloudFront origin
@@ -173,14 +177,9 @@ locals {
   }
 }
 
-resource "random_id" "policy_name" {
-  prefix      = "${var.deployment_name}-"
-  byte_length = 4
-}
-
 resource "aws_cloudfront_origin_request_policy" "this" {
-  name    = "${random_id.policy_name.hex}-request"
-  comment = "Managed by Terraform-next.js image optimizer"
+  name    = "${var.deployment_name}_request"
+  comment = "Managed by Terraform Next.js image optimizer"
 
   cookies_config {
     cookie_behavior = "none"
@@ -202,8 +201,8 @@ resource "aws_cloudfront_origin_request_policy" "this" {
 }
 
 resource "aws_cloudfront_cache_policy" "this" {
-  name    = "${random_id.policy_name.hex}-cache"
-  comment = "Managed by Terraform-next.js image optimizer"
+  name    = "${var.deployment_name}_image-cache"
+  comment = "Managed by Terraform Next.js image optimizer"
 
   # Default values (Should be provided by origin)
   min_ttl     = 0

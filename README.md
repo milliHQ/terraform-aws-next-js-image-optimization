@@ -110,14 +110,12 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 |------|---------|
 | terraform | >= 0.13 |
 | aws | >= 3.43.0 |
-| random | >= 2.3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | aws | >= 3.43.0 |
-| random | >= 2.3.0 |
 
 ## Inputs
 
@@ -129,7 +127,7 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | cloudfront\_origin\_shield\_region | Override the region choosen for the CloudFront origin shield. Use `auto` to automatically determine the optimal region. | `string` | `"auto"` | no |
 | cloudfront\_price\_class | Price class for the CloudFront distribution. One of PriceClass\_All, PriceClass\_200, PriceClass\_100. | `string` | `"PriceClass_100"` | no |
 | debug\_use\_local\_packages | (Debug) Use local packages instead of downloading them from npm. | `bool` | `false` | no |
-| deployment\_name | Identifier for the deployment group (alphanumeric characters, underscores, hyphens, slashes, hash signs and dots are allowed). | `string` | `"tf-next-image"` | no |
+| deployment\_name | Identifier for the deployment group (only lowercase alphanumeric characters and hyphens are allowed). | `string` | `"tf-next-image"` | no |
 | lambda\_attach\_policy\_json | Controls whether lambda\_policy\_json should be added to IAM role for Lambda function. | `bool` | `false` | no |
 | lambda\_memory\_size | Amount of memory in MB the worker Lambda Function can use. Valid value between 128 MB to 10,240 MB, in 1 MB increments. | `number` | `1024` | no |
 | lambda\_policy\_json | Additional policy document as JSON to attach to the Lambda Function role. | `string` | `""` | no |
@@ -137,8 +135,9 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | lambda\_timeout | Max amount of time the worker Lambda Function has to return a response in seconds. Should not be more than 30 (Limited by API Gateway). | `number` | `30` | no |
 | next\_image\_device\_sizes | Allowed device sizes that should be used for image optimization. | `list(number)` | `null` | no |
 | next\_image\_domains | Allowed origin domains that can be used for fetching images. | `list(string)` | `[]` | no |
+| next\_image\_formats | If the Accept head matches more than one of the configured formats, the first match in the array is used. Therefore, the array order matters. If there is no match, the Image Optimization API will fallback to the original image's format. | `list(string)` | <pre>[<br>  "image/webp"<br>]</pre> | no |
 | next\_image\_image\_sizes | Allowed image sizes that should be used for image optimization. | `list(number)` | `null` | no |
-| next\_image\_version | Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"11.1.2"` | no |
+| next\_image\_version | Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"12.0.0"` | no |
 | source\_bucket\_id | When your static files are deployed to a Bucket (e.g. with Terraform Next.js) the optimizer can pull the source from the bucket rather than over the internet. | `string` | `null` | no |
 | tags | Tag metadata to label AWS resources that support tags. | `map(string)` | `{}` | no |
 
@@ -152,7 +151,6 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | cloudfront\_hosted\_zone\_id | Zone id of the internal CloudFront distribution. |
 | cloudfront\_origin | Predefined CloudFront origin. Can be used to embed the image optimizer into an existing CloudFront resource. |
 | cloudfront\_origin\_id | Id of the custom origin used for image optimization. |
-| cloudfront\_origin\_image\_optimizer | Deprecated, please use cloudfront\_origin instead. |
 | cloudfront\_origin\_request\_policy\_id | Request policy id used for image optimization. |
 
 <!--- END_TF_DOCS --->
@@ -171,6 +169,11 @@ Please note that we only publish versions `>=10.0.5`, for a full list of availab
 
 Contributions are welcome!  
 If you want to improve this module, please take a look at our [contributing guide](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/blob/main/CONTRIBUTING.md).
+
+## About
+
+This project is maintained by [milliVolt infrastructure](https://milli.is).  
+We build custom infrastructure solutions for any cloud provider.
 
 ## License
 
