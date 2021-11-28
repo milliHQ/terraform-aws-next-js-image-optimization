@@ -1,11 +1,17 @@
 import * as path from 'path';
+import { URLSearchParams } from 'url';
+
 import { LambdaSAM, generateSAM } from '@dealmore/sammy';
 import S3 from 'aws-sdk/clients/s3';
-import { URLSearchParams } from 'url';
+import { extension as extensionMimeType } from 'mime-types';
 
 import { s3PublicDir } from './utils/s3-public-dir';
 import { getLocalIpAddressFromHost } from './utils/host-ip-address';
-import { acceptAllFixtures, acceptWebpFixtures } from './constants';
+import {
+  acceptAllFixtures,
+  acceptAvifFixtures,
+  acceptWebpFixtures,
+} from './constants';
 
 const ONE_MINUTE_IN_MS = 60000;
 const NODE_RUNTIME = 'nodejs14.x';
@@ -73,7 +79,7 @@ describe('[e2e]', () => {
 
     test.each(acceptAllFixtures)(
       'External: Accept */*: %s',
-      async (filePath, fixtureResponse) => {
+      async (filePath, outputContentType) => {
         const publicPath = `http://${s3Endpoint}/${fixtureBucketName}/${filePath}`;
         const optimizerParams = new URLSearchParams({
           url: publicPath,
@@ -86,9 +92,9 @@ describe('[e2e]', () => {
         const snapshotFileName = path.join(
           __dirname,
           '__snapshots__/e2e/',
-          `${optimizerPrefix}${filePath.replace('/', '_')}.${
-            fixtureResponse.ext
-          }`
+          `${optimizerPrefix}${filePath.replace('/', '_')}.${extensionMimeType(
+            outputContentType
+          )}`
         );
 
         const response = await lambdaSAM.sendApiGwRequest(
@@ -103,9 +109,7 @@ describe('[e2e]', () => {
 
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
-        expect(response.headers.get('Content-Type')).toBe(
-          fixtureResponse['content-type']
-        );
+        expect(response.headers.get('Content-Type')).toBe(outputContentType);
         expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
 
         // Header settings needed for CloudFront compression
@@ -117,7 +121,7 @@ describe('[e2e]', () => {
 
     test.each(acceptAllFixtures)(
       'Internal: Accept */*: %s',
-      async (filePath, fixtureResponse) => {
+      async (filePath, outputContentType) => {
         const publicPath = `/${fixtureBucketName}/${filePath}`;
         const optimizerParams = new URLSearchParams({
           url: publicPath,
@@ -130,9 +134,9 @@ describe('[e2e]', () => {
         const snapshotFileName = path.join(
           __dirname,
           '__snapshots__/e2e/',
-          `${optimizerPrefix}${filePath.replace('/', '_')}.${
-            fixtureResponse.ext
-          }`
+          `${optimizerPrefix}${filePath.replace('/', '_')}.${extensionMimeType(
+            outputContentType
+          )}`
         );
 
         const response = await lambdaSAM.sendApiGwRequest(
@@ -149,9 +153,7 @@ describe('[e2e]', () => {
 
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
-        expect(response.headers.get('Content-Type')).toBe(
-          fixtureResponse['content-type']
-        );
+        expect(response.headers.get('Content-Type')).toBe(outputContentType);
         expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
 
         // Header settings needed for CloudFront compression
@@ -163,7 +165,7 @@ describe('[e2e]', () => {
 
     test.each(acceptWebpFixtures)(
       'External: Accept image/webp,*/*: %s',
-      async (filePath, fixtureResponse) => {
+      async (filePath, outputContentType) => {
         const publicPath = `http://${s3Endpoint}/${fixtureBucketName}/${filePath}`;
         const optimizerParams = new URLSearchParams({
           url: publicPath,
@@ -176,9 +178,9 @@ describe('[e2e]', () => {
         const snapshotFileName = path.join(
           __dirname,
           '__snapshots__/e2e/',
-          `${optimizerPrefix}${filePath.replace('/', '_')}.${
-            fixtureResponse.ext
-          }`
+          `${optimizerPrefix}${filePath.replace('/', '_')}.${extensionMimeType(
+            outputContentType
+          )}`
         );
 
         const response = await lambdaSAM.sendApiGwRequest(
@@ -193,9 +195,7 @@ describe('[e2e]', () => {
 
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
-        expect(response.headers.get('Content-Type')).toBe(
-          fixtureResponse['content-type']
-        );
+        expect(response.headers.get('Content-Type')).toBe(outputContentType);
         expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
 
         // Header settings needed for CloudFront compression
@@ -207,7 +207,7 @@ describe('[e2e]', () => {
 
     test.each(acceptWebpFixtures)(
       'Internal: Accept image/webp,*/*: %s',
-      async (filePath, fixtureResponse) => {
+      async (filePath, outputContentType) => {
         const publicPath = `/${fixtureBucketName}/${filePath}`;
         const optimizerParams = new URLSearchParams({
           url: publicPath,
@@ -220,9 +220,9 @@ describe('[e2e]', () => {
         const snapshotFileName = path.join(
           __dirname,
           '__snapshots__/e2e/',
-          `${optimizerPrefix}${filePath.replace('/', '_')}.${
-            fixtureResponse.ext
-          }`
+          `${optimizerPrefix}${filePath.replace('/', '_')}.${extensionMimeType(
+            outputContentType
+          )}`
         );
 
         const response = await lambdaSAM.sendApiGwRequest(
@@ -239,9 +239,7 @@ describe('[e2e]', () => {
 
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
-        expect(response.headers.get('Content-Type')).toBe(
-          fixtureResponse['content-type']
-        );
+        expect(response.headers.get('Content-Type')).toBe(outputContentType);
         expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
 
         // Header settings needed for CloudFront compression
@@ -317,9 +315,81 @@ describe('[e2e]', () => {
         );
 
         expect(response.ok).toBeTruthy();
-        expect(response.headers.get('content-type')).toBe(
-          fixture[1]['content-type']
+        expect(response.headers.get('content-type')).toBe(fixture[1]);
+      },
+      ONE_MINUTE_IN_MS
+    );
+  });
+
+  describe('Accept Avif format', () => {
+    let lambdaSAM: LambdaSAM;
+
+    beforeAll(async () => {
+      // Generate SAM for the worker lambda
+      lambdaSAM = await generateSAM({
+        lambdas: {
+          imageOptimizer: {
+            filename: 'dist.zip',
+            handler: 'handler.handler',
+            runtime: NODE_RUNTIME,
+            memorySize: 1024,
+            route,
+            method: 'get',
+            environment: {
+              TF_NEXTIMAGE_SOURCE_BUCKET: fixtureBucketName,
+              TF_NEXTIMAGE_FORMATS: JSON.stringify([
+                'image/avif',
+                'image/webp',
+              ]),
+              __DEBUG__USE_LOCAL_BUCKET: JSON.stringify({
+                accessKeyId: 'test',
+                secretAccessKey: 'testtest',
+                endpoint: s3Endpoint,
+                s3ForcePathStyle: true,
+                signatureVersion: 'v4',
+                sslEnabled: false,
+              }),
+            },
+          },
+        },
+        cwd: pathToWorker,
+        onData(data) {
+          console.log(data.toString());
+        },
+        onError(data) {
+          console.log(data.toString());
+        },
+      });
+
+      await lambdaSAM.start();
+    });
+
+    afterAll(async () => {
+      await lambdaSAM.stop();
+    });
+
+    test.each(acceptAvifFixtures)(
+      'Accept image/avif,*/*: %s',
+      async (filePath, outputContentType) => {
+        const publicPath = `/${filePath}`;
+        const optimizerParams = new URLSearchParams({
+          url: publicPath,
+          w: '128',
+          q: '75',
+        });
+
+        const response = await lambdaSAM.sendApiGwRequest(
+          `${route}?${optimizerParams.toString()}`,
+          {
+            headers: {
+              Accept: 'image/avif,*/*',
+              Referer: `http://${s3Endpoint}/`,
+            },
+          }
         );
+
+        expect(response.ok).toBeTruthy();
+        expect(response.headers.get('content-type')).toBe(outputContentType);
       },
       ONE_MINUTE_IN_MS
     );
@@ -361,9 +431,9 @@ describe('[e2e]', () => {
     ])(
       'Fetch external image by %s',
       async () => {
-        const [filePath, fixtureResponse] =
-          acceptAllFixtures.find((f) => f[1].ext === 'png') || [];
-        if (!filePath || !fixtureResponse)
+        const [filePath, outputContentType] =
+          acceptAllFixtures.find((f) => f[1] === 'image/png') || [];
+        if (!filePath || !outputContentType)
           throw new Error('Can not found png file path');
 
         const publicPath = `http://${s3Endpoint}/${fixtureBucketName}/${filePath}`;
@@ -373,9 +443,9 @@ describe('[e2e]', () => {
         const snapshotFileName = path.join(
           __dirname,
           '__snapshots__/e2e/',
-          `${optimizerPrefix}${filePath.replace('/', '_')}.${
-            fixtureResponse.ext
-          }`
+          `${optimizerPrefix}${filePath.replace('/', '_')}.${extensionMimeType(
+            outputContentType
+          )}`
         );
 
         const response = await lambdaSAM.sendApiGwRequest(
@@ -391,9 +461,7 @@ describe('[e2e]', () => {
 
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
-        expect(response.headers.get('Content-Type')).toBe(
-          fixtureResponse['content-type']
-        );
+        expect(response.headers.get('Content-Type')).toBe(outputContentType);
         expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
 
         // Header settings needed for CloudFront compression

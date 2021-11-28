@@ -1,8 +1,10 @@
 /// <reference types="jest-file-snapshot" />
 
-import { ImageConfig, imageConfigDefault } from 'next/dist/server/image-config';
-import S3 from 'aws-sdk/clients/s3';
 import * as path from 'path';
+
+import S3 from 'aws-sdk/clients/s3';
+import { extension as extensionMimeType } from 'mime-types';
+import { ImageConfig, imageConfigDefault } from 'next/dist/server/image-config';
 
 import { s3PublicDir } from './utils/s3-public-dir';
 import { acceptAllFixtures, acceptWebpFixtures } from './constants';
@@ -59,7 +61,7 @@ describe('unit', () => {
     );
 
     expect(result.finished).toBe(true);
-    expect(headers['content-type']).toBe(fixture[1]['content-type']);
+    expect(headers['content-type']).toBe(fixture[1]);
   });
 
   test('Custom image size', async () => {
@@ -91,7 +93,7 @@ describe('unit', () => {
       );
 
       expect(result.finished).toBe(true);
-      expect(headers['content-type']).toBe(fixture[1]['content-type']);
+      expect(headers['content-type']).toBe(fixture[1]);
     }
 
     {
@@ -147,7 +149,7 @@ describe('unit', () => {
       );
 
       expect(result.finished).toBe(true);
-      expect(headers['content-type']).toBe(fixture[1]['content-type']);
+      expect(headers['content-type']).toBe(fixture[1]);
     }
 
     {
@@ -176,7 +178,7 @@ describe('unit', () => {
 
   test.each(acceptAllFixtures)(
     'External image: Accept */*: %s',
-    async (filePath, fixtureResponse) => {
+    async (filePath, outputContentType) => {
       const publicPath = `http://${s3Endpoint}/${bucketName}/${filePath}`;
       const params = generateParams(publicPath, optimizerParams);
 
@@ -189,7 +191,7 @@ describe('unit', () => {
       );
 
       expect(result.finished).toBe(true);
-      expect(headers['content-type']).toBe(fixtureResponse['content-type']);
+      expect(headers['content-type']).toBe(outputContentType);
 
       // Check that Content-Security-Policy header is present to prevent potential
       // XSS attack
@@ -204,7 +206,9 @@ describe('unit', () => {
       const snapshotFileName = path.join(
         __dirname,
         '__snapshots__',
-        `${optimizerPrefix}${filePath.replace('/', '_')}.${fixtureResponse.ext}`
+        `${optimizerPrefix}${filePath.replace('/', '_')}.${extensionMimeType(
+          outputContentType
+        )}`
       );
       expect(body).toMatchFile(snapshotFileName);
     }
@@ -212,7 +216,7 @@ describe('unit', () => {
 
   test.each(acceptWebpFixtures)(
     'External image: Accept image/webp: %s',
-    async (filePath, fixtureResponse) => {
+    async (filePath, outputContentType) => {
       const publicPath = `http://${s3Endpoint}/${bucketName}/${filePath}`;
       const params = generateParams(publicPath, optimizerParams);
 
@@ -226,7 +230,7 @@ describe('unit', () => {
 
       expect(result.finished).toBe(true);
       expect(result.originCacheControl).toBe(cacheControlHeader);
-      expect(headers['content-type']).toBe(fixtureResponse['content-type']);
+      expect(headers['content-type']).toBe(outputContentType);
       expect(headers['etag']).toBeDefined();
       expect(headers['cache-control']).toBe(
         'public, max-age=123456, must-revalidate'
@@ -236,7 +240,9 @@ describe('unit', () => {
       const snapshotFileName = path.join(
         __dirname,
         '__snapshots__',
-        `${optimizerPrefix}${filePath.replace('/', '_')}.${fixtureResponse.ext}`
+        `${optimizerPrefix}${filePath.replace('/', '_')}.${extensionMimeType(
+          outputContentType
+        )}`
       );
       expect(body).toMatchFile(snapshotFileName);
     }
@@ -244,7 +250,7 @@ describe('unit', () => {
 
   test.each(acceptAllFixtures)(
     'Internal image: Accept */*: %s',
-    async (filePath, fixtureResponse) => {
+    async (filePath, outputContentType) => {
       const publicPath = `/${bucketName}/${filePath}`;
       const params = generateParams(publicPath, optimizerParams);
 
@@ -258,13 +264,15 @@ describe('unit', () => {
       );
 
       expect(result.finished).toBe(true);
-      expect(headers['content-type']).toBe(fixtureResponse['content-type']);
+      expect(headers['content-type']).toBe(outputContentType);
 
       const optimizerPrefix = `internal_accept_all_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
       const snapshotFileName = path.join(
         __dirname,
         '__snapshots__',
-        `${optimizerPrefix}${filePath.replace('/', '_')}.${fixtureResponse.ext}`
+        `${optimizerPrefix}${filePath.replace('/', '_')}.${extensionMimeType(
+          outputContentType
+        )}`
       );
       expect(body).toMatchFile(snapshotFileName);
     }
@@ -272,7 +280,7 @@ describe('unit', () => {
 
   test.each(acceptWebpFixtures)(
     'Internal image: Accept image/webp: %s',
-    async (filePath, fixtureResponse) => {
+    async (filePath, outputContentType) => {
       const publicPath = `/${bucketName}/${filePath}`;
       const params = generateParams(publicPath, optimizerParams);
 
@@ -286,13 +294,15 @@ describe('unit', () => {
       );
 
       expect(result.finished).toBe(true);
-      expect(headers['content-type']).toBe(fixtureResponse['content-type']);
+      expect(headers['content-type']).toBe(outputContentType);
 
       const optimizerPrefix = `internal_accept_webp_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
       const snapshotFileName = path.join(
         __dirname,
         '__snapshots__',
-        `${optimizerPrefix}${filePath.replace('/', '_')}.${fixtureResponse.ext}`
+        `${optimizerPrefix}${filePath.replace('/', '_')}.${extensionMimeType(
+          outputContentType
+        )}`
       );
       expect(body).toMatchFile(snapshotFileName);
     }
