@@ -18,7 +18,7 @@
   "dependencies": {
     "@millihq/pixel-core": "1.0.0",
     "aws-sdk": "*",
-    "next": "12.0.4",
+    "next": "12.0.1",
     "node-fetch": "2.6.1",
     "react": "17.0.2",
     "sharp": "0.29.3"
