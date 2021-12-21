@@ -10,20 +10,24 @@ const http = require('http');
 const { imageOptimizer } = require('@millihq/tf-next-image-optimization');
 const S3 = require('aws-sdk/clients/s3');
 
-async function invoke({ port, imageConfig, parsedUrl, s3Config }) {
+async function invoke({
+  port,
+  imageConfig,
+  parsedUrl,
+  s3Config,
+  baseOriginUrl,
+}) {
   const server = http.createServer(async (request, response) => {
-    const result = await imageOptimizer(
-      imageConfig,
-      request,
-      response,
+    const result = await imageOptimizer(imageConfig, request, response, {
+      baseOriginUrl,
       parsedUrl,
-      s3Config
+      s3Config: s3Config
         ? {
             s3: new S3(s3Config.options),
             bucket: s3Config.bucket,
           }
-        : undefined
-    );
+        : undefined,
+    });
 
     process.send({ type: 'RESULT', payload: result });
   });

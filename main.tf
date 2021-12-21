@@ -27,6 +27,7 @@ module "image_optimizer" {
 
   environment_variables = {
     NODE_ENV                   = "production"
+    TF_NEXTIMAGE_BASE_ORIGIN   = var.next_image_base_origin
     TF_NEXTIMAGE_DOMAINS       = jsonencode(var.next_image_domains)
     TF_NEXTIMAGE_DEVICE_SIZES  = var.next_image_device_sizes != null ? jsonencode(var.next_image_device_sizes) : null
     TF_NEXTIMAGE_FORMATS       = jsonencode(var.next_image_formats)
@@ -143,7 +144,7 @@ locals {
   #            e.g. example.com/_next/image?url=/image.png, would fetch the
   #            image from example.com/image.png.name
   #            Not used if the images are fetched from S3 bucket.
-  cloudfront_allowed_headers = var.source_bucket_id != null ? ["accept"] : sort(["accept", "referer"])
+  cloudfront_allowed_headers = var.source_bucket_id == null && var.next_image_base_origin == null ? sort(["accept", "referer"]) : ["accept"]
 
 
   # CloudFront origin

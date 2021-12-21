@@ -7,6 +7,12 @@ variable "next_image_version" {
   default     = "12.0.0"
 }
 
+variable "next_image_base_origin" {
+  description = "Base URL where requests for absolute image paths should be resolved to. Should not have a trailing slash."
+  type        = string
+  default     = null
+}
+
 variable "next_image_domains" {
   description = "Allowed origin domains that can be used for fetching images."
   type        = list(string)

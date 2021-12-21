@@ -7,6 +7,7 @@ declare global {
       fetch: NodeFetch;
     }
     export interface ProcessEnv {
+      TF_NEXTIMAGE_BASE_ORIGIN?: string;
       TF_NEXTIMAGE_DOMAINS?: string;
       TF_NEXTIMAGE_DEVICE_SIZES?: string;
       TF_NEXTIMAGE_FORMATS?: string;

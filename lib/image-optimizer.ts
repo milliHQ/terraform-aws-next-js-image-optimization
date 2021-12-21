@@ -3,7 +3,7 @@ import { URL, UrlWithParsedQuery } from 'url';
 
 import {
   imageOptimizer as pixel,
-  ImageOptimizerOptions,
+  ImageOptimizerOptions as PixelOptions,
 } from '@millihq/pixel-core';
 import { ImageConfig } from 'next/dist/server/image-config';
 import nodeFetch from 'node-fetch';
@@ -13,10 +13,16 @@ import S3 from 'aws-sdk/clients/s3';
  * Types
  * ---------------------------------------------------------------------------*/
 
-interface S3Config {
+type S3Config = {
   s3: S3;
   bucket: string;
-}
+};
+
+type ImageOptimizerOptions = {
+  baseOriginUrl?: string;
+  parsedUrl: UrlWithParsedQuery;
+  s3Config?: S3Config;
+};
 
 /* -----------------------------------------------------------------------------
  * imageOptimizer
@@ -26,10 +32,10 @@ async function imageOptimizer(
   imageConfig: ImageConfig,
   req: IncomingMessage,
   res: ServerResponse,
-  parsedUrl: UrlWithParsedQuery,
-  s3Config?: S3Config
+  options: ImageOptimizerOptions
 ): ReturnType<typeof pixel> {
-  const options: ImageOptimizerOptions = {
+  const { baseOriginUrl, parsedUrl, s3Config } = options;
+  const pixelOptions: PixelOptions = {
     /**
      * Use default temporary folder from AWS Lambda
      */
@@ -83,11 +89,21 @@ async function imageOptimizer(
 
         res.write(object.Body);
         res.end();
-      } else if (headers.referer) {
-        // Referer header is a full URL with path
-        // e.g. https://test.example.com/some-path/?foo=bar
-        // So we need to parse it first and then extract the host from it
-        const { origin: originBaseUrl } = new URL(headers.referer);
+      } else if (baseOriginUrl || headers.referer) {
+        let originBaseUrl = '';
+
+        // When `baseOriginUrl` is set it should take precedence over the
+        // referer header
+        if (baseOriginUrl) {
+          originBaseUrl = baseOriginUrl;
+        } else if (headers.referer) {
+          // Referer header is a full URL with path
+          // e.g. https://test.example.com/some-path/?foo=bar
+          // So we need to parse it first and then extract the host from it
+          const { origin: refererBaseUrl } = new URL(headers.referer);
+          originBaseUrl = refererBaseUrl;
+        }
+
         const origin = `${originBaseUrl}${url.href}`;
         const upstreamRes = await nodeFetch(origin);
 
@@ -114,7 +130,7 @@ async function imageOptimizer(
     },
   };
 
-  return pixel(req, res, parsedUrl, options);
+  return pixel(req, res, parsedUrl, pixelOptions);
 }
 
 export type { S3Config };
