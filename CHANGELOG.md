@@ -1,5 +1,17 @@
 # Changelog
 
+## 12.0.1 (December 21, 2021)
+
+In this release we fixed a bug that could occur when using absolute image paths (When you use S3 as backend, you are not affected).  
+In addition you can now define a new input variable `next_image_base_origin` that can be used to resolve absolute image paths.
+
+When you set `next_image_base_origin = "https://example.com"` requests for an absolute image path (`/path/to/image.png`) are then resolved to the URL `https://example.com/path/to/image.png`.
+
+We also added a fully featured example how to use `next export` together with S3 and the image optimizer, check it out: [Statically exported Next.js app hosted on S3](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/tree/main/examples/with-next-js)
+
+- Add base origin setting ([#94](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues/94), [#95](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/95))
+- Uses Image Optimizer module of [Next.js 12.0.1](https://github.com/vercel/next.js/releases/tag/v12.0.1) ([#81](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/81))
+
 ## 12.0.0 (November 28, 2021)
 
 This release introduces a new package called [Pixel](https://github.com/milliHQ/pixel) that abstracts the image optimization stuff and makes it usable with platforms other than AWS Lambda.
