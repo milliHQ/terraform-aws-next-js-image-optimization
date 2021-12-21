@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { UrlWithParsedQuery } from 'url';
+import { URL, UrlWithParsedQuery } from 'url';
 
 import {
   imageOptimizer as pixel,
@@ -84,11 +84,11 @@ async function imageOptimizer(
         res.write(object.Body);
         res.end();
       } else if (headers.referer) {
-        const { referer } = headers;
-        const trimmedReferer = referer.endsWith('/')
-          ? referer.substring(0, referer.length - 1)
-          : referer;
-        const origin = `${trimmedReferer}${url.href}`;
+        // Referer header is a full URL with path
+        // e.g. https://test.example.com/some-path/?foo=bar
+        // So we need to parse it first and then extract the host from it
+        const { origin: originBaseUrl } = new URL(headers.referer);
+        const origin = `${originBaseUrl}${url.href}`;
         const upstreamRes = await nodeFetch(origin);
 
         if (!upstreamRes.ok) {

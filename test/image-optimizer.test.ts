@@ -259,7 +259,7 @@ describe('unit', () => {
         imageConfig,
         {
           accept: '*/*',
-          referer: `http://${s3Endpoint}/`,
+          referer: `http://${s3Endpoint}/hello/world?foo=bar`,
         }
       );
 
