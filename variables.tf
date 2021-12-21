@@ -4,7 +4,13 @@
 variable "next_image_version" {
   description = "Next.js version from where you want to use the image optimizer from. Supports semver ranges."
   type        = string
-  default     = "12.0.0"
+  default     = "12.0.1"
+}
+
+variable "next_image_base_origin" {
+  description = "Base URL where requests for absolute image paths should be resolved to. Should not have a trailing slash."
+  type        = string
+  default     = null
 }
 
 variable "next_image_domains" {

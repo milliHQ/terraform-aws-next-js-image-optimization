@@ -2,18 +2,18 @@ import Image from 'next/image';
 import ViewSource from '../components/view-source';
 import mountains from '../public/mountains.jpg';
 
-const Fixed = () => (
+const PlaceholderBlur = () => (
   <div>
-    <ViewSource pathname="pages/layout-fixed.js" />
-    <h1>Image Component With Layout Fixed</h1>
+    <ViewSource pathname="pages/placeholder.js" />
+    <h1>Image Component With Placeholder Blur</h1>
     <Image
       alt="Mountains"
       src={mountains}
-      layout="fixed"
+      placeholder="blur"
       width={700}
       height={475}
     />
   </div>
 );
 
-export default Fixed;
+export default PlaceholderBlur;
