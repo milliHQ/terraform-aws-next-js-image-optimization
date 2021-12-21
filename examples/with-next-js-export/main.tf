@@ -32,6 +32,7 @@ module "next_image_optimizer" {
 
   deployment_name    = var.deployment_name
   next_image_domains = ["assets.vercel.com"]
+  next_image_formats = ["image/avif", "image/webp"]
 }
 
 ###########
@@ -51,7 +52,7 @@ resource "aws_s3_bucket" "website_bucket" {
 
   website {
     index_document = "index.html"
-    error_document = "404.html"
+    error_document = "404/index.html"
   }
 
   tags = {
