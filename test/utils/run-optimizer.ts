@@ -34,6 +34,11 @@ type RunOptimizerReturnType = Promise<{
   body: Buffer;
 }>;
 
+type RunOptimizerOptions = {
+  baseOriginUrl?: string;
+  s3Config?: S3Options;
+};
+
 /**
  * Runs the image optimizer inside a forked process
  */
@@ -41,7 +46,7 @@ export async function runOptimizerFork(
   params: GenerateParams,
   imageConfig: ImageConfig,
   requestHeaders: Record<string, string>,
-  s3Config?: S3Options
+  { baseOriginUrl, s3Config }: RunOptimizerOptions = {}
 ): RunOptimizerReturnType {
   let result: ImageOptimizerResult;
   const port = await getPort();
@@ -65,6 +70,7 @@ export async function runOptimizerFork(
   imageOptimizerFork.send({
     port,
     imageConfig,
+    baseOriginUrl,
     parsedUrl: params.parsedUrl,
     s3Config,
   });
@@ -102,7 +108,7 @@ export async function runOptimizer(
   params: GenerateParams,
   imageConfig: ImageConfig,
   requestHeaders: Record<string, string>,
-  s3Config?: S3Options
+  { baseOriginUrl, s3Config }: RunOptimizerOptions = {}
 ): RunOptimizerReturnType {
   // Mock request & response
   const request = createRequest({
@@ -127,18 +133,16 @@ export async function runOptimizer(
     defer.resolve();
   });
 
-  const result = await imageOptimizer(
-    imageConfig,
-    request,
-    response,
-    params.parsedUrl,
-    s3Config
+  const result = await imageOptimizer(imageConfig, request, response, {
+    baseOriginUrl,
+    parsedUrl: params.parsedUrl,
+    s3Config: s3Config
       ? {
           s3: new S3(s3Config.options),
           bucket: s3Config.bucket,
         }
-      : undefined
-  );
+      : undefined,
+  });
 
   await defer.promise;
 

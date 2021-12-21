@@ -71,6 +71,7 @@ const imageSizes = parseFromEnv(
   imageConfigDefault.imageSizes
 );
 const sourceBucket = process.env.TF_NEXTIMAGE_SOURCE_BUCKET ?? undefined;
+const baseOriginUrl = process.env.TF_NEXTIMAGE_BASE_ORIGIN ?? undefined;
 
 const imageConfig: ImageConfig = {
   ...imageConfigDefault,
@@ -122,13 +123,11 @@ export async function handler(
   };
 
   const parsedUrl = parseUrl(reqMock.url, true);
-  await imageOptimizer(
-    imageConfig,
-    reqMock as IncomingMessage,
-    resMock,
+  await imageOptimizer(imageConfig, reqMock as IncomingMessage, resMock, {
+    baseOriginUrl,
     parsedUrl,
-    s3Config
-  );
+    s3Config,
+  });
 
   const normalizedHeaders: Record<string, string> = {};
   for (const [headerKey, headerValue] of mockHeaders.entries()) {

@@ -57,7 +57,7 @@ describe('unit', () => {
       {
         accept: '*/*',
       },
-      { options: S3options, bucket: bucketName }
+      { s3Config: { options: S3options, bucket: bucketName } }
     );
 
     expect(result.finished).toBe(true);
@@ -259,7 +259,7 @@ describe('unit', () => {
         imageConfig,
         {
           accept: '*/*',
-          referer: `http://${s3Endpoint}/`,
+          referer: `http://${s3Endpoint}/hello/world?foo=bar`,
         }
       );
 
@@ -307,4 +307,27 @@ describe('unit', () => {
       expect(body).toMatchFile(snapshotFileName);
     }
   );
+
+  test('Use base origin option', async () => {
+    const fixture = acceptAllFixtures[0];
+    const fixturePath = `/${fixture[0]}`;
+    const params = generateParams(fixturePath, {
+      w: '1080',
+      q: '75',
+    });
+
+    const { result, headers } = await runOptimizer(
+      params,
+      imageConfig,
+      {
+        accept: '*/*',
+      },
+      {
+        baseOriginUrl: `http://${s3Endpoint}/${bucketName}`,
+      }
+    );
+
+    expect(result.finished).toBe(true);
+    expect(headers['content-type']).toBe(fixture[1]);
+  });
 });

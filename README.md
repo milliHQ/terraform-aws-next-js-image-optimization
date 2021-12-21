@@ -96,7 +96,9 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 
 ## Examples
 
-- [Next.js + Vercel](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/tree/main/examples/with-next-js)  
+- [Statically exported Next.js app hosted on S3](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/tree/main/examples/with-next-js)  
+  Use the image optimizer together with a statically exported Next.js app that is deployed to S3 and CloudFront.
+- [Next.js + Vercel](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/tree/main/examples/with-next-js-export)  
   Use the image optimizer together with a Next.js app deployed on Vercel.
 - [Existing CloudFront](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/tree/main/examples/with-existing-cloudfront)  
   Use the image optimizer with an existing CloudFront distribution.
