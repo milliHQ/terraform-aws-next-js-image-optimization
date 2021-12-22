@@ -1,0 +1,12 @@
+{
+  "name": "Terraform Next.js Image Optimization module for AWS",
+
+  "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"],
+
+  "dockerComposeFile": ["../docker-compose.yml", "docker-compose.yml"],
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [9000],
+
+  "remoteUser": "vscode"
+}
