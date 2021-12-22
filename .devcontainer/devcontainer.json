@@ -8,5 +8,7 @@
   "workspaceFolder": "/workspace",
   "forwardPorts": [9000],
 
+  "postCreateCommand": "yarn --frozen-lockfile",
+
   "remoteUser": "node"
 }

@@ -2,11 +2,15 @@ version: '3'
 
 services:
   app:
+    init: true
+    privileged: true
     build:
       context: .devcontainer/
       dockerfile: Dockerfile
 
     volumes:
+      # Forwards the local Docker socket to the container.
+      - dind-var-lib-docker:/var/lib/docker
       # This is where VS Code should expect to find your project's source code and the value of "workspaceFolder" in .devcontainer/devcontainer.json
       - ..:/workspace:cached
 

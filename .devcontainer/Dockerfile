@@ -2,29 +2,25 @@
 ARG VARIANT=14-bullseye
 FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:${VARIANT}
 
-# Run debian common scripts
-# https://github.com/microsoft/vscode-dev-containers/blob/main/script-library/docs/common.md
-COPY library-scripts/common-debian.sh /tmp/library-scripts/
-RUN apt-get update && bash /tmp/library-scripts/common-debian.sh
-
-##
-# Install AWS SAM CLI through homebrew
-##
-
-# Install Homebrew
-# https://github.com/microsoft/vscode-dev-containers/blob/main/script-library/docs/homebrew.md
+# Homebrew
 ENV BREW_PREFIX=/home/linuxbrew/.linuxbrew
 ENV PATH=${BREW_PREFIX}/sbin:${BREW_PREFIX}/bin:${PATH}
-COPY library-scripts/homebrew-debian.sh /tmp/library-scripts/
-RUN apt-get update && bash /tmp/library-scripts/homebrew-debian.sh
 
-# Install SAM CLI
-RUN \
-  brew tap aws/tap &&\
-  brew install aws-sam-cli &&\
-  sam --version
+# Docker
+ENV DOCKER_BUILDKIT=1
 
-# Install Terraform
-# https://github.com/microsoft/vscode-dev-containers/blob/main/script-library/docs/terraform.md
-COPY library-scripts/terraform-debian.sh /tmp/library-scripts/
-RUN apt-get update && bash /tmp/library-scripts/terraform-debian.sh
+COPY library-scripts/*.sh /tmp/library-scripts/
+
+RUN apt-get update \
+  && /bin/bash /tmp/library-scripts/common-debian.sh \
+  && /bin/bash /tmp/library-scripts/homebrew-debian.sh \
+  && /bin/bash /tmp/library-scripts/terraform-debian.sh "latest" "none" "none" \
+  && /bin/bash /tmp/library-scripts/docker-in-docker-debian.sh \
+  && brew tap aws/tap \
+  && brew install aws-sam-cli
+
+# Setting the ENTRYPOINT to docker-init.sh will configure non-root access
+# to the Docker socket. The script will also execute CMD as needed.
+ENTRYPOINT ["/usr/local/share/docker-init.sh"]
+VOLUME [ "/var/lib/docker" ]
+CMD ["sleep", "infinity"]
