@@ -9,13 +9,8 @@ services:
       dockerfile: Dockerfile
 
     volumes:
-      # Forwards the local Docker socket to the container.
-      - dind-var-lib-docker:/var/lib/docker
       # This is where VS Code should expect to find your project's source code and the value of "workspaceFolder" in .devcontainer/devcontainer.json
       - ..:/workspace:cached
-
-    # Overrides default command so things don't shut down after the process ends.
-    command: /bin/sh -c "while sleep 1000; do :; done"
 
     # Runs app on the same network as the service container, allows "forwardPorts" in devcontainer.json function.
     network_mode: service:local-s3
