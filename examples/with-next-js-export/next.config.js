@@ -1,5 +1,3 @@
-const domainName = '<distribution-id>.cloudfront.net';
-
 module.exports = (phase) => {
   const isExport = phase === 'phase-export';
 
@@ -11,7 +9,6 @@ module.exports = (phase) => {
       loader: isExport ? 'custom' : 'default',
       domains: ['assets.vercel.com'],
       formats: ['image/avif', 'image/webp'],
-      path: `https://${domainName}/_next/image`,
     },
 
     /**

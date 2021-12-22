@@ -59,17 +59,7 @@ After Terraform has successfully created all resources in your AWS account, you 
 > website_bucket_id = "next-image-optimizer-example-export"
 ```
 
-### 3. Adjust Next.js config
-
-In the Next.js project, open the `next.config.js` file and add the following lines (Remember to replace `<distribution-id>` with the output from the previous step):
-
-```diff
-// next.config.js
-+ const domainName = 'xxxxxxxxxxxxxxxxx.cloudfront.net';
-- const domainName = '<distribution-id>.cloudfront.net';
-```
-
-### 4. Build and export the Next.js site
+### 3. Build and export the Next.js site
 
 To create a static build of Next.js we need to run two commands.  
 `next build` builds the production site in the `.next/` folder.  
@@ -82,7 +72,7 @@ npm run export # Prepares the
 
 After running the two commands you should see a new folder named `out/` in your project, where the statically exported site is exported to.
 
-### 5. Upload the Next.js site to S3
+### 4. Upload the Next.js site to S3
 
 To upload the content of the `out/` folder we use the [AWS CLI](https://aws.amazon.com/cli/).  
 Make sure to replace `<bucket-name>` with the output from step 2 before running the command:
