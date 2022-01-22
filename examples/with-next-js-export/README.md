@@ -67,7 +67,7 @@ To create a static build of Next.js we need to run two commands.
 
 ```sh
 npm run build  # Builds the Next.js site
-npm run export # Prepares the
+npm run export # Prepares the build output for upload to S3
 ```
 
 After running the two commands you should see a new folder named `out/` in your project, where the statically exported site is exported to.
@@ -84,7 +84,7 @@ aws s3 sync ./out s3://<bucket-name>
 ---
 
 Your website should now be accessible on the CloudFront domain `<distribution-id>.cloudfront.net` you got from step 2.  
-To update your site, simply repeat step 4. & 5 of this guide.
+To update your site, simply repeat step 3 & 4 of this guide.
 
 ## Caveats
 
