@@ -27,7 +27,7 @@ const Shimmer = () => (
     <h1>Image Component With Shimmer Data URL</h1>
     <Image
       alt="Mountains"
-      src="/mountains.jpg"
+      src="/mountains.jpeg"
       placeholder="blur"
       blurDataURL={`data:image/svg+xml;base64,${toBase64(shimmer(700, 475))}`}
       width={700}

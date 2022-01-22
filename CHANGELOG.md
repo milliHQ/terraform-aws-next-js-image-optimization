@@ -1,6 +1,13 @@
 # Changelog
 
-## 12.0.1 (December 21, 2021)
+## [Unreleased]
+
+## [12.0.2] - 2022-01-22
+
+- Uses Image Optimizer module of [Next.js 12.0.2](https://github.com/vercel/next.js/releases/tag/v12.0.2) ([#101](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/101))
+- Use relative path as lambda function local package path ([#98](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/98))
+
+## [12.0.1] (December 21, 2021)
 
 In this release we fixed a bug that could occur when using absolute image paths (When you use S3 as backend, you are not affected).  
 In addition you can now define a new input variable `next_image_base_origin` that can be used to resolve absolute image paths.
