@@ -21,6 +21,7 @@ jobs:
           release-branch: release
           release-tag: ${{ github.event.inputs.tag }}
           exclude: |
+            .devcontainer/**/*
             .vscode/**/*
             lib/**/*
             scripts/**/*
