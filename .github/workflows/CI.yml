@@ -127,18 +127,17 @@ jobs:
         with:
           fetch-depth: 25
 
-      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+      - name: Fetch git tags
+        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
-      - name: Cache
-        uses: actions/cache@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
         with:
-          path: |
-            .yarn
-            **/node_modules
-          key: e2e-${{ hashFiles('yarn.lock') }}
+          node-version: '14'
+          cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --check-files
+        run: yarn --frozen-lockfile
 
       - name: Download build artifact
         uses: actions/download-artifact@v2
@@ -146,4 +145,12 @@ jobs:
           name: lambda
           path: lib
 
-      - run: ./scripts/publish-release.sh
+      # git user is required (bot not used) by release-it
+      - name: Set git user to GitHub Actions
+        uses: fregante/setup-git-user@v1.0.1
+
+      - name: Set registry for publish
+        run: yarn config set registry https://registry.npmjs.org
+
+      - name: Publish packages
+        run: ./scripts/publish-release.sh
