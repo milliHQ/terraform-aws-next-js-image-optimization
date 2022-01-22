@@ -4,7 +4,7 @@
 
 module "lambda_content" {
   source  = "milliHQ/download/npm"
-  version = "2.0.0"
+  version = "2.1.0"
 
   module_name    = "@millihq/tf-next-image-optimization"
   module_version = var.next_image_version
@@ -36,7 +36,7 @@ module "image_optimizer" {
   }
 
   create_package         = false
-  local_existing_package = module.lambda_content.abs_path
+  local_existing_package = module.lambda_content.rel_path
 
   allowed_triggers = {
     AllowExecutionFromAPIGateway = {
