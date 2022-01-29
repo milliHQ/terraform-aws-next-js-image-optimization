@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Uses Image Optimizer module of [Next.js 12.0.7](https://github.com/vercel/next.js/releases/tag/v12.0.7) ([#93](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/93))
+
 ## [12.0.6] - 2022-01-29
 
 - Bump node-fetch from 2.6.6 to 2.6.7 ([#106](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/106))
