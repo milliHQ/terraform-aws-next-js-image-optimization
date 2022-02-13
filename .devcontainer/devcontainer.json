@@ -1,7 +1,11 @@
 {
   "name": "Terraform Next.js Image Optimization module for AWS",
 
-  "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"],
+  "extensions": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "HashiCorp.terraform"
+  ],
 
   "dockerComposeFile": ["../docker-compose.yml", "docker-compose.yml"],
   "service": "app",
