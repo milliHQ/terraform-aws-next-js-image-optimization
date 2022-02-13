@@ -13,8 +13,9 @@ import {
   acceptWebpFixtures,
 } from './constants';
 
-const ONE_MINUTE_IN_MS = 60000;
 const NODE_RUNTIME = 'nodejs14.x';
+
+jest.setTimeout(60_000);
 
 describe('[e2e]', () => {
   const route = '/_next/image';
@@ -115,8 +116,7 @@ describe('[e2e]', () => {
         // Header settings needed for CloudFront compression
         expect(response.headers.has('Content-Length')).toBeTruthy();
         expect(response.headers.has('Content-Encoding')).toBeFalsy();
-      },
-      ONE_MINUTE_IN_MS
+      }
     );
 
     test.each(acceptAllFixtures)(
@@ -159,8 +159,7 @@ describe('[e2e]', () => {
         // Header settings needed for CloudFront compression
         expect(response.headers.has('Content-Length')).toBeTruthy();
         expect(response.headers.has('Content-Encoding')).toBeFalsy();
-      },
-      ONE_MINUTE_IN_MS
+      }
     );
 
     test.each(acceptWebpFixtures)(
@@ -201,8 +200,7 @@ describe('[e2e]', () => {
         // Header settings needed for CloudFront compression
         expect(response.headers.has('Content-Length')).toBeTruthy();
         expect(response.headers.has('Content-Encoding')).toBeFalsy();
-      },
-      ONE_MINUTE_IN_MS
+      }
     );
 
     test.each(acceptWebpFixtures)(
@@ -245,8 +243,7 @@ describe('[e2e]', () => {
         // Header settings needed for CloudFront compression
         expect(response.headers.has('Content-Length')).toBeTruthy();
         expect(response.headers.has('Content-Encoding')).toBeFalsy();
-      },
-      ONE_MINUTE_IN_MS
+      }
     );
   });
 
@@ -293,32 +290,28 @@ describe('[e2e]', () => {
       await lambdaSAM.stop();
     });
 
-    test(
-      'Internal: Fetch image from S3',
-      async () => {
-        const fixture = acceptWebpFixtures[1];
-        const publicPath = `/${fixture[0]}`;
-        const optimizerParams = new URLSearchParams({
-          url: publicPath,
-          w: '2048',
-          q: '75',
-        });
+    test('Internal: Fetch image from S3', async () => {
+      const fixture = acceptWebpFixtures[1];
+      const publicPath = `/${fixture[0]}`;
+      const optimizerParams = new URLSearchParams({
+        url: publicPath,
+        w: '2048',
+        q: '75',
+      });
 
-        const response = await lambdaSAM.sendApiGwRequest(
-          `${route}?${optimizerParams.toString()}`,
-          {
-            headers: {
-              Accept: 'image/webp,*/*',
-              Referer: `http://${s3Endpoint}/`,
-            },
-          }
-        );
+      const response = await lambdaSAM.sendApiGwRequest(
+        `${route}?${optimizerParams.toString()}`,
+        {
+          headers: {
+            Accept: 'image/webp,*/*',
+            Referer: `http://${s3Endpoint}/`,
+          },
+        }
+      );
 
-        expect(response.ok).toBeTruthy();
-        expect(response.headers.get('content-type')).toBe(fixture[1]);
-      },
-      ONE_MINUTE_IN_MS
-    );
+      expect(response.ok).toBeTruthy();
+      expect(response.headers.get('content-type')).toBe(fixture[1]);
+    });
   });
 
   describe('Accept Avif format', () => {
@@ -390,8 +383,7 @@ describe('[e2e]', () => {
 
         expect(response.ok).toBeTruthy();
         expect(response.headers.get('content-type')).toBe(outputContentType);
-      },
-      ONE_MINUTE_IN_MS
+      }
     );
   });
 
@@ -428,48 +420,44 @@ describe('[e2e]', () => {
     test.each([
       'internet. (first call)',
       'hitting filesystem cache. (2nd call)',
-    ])(
-      'Fetch external image by %s',
-      async () => {
-        const [filePath, outputContentType] =
-          acceptAllFixtures.find((f) => f[1] === 'image/png') || [];
-        if (!filePath || !outputContentType)
-          throw new Error('Can not found png file path');
+    ])('Fetch external image by %s', async () => {
+      const [filePath, outputContentType] =
+        acceptAllFixtures.find((f) => f[1] === 'image/png') || [];
+      if (!filePath || !outputContentType)
+        throw new Error('Can not found png file path');
 
-        const publicPath = `http://${s3Endpoint}/${fixtureBucketName}/${filePath}`;
-        const [w, q] = ['2048', '75'];
-        const optimizerParams = new URLSearchParams({ url: publicPath, w, q });
-        const optimizerPrefix = `external_accept_all_w-${w}_q-${q}_`;
-        const snapshotFileName = path.join(
-          __dirname,
-          '__snapshots__/e2e/',
-          `${optimizerPrefix}${filePath.replace('/', '_')}.${extensionMimeType(
-            outputContentType
-          )}`
-        );
+      const publicPath = `http://${s3Endpoint}/${fixtureBucketName}/${filePath}`;
+      const [w, q] = ['2048', '75'];
+      const optimizerParams = new URLSearchParams({ url: publicPath, w, q });
+      const optimizerPrefix = `external_accept_all_w-${w}_q-${q}_`;
+      const snapshotFileName = path.join(
+        __dirname,
+        '__snapshots__/e2e/',
+        `${optimizerPrefix}${filePath.replace('/', '_')}.${extensionMimeType(
+          outputContentType
+        )}`
+      );
 
-        const response = await lambdaSAM.sendApiGwRequest(
-          `${route}?${optimizerParams.toString()}`,
-          {
-            headers: {
-              Accept: '*/*',
-              Referer: `http://${s3Endpoint}/`,
-            },
-          }
-        );
-        const body = await response.buffer();
+      const response = await lambdaSAM.sendApiGwRequest(
+        `${route}?${optimizerParams.toString()}`,
+        {
+          headers: {
+            Accept: '*/*',
+            Referer: `http://${s3Endpoint}/`,
+          },
+        }
+      );
+      const body = await response.buffer();
 
-        expect(response.status).toBe(200);
-        expect(body).toMatchFile(snapshotFileName);
-        expect(response.headers.get('Content-Type')).toBe(outputContentType);
-        expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
+      expect(response.status).toBe(200);
+      expect(body).toMatchFile(snapshotFileName);
+      expect(response.headers.get('Content-Type')).toBe(outputContentType);
+      expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
 
-        // Header settings needed for CloudFront compression
-        expect(response.headers.has('Content-Length')).toBeTruthy();
-        expect(response.headers.has('Content-Encoding')).toBeFalsy();
-      },
-      ONE_MINUTE_IN_MS
-    );
+      // Header settings needed for CloudFront compression
+      expect(response.headers.has('Content-Length')).toBeTruthy();
+      expect(response.headers.has('Content-Encoding')).toBeFalsy();
+    });
   });
 
   test.todo('Run test against domain that is not on the list');
