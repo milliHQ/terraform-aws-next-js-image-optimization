@@ -140,7 +140,7 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | next\_image\_domains | Allowed origin domains that can be used for fetching images. | `list(string)` | `[]` | no |
 | next\_image\_formats | If the Accept head matches more than one of the configured formats, the first match in the array is used. Therefore, the array order matters. If there is no match, the Image Optimization API will fallback to the original image's format. | `list(string)` | <pre>[<br>  "image/webp"<br>]</pre> | no |
 | next\_image\_image\_sizes | Allowed image sizes that should be used for image optimization. | `list(number)` | `null` | no |
-| next\_image\_version | Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"12.0.6"` | no |
+| next\_image\_version | Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"12.0.7"` | no |
 | source\_bucket\_id | When your static files are deployed to a Bucket (e.g. with Terraform Next.js) the optimizer can pull the source from the bucket rather than over the internet. | `string` | `null` | no |
 | tags | Tag metadata to label AWS resources that support tags. | `map(string)` | `{}` | no |
 
@@ -158,6 +158,11 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 
 <!--- END_TF_DOCS --->
 <!-- prettier-ignore-end -->
+
+## Limits
+
+- Max file size of a resized image is 6mb ([#110](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues/110))  
+  Resized images returned by the image optimization API cannot exceed 6mb in size, because this is the maximum allowed [payload size for AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html#function-configuration-deployment-and-execution).
 
 ## Versioning
 
