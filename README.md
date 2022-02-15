@@ -159,6 +159,11 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 <!--- END_TF_DOCS --->
 <!-- prettier-ignore-end -->
 
+## Limits
+
+- Max file size of a resized image is 6mb ([#110](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues/110))  
+  Resized images returned by the image optimization API cannot exceed 6mb in size, because this is the maximum allowed [payload size for AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html#function-configuration-deployment-and-execution).
+
 ## Versioning
 
 The module internally relies on the original Next.js image optimizer.
