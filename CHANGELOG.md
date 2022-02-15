@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [12.0.7] - 2022-02-15
+
 - Updates sharp to [`v0.30.1`](https://github.com/lovell/sharp/releases/tag/v0.30.1) ([#109](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/109))
 - Uses Image Optimizer module of [Next.js 12.0.7](https://github.com/vercel/next.js/releases/tag/v12.0.7) ([#93](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/93))
 
