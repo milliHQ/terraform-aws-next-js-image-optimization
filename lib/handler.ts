@@ -1,3 +1,5 @@
+// Ensure NODE_ENV is set to production
+process.env.NODE_ENV = 'production';
 // Set NEXT_SHARP_PATH environment variable
 // ! Make sure this comes before the fist import
 process.env.NEXT_SHARP_PATH = require.resolve('sharp');

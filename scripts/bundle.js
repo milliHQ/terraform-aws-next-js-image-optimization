@@ -18,8 +18,19 @@ async function main() {
   const { fileList } = await nodeFileTrace(buildFiles, {
     base: workspaceRoot,
     processCwd: process.cwd(),
-    // aws-sdk is already provided in Lambda images
-    ignore: ['**/aws-sdk/**/*'],
+    ignore: [
+      // aws-sdk is already provided in Lambda images
+      '**/aws-sdk/**/*',
+      // next server files not required for minimal mode
+      // https://github.com/vercel/next.js/blob/canary/scripts/trace-next-server.js#L76
+      'node_modules/next/dist/pages/**/*',
+      'node_modules/next/dist/compiled/@ampproject/toolbox-optimizer/**/*',
+      'node_modules/next/dist/server/lib/squoosh/**/*.wasm',
+      'node_modules/next/dist/compiled/webpack/(bundle4|bundle5).js',
+      'node_modules/react/**/*.development.js',
+      'node_modules/react-dom/**/*.development.js',
+      'node_modules/use-subscription/**/*.development.js',
+    ],
   });
 
   // Create zip file
