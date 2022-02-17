@@ -19,7 +19,7 @@
     "release:ci": "release-it --no-increment --no-git.push --ci"
   },
   "devDependencies": {
-    "@dealmore/sammy": "^1.5.0",
+    "@millihq/sammy": "^2.0.1",
     "@ofhouse/keep-a-changelog": "2.3.0-no-increment-fix",
     "@release-it/bumper": "^3.0.1",
     "@tsconfig/node14": "^1.0.1",

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { URLSearchParams } from 'url';
 
-import { LambdaSAM, generateSAM } from '@dealmore/sammy';
+import { generateAPISAM, APISAMGenerator } from '@millihq/sammy';
 import S3 from 'aws-sdk/clients/s3';
 import { extension as extensionMimeType } from 'mime-types';
 
@@ -14,6 +14,10 @@ import {
 } from './constants';
 
 const NODE_RUNTIME = 'nodejs14.x';
+// Environment variables that should be set in the Lambda environment
+const ENVIRONMENT_VARIABLES = {
+  NODE_ENV: 'production',
+};
 
 jest.setTimeout(60_000);
 
@@ -44,11 +48,11 @@ describe('[e2e]', () => {
   });
 
   describe('Without S3', () => {
-    let lambdaSAM: LambdaSAM;
+    let lambdaSAM: APISAMGenerator;
 
     beforeAll(async () => {
       // Generate SAM for the worker lambda
-      lambdaSAM = await generateSAM({
+      lambdaSAM = await generateAPISAM({
         lambdas: {
           imageOptimizer: {
             filename: 'dist.zip',
@@ -58,6 +62,7 @@ describe('[e2e]', () => {
             route,
             method: 'get',
             environment: {
+              ...ENVIRONMENT_VARIABLES,
               TF_NEXTIMAGE_DOMAINS: JSON.stringify([hostIpAddress]),
             },
           },
@@ -248,11 +253,11 @@ describe('[e2e]', () => {
   });
 
   describe('With S3', () => {
-    let lambdaSAM: LambdaSAM;
+    let lambdaSAM: APISAMGenerator;
 
     beforeAll(async () => {
       // Generate SAM for the worker lambda
-      lambdaSAM = await generateSAM({
+      lambdaSAM = await generateAPISAM({
         lambdas: {
           imageOptimizer: {
             filename: 'dist.zip',
@@ -262,6 +267,7 @@ describe('[e2e]', () => {
             route,
             method: 'get',
             environment: {
+              ...ENVIRONMENT_VARIABLES,
               TF_NEXTIMAGE_SOURCE_BUCKET: fixtureBucketName,
               __DEBUG__USE_LOCAL_BUCKET: JSON.stringify({
                 accessKeyId: 'test',
@@ -315,11 +321,11 @@ describe('[e2e]', () => {
   });
 
   describe('Accept Avif format', () => {
-    let lambdaSAM: LambdaSAM;
+    let lambdaSAM: APISAMGenerator;
 
     beforeAll(async () => {
       // Generate SAM for the worker lambda
-      lambdaSAM = await generateSAM({
+      lambdaSAM = await generateAPISAM({
         lambdas: {
           imageOptimizer: {
             filename: 'dist.zip',
@@ -329,6 +335,7 @@ describe('[e2e]', () => {
             route,
             method: 'get',
             environment: {
+              ...ENVIRONMENT_VARIABLES,
               TF_NEXTIMAGE_SOURCE_BUCKET: fixtureBucketName,
               TF_NEXTIMAGE_FORMATS: JSON.stringify([
                 'image/avif',
@@ -388,10 +395,10 @@ describe('[e2e]', () => {
   });
 
   describe('From filesystem cache for external image', () => {
-    let lambdaSAM: LambdaSAM;
+    let lambdaSAM: APISAMGenerator;
     beforeAll(async () => {
       // Generate SAM for the worker lambda
-      lambdaSAM = await generateSAM({
+      lambdaSAM = await generateAPISAM({
         lambdas: {
           imageOptimizer: {
             filename: 'dist.zip',
@@ -401,6 +408,7 @@ describe('[e2e]', () => {
             route,
             method: 'get',
             environment: {
+              ...ENVIRONMENT_VARIABLES,
               TF_NEXTIMAGE_DOMAINS: JSON.stringify([hostIpAddress]),
             },
           },
@@ -408,10 +416,9 @@ describe('[e2e]', () => {
         cwd: pathToWorker,
         onData: (data) => console.log(data.toString()),
         onError: (data) => console.log(data.toString()),
-        cliOptions: { warmContainers: 'EAGER' },
       });
 
-      await lambdaSAM.start();
+      await lambdaSAM.start({ warmContainers: 'EAGER' });
     });
 
     afterAll(async () => {

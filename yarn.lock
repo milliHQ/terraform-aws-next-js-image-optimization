@@ -530,19 +530,6 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@dealmore/sammy@^1.5.0":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@dealmore/sammy/-/sammy-1.5.0.tgz#c8c788ba20897e458d082e434f7714dfadde1109"
-  integrity sha512-rpoAHgB4ItpFvsswq/0Np9QHHVqbWy3Yfz+Es45uknnqQKRK88aMjjNOBSJukaWTnJ+kb+TzSQnb+don+/RPBQ==
-  dependencies:
-    aws-sdk "^2.771.0"
-    change-case "^4.1.2"
-    get-port "^5.1.1"
-    node-fetch "^2.6.1"
-    tmp "^0.2.1"
-    unzipper "^0.10.11"
-    yaml "^1.10.0"
-
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/@eslint/eslintrc/-/eslintrc-0.4.3.tgz#9e42981ef035beb3dd49add17acb96e8ff6f394c"
@@ -794,6 +781,19 @@
   integrity sha512-3e9e8VP+0Dokid8n3iBTiF/iL941KTsckfPTQuW9v3pCY1cSekCXUlWBCs4riPacQAzWsS/axZC46DpQmXopEw==
   dependencies:
     node-fetch "^2.0.0"
+
+"@millihq/sammy@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@millihq/sammy/-/sammy-2.0.1.tgz#3200fbdb58449fd50d5df394dd9f21741650af77"
+  integrity sha512-6j76MsB5cKWJrlRD4D2bGeI74N1IzeM5PJS4HJWHkZmnhVgkbMxuDOazyS+A0ps8+m8HQ+Wa3n8li5iVGcbjNQ==
+  dependencies:
+    aws-sdk "^2.804.0"
+    change-case "^4.1.2"
+    get-port "^5.1.1"
+    node-fetch "^2.6.1"
+    tmp "^0.2.1"
+    unzipper "^0.10.11"
+    yaml "^1.10.0"
 
 "@next/env@12.0.9":
   version "12.0.9"
@@ -1597,7 +1597,7 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
 
-aws-sdk@*, aws-sdk@2.1001.0, aws-sdk@^2.771.0:
+aws-sdk@*, aws-sdk@2.1001.0, aws-sdk@^2.804.0:
   version "2.1001.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1001.0.tgz#c4da256aa0058438ba611ae06fa850f4f7d63abc"
   integrity sha512-DpmslPU8myCaaRUwMzB/SqAMtD2zQckxYwq3CguIv8BI+JHxDLeTdPCLfA5jffQ8k6dcvISOuiqdpwCZucU0BA==
