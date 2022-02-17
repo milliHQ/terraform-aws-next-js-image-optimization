@@ -1,3 +1,5 @@
+// Ensure NODE_ENV is set to production
+process.env.NODE_ENV = 'production';
 // Set NEXT_SHARP_PATH environment variable
 // ! Make sure this comes before the fist import
 process.env.NEXT_SHARP_PATH = require.resolve('sharp');
@@ -18,11 +20,6 @@ import { IncomingMessage } from 'http';
 import { imageOptimizer, S3Config } from './image-optimizer';
 import { normalizeHeaders } from './normalized-headers';
 import { createDeferred } from './utils';
-
-// Ensure NODE_ENV is set to production
-if (process.env.NODE_ENV !== 'production') {
-  process.env.NODE_ENV = 'production';
-}
 
 function generateS3Config(bucketName?: string): S3Config | undefined {
   let s3: S3;
