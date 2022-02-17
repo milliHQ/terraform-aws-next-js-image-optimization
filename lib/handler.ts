@@ -19,6 +19,11 @@ import { imageOptimizer, S3Config } from './image-optimizer';
 import { normalizeHeaders } from './normalized-headers';
 import { createDeferred } from './utils';
 
+// Ensure NODE_ENV is set to production
+if (process.env.NODE_ENV !== 'production') {
+  process.env.NODE_ENV = 'production';
+}
+
 function generateS3Config(bucketName?: string): S3Config | undefined {
   let s3: S3;
 
