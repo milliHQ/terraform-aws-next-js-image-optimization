@@ -54,11 +54,11 @@ async function imageOptimizer(
      * @param url - Parsed url object from the client request,
      *              e.g. `/my/image.png`
      */
-    async requestHandler(
-      { headers }: IncomingMessage,
-      res: ServerResponse,
-      url: UrlWithParsedQuery
-    ) {
+    async requestHandler({ headers }, res, url) {
+      if (!url) {
+        throw new Error('URL is missing from request.');
+      }
+
       if (s3Config) {
         // S3 expects keys without leading `/`
         const trimmedKey = url.href.startsWith('/')
