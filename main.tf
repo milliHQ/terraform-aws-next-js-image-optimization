@@ -15,7 +15,7 @@ module "lambda_content" {
 
 module "image_optimizer" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "2.17.0"
+  version = "3.1.0"
 
   function_name = var.deployment_name
   description   = "Managed by Terraform Next.js image optimizer"
