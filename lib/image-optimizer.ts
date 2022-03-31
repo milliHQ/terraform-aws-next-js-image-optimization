@@ -1,10 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { URL, UrlWithParsedQuery } from 'url';
 
-import {
-  imageOptimizer as pixel,
-  ImageOptimizerOptions as PixelOptions,
-} from '@millihq/pixel-core';
+import { Pixel } from '@millihq/pixel-core';
 import { ImageConfig } from 'next/dist/server/image-config';
 import nodeFetch from 'node-fetch';
 import S3 from 'aws-sdk/clients/s3';
@@ -33,9 +30,9 @@ async function imageOptimizer(
   req: IncomingMessage,
   res: ServerResponse,
   options: ImageOptimizerOptions
-): ReturnType<typeof pixel> {
+): Promise<ReturnType<Pixel['imageOptimizer']>> {
   const { baseOriginUrl, parsedUrl, s3Config } = options;
-  const pixelOptions: PixelOptions = {
+  const pixel = new Pixel({
     /**
      * Use default temporary folder from AWS Lambda
      */
@@ -128,9 +125,9 @@ async function imageOptimizer(
         res.end();
       }
     },
-  };
+  });
 
-  return pixel(req, res, parsedUrl, pixelOptions);
+  return pixel.imageOptimizer(req, res, parsedUrl);
 }
 
 export type { S3Config };
