@@ -13,7 +13,7 @@ import { createDeferred } from '../../lib/utils';
 import { GenerateParams } from './generate-params';
 
 interface ImageOptimizerResult {
-  originCacheControl: string | null;
+  originCacheControl?: string | null;
   finished: boolean;
 }
 
