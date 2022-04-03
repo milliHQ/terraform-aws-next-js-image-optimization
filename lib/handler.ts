@@ -88,6 +88,14 @@ const imageSizes = parseFromEnv(
   'TF_NEXTIMAGE_IMAGE_SIZES',
   imageConfigDefault.imageSizes
 );
+const dangerouslyAllowSVG = parseFromEnv(
+  'TF_NEXTIMAGE_DANGEROUSLY_ALLOW_SVG',
+  imageConfigDefault.dangerouslyAllowSVG
+);
+const contentSecurityPolicy = parseFromEnv(
+  'TF_NEXTIMAGE_CONTENT_SECURITY_POLICY',
+  imageConfigDefault.contentSecurityPolicy
+);
 const sourceBucket = process.env.TF_NEXTIMAGE_SOURCE_BUCKET ?? undefined;
 const baseOriginUrl = process.env.TF_NEXTIMAGE_BASE_ORIGIN ?? undefined;
 
@@ -97,6 +105,8 @@ const imageConfig: ImageConfig = {
   deviceSizes,
   formats,
   imageSizes,
+  dangerouslyAllowSVG,
+  contentSecurityPolicy,
 };
 
 /* -----------------------------------------------------------------------------
