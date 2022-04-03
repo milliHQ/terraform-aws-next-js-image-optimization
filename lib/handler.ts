@@ -4,8 +4,12 @@ process.env.NODE_ENV = 'production';
 // ! Make sure this comes before the fist import
 process.env.NEXT_SHARP_PATH = require.resolve('sharp');
 
-import { ImageConfig, imageConfigDefault } from 'next/dist/server/image-config';
 import { parse as parseUrl } from 'url';
+
+import {
+  defaultConfig,
+  NextConfigComplete,
+} from 'next/dist/server/config-shared';
 import type {
   APIGatewayProxyEventV2,
   APIGatewayProxyStructuredResultV2,
@@ -13,13 +17,19 @@ import type {
   // itself
   // eslint-disable-next-line import/no-unresolved
 } from 'aws-lambda';
-import { Writable } from 'stream';
 import S3 from 'aws-sdk/clients/s3';
-import { IncomingMessage } from 'http';
 
 import { imageOptimizer, S3Config } from './image-optimizer';
 import { normalizeHeaders } from './normalized-headers';
-import { createDeferred } from './utils';
+
+/* -----------------------------------------------------------------------------
+ * Types
+ * ---------------------------------------------------------------------------*/
+type ImageConfig = Partial<NextConfigComplete['images']>;
+
+/* -----------------------------------------------------------------------------
+ * Utils
+ * ---------------------------------------------------------------------------*/
 
 function generateS3Config(bucketName?: string): S3Config | undefined {
   let s3: S3;
@@ -56,6 +66,13 @@ function parseFromEnv<T>(key: string, defaultValue: T) {
   }
 }
 
+/* -----------------------------------------------------------------------------
+ * Globals
+ * ---------------------------------------------------------------------------*/
+// `images` property is defined on default config
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const imageConfigDefault = defaultConfig.images!;
+
 const domains = parseFromEnv(
   'TF_NEXTIMAGE_DOMAINS',
   imageConfigDefault.domains ?? []
@@ -72,6 +89,14 @@ const imageSizes = parseFromEnv(
   'TF_NEXTIMAGE_IMAGE_SIZES',
   imageConfigDefault.imageSizes
 );
+const dangerouslyAllowSVG = parseFromEnv(
+  'TF_NEXTIMAGE_DANGEROUSLY_ALLOW_SVG',
+  imageConfigDefault.dangerouslyAllowSVG
+);
+const contentSecurityPolicy = parseFromEnv(
+  'TF_NEXTIMAGE_CONTENT_SECURITY_POLICY',
+  imageConfigDefault.contentSecurityPolicy
+);
 const sourceBucket = process.env.TF_NEXTIMAGE_SOURCE_BUCKET ?? undefined;
 const baseOriginUrl = process.env.TF_NEXTIMAGE_BASE_ORIGIN ?? undefined;
 
@@ -81,72 +106,57 @@ const imageConfig: ImageConfig = {
   deviceSizes,
   formats,
   imageSizes,
+  dangerouslyAllowSVG,
+  contentSecurityPolicy,
 };
+
+/* -----------------------------------------------------------------------------
+ * Handler
+ * ---------------------------------------------------------------------------*/
 
 export async function handler(
   event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyStructuredResultV2> {
   const s3Config = generateS3Config(sourceBucket);
 
-  const reqMock = {
-    headers: normalizeHeaders(event.headers),
-    method: event.requestContext.http.method,
-    url: `/?${event.rawQueryString}`,
-  };
-
-  const resBuffers: Buffer[] = [];
-  const resMock: any = new Writable();
-  const defer = createDeferred();
-  let didCallEnd = false;
-
-  resMock.write = (chunk: Buffer | string) => {
-    resBuffers.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-  };
-  resMock._write = (chunk: Buffer | string) => {
-    resMock.write(chunk);
-  };
-  const mockHeaders: Map<string, string | string[]> = new Map();
-  resMock.writeHead = (_status: any, _headers: any) =>
-    Object.assign(mockHeaders, _headers);
-  resMock.getHeader = (name: string) => mockHeaders.get(name.toLowerCase());
-  resMock.getHeaders = () => mockHeaders;
-  resMock.getHeaderNames = () => Object.keys(mockHeaders);
-  resMock.setHeader = (name: string, value: string | string[]) =>
-    mockHeaders.set(name.toLowerCase(), value);
-  // Empty function is tolerable here since it is part of a mock
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  resMock._implicitHeader = () => {};
-
-  resMock.originalEnd = resMock.end;
-  resMock.on('close', () => defer.resolve());
-  resMock.end = (message: string) => {
-    didCallEnd = true;
-    resMock.originalEnd(message);
-  };
-
-  const parsedUrl = parseUrl(reqMock.url, true);
-  await imageOptimizer(imageConfig, reqMock as IncomingMessage, resMock, {
-    baseOriginUrl,
-    parsedUrl,
-    s3Config,
-  });
-
-  const normalizedHeaders: Record<string, string> = {};
-  for (const [headerKey, headerValue] of mockHeaders.entries()) {
-    if (Array.isArray(headerValue)) {
-      normalizedHeaders[headerKey] = headerValue.join(', ');
-      continue;
+  const parsedUrl = parseUrl(`/?${event.rawQueryString}`, true);
+  const imageOptimizerResult = await imageOptimizer(
+    { headers: normalizeHeaders(event.headers) },
+    imageConfig,
+    {
+      baseOriginUrl,
+      parsedUrl,
+      s3Config,
     }
+  );
 
-    normalizedHeaders[headerKey] = headerValue;
+  if ('error' in imageOptimizerResult) {
+    return {
+      statusCode: imageOptimizerResult.statusCode,
+      body: imageOptimizerResult.error,
+    };
   }
 
-  if (didCallEnd) defer.resolve();
-  await defer.promise;
+  const { contentType, paramsResult, maxAge } = imageOptimizerResult;
+  const { isStatic, minimumCacheTTL } = paramsResult;
+  const cacheTTL = Math.max(minimumCacheTTL, maxAge);
+
+  const normalizedHeaders: Record<string, string> = {
+    Vary: 'Accept',
+    'Content-Type': contentType,
+    'Cache-Control': isStatic
+      ? 'public, max-age=315360000, immutable'
+      : `public, max-age=${cacheTTL}`,
+  };
+
+  if (imageConfig.contentSecurityPolicy) {
+    normalizedHeaders['Content-Security-Policy'] =
+      imageConfig.contentSecurityPolicy;
+  }
 
   return {
-    statusCode: resMock.statusCode || 200,
-    body: Buffer.concat(resBuffers).toString('base64'),
+    statusCode: 200,
+    body: imageOptimizerResult.buffer.toString('base64'),
     isBase64Encoded: true,
     headers: normalizedHeaders,
   };

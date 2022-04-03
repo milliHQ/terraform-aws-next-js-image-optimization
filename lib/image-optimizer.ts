@@ -1,10 +1,7 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import { IncomingMessage } from 'http';
 import { URL, UrlWithParsedQuery } from 'url';
 
-import {
-  imageOptimizer as pixel,
-  ImageOptimizerOptions as PixelOptions,
-} from '@millihq/pixel-core';
+import { Pixel } from '@millihq/pixel-core';
 import { ImageConfig } from 'next/dist/server/image-config';
 import nodeFetch from 'node-fetch';
 import S3 from 'aws-sdk/clients/s3';
@@ -12,6 +9,10 @@ import S3 from 'aws-sdk/clients/s3';
 /* -----------------------------------------------------------------------------
  * Types
  * ---------------------------------------------------------------------------*/
+
+type RequestMock = {
+  headers: Record<string, string>;
+};
 
 type S3Config = {
   s3: S3;
@@ -29,18 +30,12 @@ type ImageOptimizerOptions = {
  * ---------------------------------------------------------------------------*/
 
 async function imageOptimizer(
+  req: RequestMock,
   imageConfig: ImageConfig,
-  req: IncomingMessage,
-  res: ServerResponse,
   options: ImageOptimizerOptions
-): ReturnType<typeof pixel> {
+): Promise<ReturnType<Pixel['imageOptimizer']>> {
   const { baseOriginUrl, parsedUrl, s3Config } = options;
-  const pixelOptions: PixelOptions = {
-    /**
-     * Use default temporary folder from AWS Lambda
-     */
-    distDir: '/tmp',
-
+  const pixel = new Pixel({
     imageConfig: {
       ...imageConfig,
       loader: 'default',
@@ -128,9 +123,11 @@ async function imageOptimizer(
         res.end();
       }
     },
-  };
+  });
 
-  return pixel(req, res, parsedUrl, pixelOptions);
+  // req and res are not used anymore by the imageoptimizer, however they still
+  // exist as variables
+  return pixel.imageOptimizer(req as IncomingMessage, {} as any, parsedUrl);
 }
 
 export type { S3Config };
