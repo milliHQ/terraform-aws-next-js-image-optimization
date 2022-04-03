@@ -194,17 +194,6 @@ describe('unit', () => {
 
       expect(result.contentType).toBe(outputContentType);
 
-      // TODO: Move this to e2e tests
-
-      // Check that Content-Security-Policy header is present to prevent potential
-      // XSS attack
-      // Fixed in Next.js 11.1.1
-      // https://github.com/vercel/next.js/security/advisories/GHSA-9gr3-7897-pp7m
-      // https://nvd.nist.gov/vuln/detail/CVE-2021-39178
-      // expect(headers['content-security-policy']).toBe(
-      //   `script-src 'none'; sandbox;`
-      // );
-
       const optimizerPrefix = `external_accept_all_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
       const snapshotFileName = path.join(
         __dirname,

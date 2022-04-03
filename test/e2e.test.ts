@@ -30,7 +30,7 @@ describe('[e2e]', () => {
   const s3Endpoint = `${hostIpAddress}:9000`;
   const pathToWorker = path.resolve(__dirname, '../lib');
   const fixturesDir = path.resolve(__dirname, './fixtures');
-  const cacheControlHeader = 'public, max-age=123456, must-revalidate';
+  const cacheControlHeader = 'public, max-age=123456';
   let fixtureBucketName: string;
   let s3: S3;
 
@@ -120,6 +120,15 @@ describe('[e2e]', () => {
         expect(body).toMatchFile(snapshotFileName);
         expect(response.headers.get('Content-Type')).toBe(outputContentType);
         expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
+
+        // Check that Content-Security-Policy header is present to prevent potential
+        // XSS attack
+        // Fixed in Next.js 11.1.1
+        // https://github.com/vercel/next.js/security/advisories/GHSA-9gr3-7897-pp7m
+        // https://nvd.nist.gov/vuln/detail/CVE-2021-39178
+        expect(response.headers.get('Content-Security-Policy')).toBe(
+          "default-src 'self'; script-src 'none'; sandbox;"
+        );
 
         // Header settings needed for CloudFront compression
         expect(response.headers.has('Content-Length')).toBeTruthy();
