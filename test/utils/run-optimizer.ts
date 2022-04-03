@@ -1,21 +1,17 @@
 import { fork } from 'child_process';
-import { EventEmitter } from 'events';
 import { URLSearchParams } from 'url';
 
+import { Pixel } from '@millihq/pixel-core';
 import getPort from 'get-port';
 import { ImageConfig } from 'next/dist/server/image-config';
 import fetch from 'node-fetch';
-import { createRequest, createResponse } from 'node-mocks-http';
 import S3 from 'aws-sdk/clients/s3';
 
 import { imageOptimizer } from '../../lib/image-optimizer';
 import { createDeferred } from '../../lib/utils';
 import { GenerateParams } from './generate-params';
 
-interface ImageOptimizerResult {
-  originCacheControl?: string | null;
-  finished: boolean;
-}
+type ImageOptimizerResult = ReturnType<Pixel['imageOptimizer']>;
 
 interface S3Options {
   options: S3.Types.ClientConfiguration;
@@ -28,11 +24,7 @@ type ForkMessage =
     }
   | { type: 'RESULT'; payload: ImageOptimizerResult };
 
-type RunOptimizerReturnType = Promise<{
-  result: ImageOptimizerResult;
-  headers: Record<string, string>;
-  body: Buffer;
-}>;
+type RunOptimizerReturnType = Promise<ImageOptimizerResult>;
 
 type RunOptimizerOptions = {
   baseOriginUrl?: string;
@@ -77,7 +69,7 @@ export async function runOptimizerFork(
 
   await deferServerStart.promise;
 
-  const response = await fetch(
+  await fetch(
     `http://localhost:${port}/_next/image?` +
       new URLSearchParams(params.params),
     {
@@ -91,14 +83,10 @@ export async function runOptimizerFork(
   // Needed to kill the WASM process for the image resizer (squoosh)
   imageOptimizerFork.kill();
 
-  return {
-    // Tolerable eslint disable because the function is only used in test
-    // environnement
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    result: result!,
-    headers: Object.fromEntries(response.headers),
-    body: await response.buffer(),
-  };
+  // Tolerable eslint disable because the function is only used in test
+  // environnement
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return result!;
 }
 
 /**
@@ -110,30 +98,7 @@ export async function runOptimizer(
   requestHeaders: Record<string, string>,
   { baseOriginUrl, s3Config }: RunOptimizerOptions = {}
 ): RunOptimizerReturnType {
-  // Mock request & response
-  const request = createRequest({
-    method: 'GET',
-    url: '/_next/image',
-    params: params.params,
-    headers: requestHeaders,
-  });
-
-  const response = createResponse({
-    eventEmitter: EventEmitter,
-  });
-
-  const defer = createDeferred();
-
-  response.on('data', () => {
-    response._getData();
-  });
-
-  response.on('end', () => {
-    response._getData();
-    defer.resolve();
-  });
-
-  const result = await imageOptimizer(imageConfig, request, response, {
+  return imageOptimizer({ headers: requestHeaders }, imageConfig, {
     baseOriginUrl,
     parsedUrl: params.parsedUrl,
     s3Config: s3Config
@@ -143,12 +108,4 @@ export async function runOptimizer(
         }
       : undefined,
   });
-
-  await defer.promise;
-
-  return {
-    result,
-    headers: response._getHeaders(),
-    body: response._getBuffer(),
-  };
 }

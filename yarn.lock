@@ -775,10 +775,10 @@
     semver "^7.3.4"
     tar "^6.1.0"
 
-"@millihq/pixel-core@3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@millihq/pixel-core/-/pixel-core-3.0.0.tgz#95297f807c9ee86ff6ad8df9b977ff17e8053996"
-  integrity sha512-CXIUp9URXFikaJnxejM0s0gFLx6/kvDOV5VrhckL8LHmHwQqTKB48xnQBRHEXAkgz9QsTw9v8jC91oubRNdZgA==
+"@millihq/pixel-core@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@millihq/pixel-core/-/pixel-core-4.1.0.tgz#6e814bc4590d5119b1021e58cd98c84add25b80a"
+  integrity sha512-i0uhGot32VsNjJnSkUddmaBENHIoCSVIotEEbJv/dQnGwq+UOs1iwW9QkLQli8hgf6q4wjZfBFjK2krc5HLbsg==
   dependencies:
     node-fetch "^2.0.0"
 
@@ -6370,10 +6370,10 @@ typescript@^4.1.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.3.tgz#39062d8019912d43726298f09493d598048c1ce3"
   integrity sha512-qOcYwxaByStAWrBf4x0fibwZvMRG+r4cQoTjbPtUlrWjBHbmCAww1i448U0GJ+3cNNEtebDteo/cHOR3xJ4wEw==
 
-typescript@^4.4.2:
-  version "4.4.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.4.2.tgz#6d618640d430e3569a1dfb44f7d7e600ced3ee86"
-  integrity sha512-gzP+t5W4hdy4c+68bfcv0t400HVJMMd2+H9B7gae1nQlBzCqvrXX+6GL/b3GAgyTH966pzrZ70/fRjwAtZksSQ==
+typescript@^4.6.3:
+  version "4.6.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.3.tgz#eefeafa6afdd31d725584c67a0eaba80f6fc6c6c"
+  integrity sha512-yNIatDa5iaofVozS/uQJEl3JRWLKKGJKh6Yaiv0GLGSuhpFJe7P3SbHZ8/yjAHRQwKRoA6YZqlfjXWmVzoVSMw==
 
 unbox-primitive@^1.0.0, unbox-primitive@^1.0.1:
   version "1.0.1"

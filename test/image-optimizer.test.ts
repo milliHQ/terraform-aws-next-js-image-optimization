@@ -6,10 +6,10 @@ import S3 from 'aws-sdk/clients/s3';
 import { extension as extensionMimeType } from 'mime-types';
 import { ImageConfig, imageConfigDefault } from 'next/dist/server/image-config';
 
+import { generateParams } from './utils/generate-params';
+import { runOptimizer } from './utils/run-optimizer';
 import { s3PublicDir } from './utils/s3-public-dir';
 import { acceptAllFixtures, acceptWebpFixtures } from './constants';
-import { generateParams } from './utils/generate-params';
-import { runOptimizerFork as runOptimizer } from './utils/run-optimizer';
 
 // 1 min timeout, since first request for S3 image can be pretty slow on local
 // machines
@@ -51,7 +51,7 @@ describe('unit', () => {
     const fixturePath = `/${fixture[0]}`;
     const params = generateParams(fixturePath, optimizerParams);
 
-    const { result, headers } = await runOptimizer(
+    const result = await runOptimizer(
       params,
       imageConfig,
       {
@@ -60,8 +60,11 @@ describe('unit', () => {
       { s3Config: { options: S3options, bucket: bucketName } }
     );
 
-    expect(result.finished).toBe(true);
-    expect(headers['content-type']).toBe(fixture[1]);
+    if ('error' in result) {
+      throw result.error;
+    }
+
+    expect(result.contentType).toBe(fixture[1]);
   });
 
   test('Custom image size', async () => {
@@ -84,16 +87,15 @@ describe('unit', () => {
         imageSizes: [nonDefaultImageSize],
       };
 
-      const { result, headers } = await runOptimizer(
-        params,
-        customImageConfig,
-        {
-          accept: '*/*',
-        }
-      );
+      const result = await runOptimizer(params, customImageConfig, {
+        accept: '*/*',
+      });
 
-      expect(result.finished).toBe(true);
-      expect(headers['content-type']).toBe(fixture[1]);
+      if ('error' in result) {
+        throw result.error;
+      }
+
+      expect(result.contentType).toBe(fixture[1]);
     }
 
     {
@@ -104,19 +106,19 @@ describe('unit', () => {
         imageSizes: [defaultImageSize],
       };
 
-      const { result, headers, body } = await runOptimizer(
-        params,
-        customImageConfig,
-        {
-          accept: '*/*',
-        }
-      );
+      const result = await runOptimizer(params, customImageConfig, {
+        accept: '*/*',
+      });
 
-      expect(result.finished).toBe(true);
-      expect(body.toString()).toBe(
+      if (!('error' in result)) {
+        throw new Error('Optimization successful, but should be failed.');
+      }
+
+      expect(result.error).toBeDefined();
+      expect(result.error).toBe(
         `"w" parameter (width) of ${nonDefaultImageSize} is not allowed`
       );
-      expect(headers['content-type']).toBeUndefined();
+      expect(result.statusCode).toBe(400);
     }
   });
 
@@ -140,16 +142,15 @@ describe('unit', () => {
         deviceSizes: [nonDefaultDeviceSize],
       };
 
-      const { result, headers } = await runOptimizer(
-        params,
-        customImageConfig,
-        {
-          accept: '*/*',
-        }
-      );
+      const result = await runOptimizer(params, customImageConfig, {
+        accept: '*/*',
+      });
 
-      expect(result.finished).toBe(true);
-      expect(headers['content-type']).toBe(fixture[1]);
+      if ('error' in result) {
+        throw result.error;
+      }
+
+      expect(result.contentType).toBe(fixture[1]);
     }
 
     {
@@ -160,19 +161,18 @@ describe('unit', () => {
         deviceSizes: [defaultDeviceSize],
       };
 
-      const { result, headers, body } = await runOptimizer(
-        params,
-        customImageConfig,
-        {
-          accept: '*/*',
-        }
-      );
+      const result = await runOptimizer(params, customImageConfig, {
+        accept: '*/*',
+      });
 
-      expect(result.finished).toBe(true);
-      expect(body.toString('utf-8')).toBe(
+      if (!('error' in result)) {
+        throw new Error('Optimization successful, but should be failed.');
+      }
+
+      expect(result.error).toBe(
         `"w" parameter (width) of ${nonDefaultDeviceSize} is not allowed`
       );
-      expect(headers['content-type']).toBeUndefined();
+      expect(result.statusCode).toBe(400);
     }
   });
 
@@ -182,25 +182,26 @@ describe('unit', () => {
       const publicPath = `http://${s3Endpoint}/${bucketName}/${filePath}`;
       const params = generateParams(publicPath, optimizerParams);
 
-      const { result, headers, body } = await runOptimizer(
-        params,
-        imageConfig,
-        {
-          accept: '*/*',
-        }
-      );
+      const result = await runOptimizer(params, imageConfig, {
+        accept: '*/*',
+      });
 
-      expect(result.finished).toBe(true);
-      expect(headers['content-type']).toBe(outputContentType);
+      if ('error' in result) {
+        throw result.error;
+      }
+
+      expect(result.contentType).toBe(outputContentType);
+
+      // TODO: Move this to e2e tests
 
       // Check that Content-Security-Policy header is present to prevent potential
       // XSS attack
       // Fixed in Next.js 11.1.1
       // https://github.com/vercel/next.js/security/advisories/GHSA-9gr3-7897-pp7m
       // https://nvd.nist.gov/vuln/detail/CVE-2021-39178
-      expect(headers['content-security-policy']).toBe(
-        `script-src 'none'; sandbox;`
-      );
+      // expect(headers['content-security-policy']).toBe(
+      //   `script-src 'none'; sandbox;`
+      // );
 
       const optimizerPrefix = `external_accept_all_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
       const snapshotFileName = path.join(
@@ -210,7 +211,7 @@ describe('unit', () => {
           outputContentType
         )}`
       );
-      expect(body).toMatchFile(snapshotFileName);
+      expect(result.buffer).toMatchFile(snapshotFileName);
     }
   );
 
@@ -220,21 +221,16 @@ describe('unit', () => {
       const publicPath = `http://${s3Endpoint}/${bucketName}/${filePath}`;
       const params = generateParams(publicPath, optimizerParams);
 
-      const { result, headers, body } = await runOptimizer(
-        params,
-        imageConfig,
-        {
-          accept: 'image/webp,*/*',
-        }
-      );
+      const result = await runOptimizer(params, imageConfig, {
+        accept: 'image/webp,*/*',
+      });
 
-      expect(result.finished).toBe(true);
-      expect(result.originCacheControl).toBe(cacheControlHeader);
-      expect(headers['content-type']).toBe(outputContentType);
-      expect(headers['etag']).toBeDefined();
-      expect(headers['cache-control']).toBe(
-        'public, max-age=123456, must-revalidate'
-      );
+      if ('error' in result) {
+        throw result.error;
+      }
+
+      expect(result.contentType).toBe(outputContentType);
+      expect(result.maxAge).toBe(123456);
 
       const optimizerPrefix = `external_accept_webp_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
       const snapshotFileName = path.join(
@@ -244,7 +240,7 @@ describe('unit', () => {
           outputContentType
         )}`
       );
-      expect(body).toMatchFile(snapshotFileName);
+      expect(result.buffer).toMatchFile(snapshotFileName);
     }
   );
 
@@ -254,17 +250,16 @@ describe('unit', () => {
       const publicPath = `/${bucketName}/${filePath}`;
       const params = generateParams(publicPath, optimizerParams);
 
-      const { result, headers, body } = await runOptimizer(
-        params,
-        imageConfig,
-        {
-          accept: '*/*',
-          referer: `http://${s3Endpoint}/hello/world?foo=bar`,
-        }
-      );
+      const result = await runOptimizer(params, imageConfig, {
+        accept: '*/*',
+        referer: `http://${s3Endpoint}/hello/world?foo=bar`,
+      });
 
-      expect(result.finished).toBe(true);
-      expect(headers['content-type']).toBe(outputContentType);
+      if ('error' in result) {
+        throw result.error;
+      }
+
+      expect(result.contentType).toBe(outputContentType);
 
       const optimizerPrefix = `internal_accept_all_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
       const snapshotFileName = path.join(
@@ -274,7 +269,7 @@ describe('unit', () => {
           outputContentType
         )}`
       );
-      expect(body).toMatchFile(snapshotFileName);
+      expect(result.buffer).toMatchFile(snapshotFileName);
     }
   );
 
@@ -284,17 +279,16 @@ describe('unit', () => {
       const publicPath = `/${bucketName}/${filePath}`;
       const params = generateParams(publicPath, optimizerParams);
 
-      const { result, headers, body } = await runOptimizer(
-        params,
-        imageConfig,
-        {
-          accept: 'image/webp,*/*',
-          referer: `http://${s3Endpoint}/`,
-        }
-      );
+      const result = await runOptimizer(params, imageConfig, {
+        accept: 'image/webp,*/*',
+        referer: `http://${s3Endpoint}/`,
+      });
 
-      expect(result.finished).toBe(true);
-      expect(headers['content-type']).toBe(outputContentType);
+      if ('error' in result) {
+        throw result.error;
+      }
+
+      expect(result.contentType).toBe(outputContentType);
 
       const optimizerPrefix = `internal_accept_webp_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
       const snapshotFileName = path.join(
@@ -304,7 +298,7 @@ describe('unit', () => {
           outputContentType
         )}`
       );
-      expect(body).toMatchFile(snapshotFileName);
+      expect(result.buffer).toMatchFile(snapshotFileName);
     }
   );
 
@@ -316,7 +310,7 @@ describe('unit', () => {
       q: '75',
     });
 
-    const { result, headers } = await runOptimizer(
+    const result = await runOptimizer(
       params,
       imageConfig,
       {
@@ -327,7 +321,10 @@ describe('unit', () => {
       }
     );
 
-    expect(result.finished).toBe(true);
-    expect(headers['content-type']).toBe(fixture[1]);
+    if ('error' in result) {
+      throw result.error;
+    }
+
+    expect(result.contentType).toBe(fixture[1]);
   });
 });

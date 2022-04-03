@@ -1,4 +1,4 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import { IncomingMessage } from 'http';
 import { URL, UrlWithParsedQuery } from 'url';
 
 import { Pixel } from '@millihq/pixel-core';
@@ -9,6 +9,10 @@ import S3 from 'aws-sdk/clients/s3';
 /* -----------------------------------------------------------------------------
  * Types
  * ---------------------------------------------------------------------------*/
+
+type RequestMock = {
+  headers: Record<string, string>;
+};
 
 type S3Config = {
   s3: S3;
@@ -26,18 +30,12 @@ type ImageOptimizerOptions = {
  * ---------------------------------------------------------------------------*/
 
 async function imageOptimizer(
+  req: RequestMock,
   imageConfig: ImageConfig,
-  req: IncomingMessage,
-  res: ServerResponse,
   options: ImageOptimizerOptions
 ): Promise<ReturnType<Pixel['imageOptimizer']>> {
   const { baseOriginUrl, parsedUrl, s3Config } = options;
   const pixel = new Pixel({
-    /**
-     * Use default temporary folder from AWS Lambda
-     */
-    distDir: '/tmp',
-
     imageConfig: {
       ...imageConfig,
       loader: 'default',
@@ -127,7 +125,9 @@ async function imageOptimizer(
     },
   });
 
-  return pixel.imageOptimizer(req, res, parsedUrl);
+  // req and res are not used anymore by the imageoptimizer, however they still
+  // exist as variables
+  return pixel.imageOptimizer(req as IncomingMessage, {} as any, parsedUrl);
 }
 
 export type { S3Config };
