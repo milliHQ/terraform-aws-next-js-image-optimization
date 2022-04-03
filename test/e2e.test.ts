@@ -17,9 +17,10 @@ const NODE_RUNTIME = 'nodejs14.x';
 // Environment variables that should be set in the Lambda environment
 const ENVIRONMENT_VARIABLES = {
   NODE_ENV: 'production',
-  TF_NEXTIMAGE_DANGEROUSLY_ALLOW_SVG: 'true',
-  TF_NEXTIMAGE_CONTENT_SECURITY_POLICY:
-    "default-src 'self'; script-src 'none'; sandbox;",
+  TF_NEXTIMAGE_DANGEROUSLY_ALLOW_SVG: JSON.stringify(true),
+  TF_NEXTIMAGE_CONTENT_SECURITY_POLICY: JSON.stringify(
+    "default-src 'self'; script-src 'none'; sandbox;"
+  ),
 };
 
 jest.setTimeout(60_000);
