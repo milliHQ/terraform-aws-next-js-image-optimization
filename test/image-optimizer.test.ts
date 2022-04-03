@@ -25,6 +25,8 @@ describe('unit', () => {
   const imageConfig: ImageConfig = {
     ...imageConfigDefault,
     domains: ['localhost', 's3'],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   };
   let s3: S3;
   let bucketName: string;

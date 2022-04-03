@@ -138,6 +138,11 @@ export async function handler(
       : `public, max-age=${cacheTTL}`,
   };
 
+  if (imageConfig.contentSecurityPolicy) {
+    normalizedHeaders['Content-Security-Policy'] =
+      imageConfig.contentSecurityPolicy;
+  }
+
   return {
     statusCode: 200,
     body: imageOptimizerResult.buffer.toString('base64'),
