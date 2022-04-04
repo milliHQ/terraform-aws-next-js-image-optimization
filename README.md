@@ -136,6 +136,8 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | lambda\_role\_permissions\_boundary | ARN of IAM policy that scopes aws\_iam\_role access for the lambda. | `string` | `null` | no |
 | lambda\_timeout | Max amount of time the worker Lambda Function has to return a response in seconds. Should not be more than 30 (Limited by API Gateway). | `number` | `30` | no |
 | next\_image\_base\_origin | Base URL where requests for absolute image paths should be resolved to. Should not have a trailing slash. | `string` | `null` | no |
+| next\_image\_content\_security\_policy | Set the value of the Content-Security-Policy header in the response of the image optimizer. | `string` | `null` | no |
+| next\_image\_dangerously\_allow\_SVG | Enable the optimization of SVG images. | `bool` | `false` | no |
 | next\_image\_device\_sizes | Allowed device sizes that should be used for image optimization. | `list(number)` | `null` | no |
 | next\_image\_domains | Allowed origin domains that can be used for fetching images. | `list(string)` | `[]` | no |
 | next\_image\_formats | If the Accept head matches more than one of the configured formats, the first match in the array is used. Therefore, the array order matters. If there is no match, the Image Optimization API will fallback to the original image's format. | `list(string)` | <pre>[<br>  "image/webp"<br>]</pre> | no |
