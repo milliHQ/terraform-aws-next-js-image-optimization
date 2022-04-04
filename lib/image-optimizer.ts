@@ -2,7 +2,7 @@ import { IncomingMessage } from 'http';
 import { URL, UrlWithParsedQuery } from 'url';
 
 import { Pixel } from '@millihq/pixel-core';
-import { ImageConfig } from 'next/dist/server/image-config';
+import { ImageConfig } from 'next/dist/shared/lib/image-config';
 import nodeFetch from 'node-fetch';
 import S3 from 'aws-sdk/clients/s3';
 

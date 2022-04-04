@@ -4,7 +4,10 @@ import * as path from 'path';
 
 import S3 from 'aws-sdk/clients/s3';
 import { extension as extensionMimeType } from 'mime-types';
-import { ImageConfig, imageConfigDefault } from 'next/dist/server/image-config';
+import {
+  ImageConfig,
+  imageConfigDefault,
+} from 'next/dist/shared/lib/image-config';
 
 import { generateParams } from './utils/generate-params';
 import { runOptimizer } from './utils/run-optimizer';
