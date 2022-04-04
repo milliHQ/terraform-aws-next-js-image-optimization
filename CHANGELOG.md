@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [12.1.0] - 2022-04-04
+
+- Ensure compatibility with AWS Provider Version 4 ([#119](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/119), [#120](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/issues/120))
+- Uses Image Optimizer module of [Next.js 12.1.0](https://github.com/vercel/next.js/releases/tag/v12.1.0) ([#123](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/123))
+- Adds option to enable SVG support ([#124](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/124))
+
 ## [12.0.10] - 2022-03-29
 
 - Updates sharp from `v0.30.1` to [`v0.30.3`](https://github.com/lovell/sharp/releases/tag/v0.30.3) ([#115](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/115))

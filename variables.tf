@@ -4,7 +4,7 @@
 variable "next_image_version" {
   description = "Next.js version from where you want to use the image optimizer from. Supports semver ranges."
   type        = string
-  default     = "12.0.10"
+  default     = "12.1.0"
 }
 
 variable "next_image_base_origin" {
@@ -34,6 +34,18 @@ variable "next_image_formats" {
 variable "next_image_image_sizes" {
   description = "Allowed image sizes that should be used for image optimization."
   type        = list(number)
+  default     = null
+}
+
+variable "next_image_dangerously_allow_SVG" {
+  description = "Enable the optimization of SVG images."
+  type        = bool
+  default     = false
+}
+
+variable "next_image_content_security_policy" {
+  description = "Set the value of the Content-Security-Policy header in the response of the image optimizer."
+  type        = string
   default     = null
 }
 

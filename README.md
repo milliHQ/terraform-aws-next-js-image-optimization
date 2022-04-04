@@ -35,7 +35,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.0"
+      version = "~> 4.0"
     }
   }
 }
@@ -111,13 +111,13 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | Name | Version |
 |------|---------|
 | terraform | >= 0.13 |
-| aws | >= 3.43.0 |
+| aws | >= 4.8 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 3.43.0 |
+| aws | >= 4.8 |
 
 ## Inputs
 
@@ -136,11 +136,13 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | lambda\_role\_permissions\_boundary | ARN of IAM policy that scopes aws\_iam\_role access for the lambda. | `string` | `null` | no |
 | lambda\_timeout | Max amount of time the worker Lambda Function has to return a response in seconds. Should not be more than 30 (Limited by API Gateway). | `number` | `30` | no |
 | next\_image\_base\_origin | Base URL where requests for absolute image paths should be resolved to. Should not have a trailing slash. | `string` | `null` | no |
+| next\_image\_content\_security\_policy | Set the value of the Content-Security-Policy header in the response of the image optimizer. | `string` | `null` | no |
+| next\_image\_dangerously\_allow\_SVG | Enable the optimization of SVG images. | `bool` | `false` | no |
 | next\_image\_device\_sizes | Allowed device sizes that should be used for image optimization. | `list(number)` | `null` | no |
 | next\_image\_domains | Allowed origin domains that can be used for fetching images. | `list(string)` | `[]` | no |
 | next\_image\_formats | If the Accept head matches more than one of the configured formats, the first match in the array is used. Therefore, the array order matters. If there is no match, the Image Optimization API will fallback to the original image's format. | `list(string)` | <pre>[<br>  "image/webp"<br>]</pre> | no |
 | next\_image\_image\_sizes | Allowed image sizes that should be used for image optimization. | `list(number)` | `null` | no |
-| next\_image\_version | Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"12.0.10"` | no |
+| next\_image\_version | Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"12.1.0"` | no |
 | source\_bucket\_id | When your static files are deployed to a Bucket (e.g. with Terraform Next.js) the optimizer can pull the source from the bucket rather than over the internet. | `string` | `null` | no |
 | tags | Tag metadata to label AWS resources that support tags. | `map(string)` | `{}` | no |
 

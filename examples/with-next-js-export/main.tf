@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.0"
+      version = "~> 4.0"
     }
   }
 }
@@ -40,8 +40,20 @@ module "next_image_optimizer" {
 ###########
 resource "aws_s3_bucket" "website_bucket" {
   bucket_prefix = var.deployment_name
-  acl           = "public-read"
   force_destroy = true
+
+  tags = {
+    Name = var.deployment_name
+  }
+}
+
+resource "aws_s3_bucket_acl" "website_bucket" {
+  bucket = aws_s3_bucket.website_bucket.id
+  acl    = "public-read"
+}
+
+resource "aws_s3_bucket_cors_configuration" "website_bucket" {
+  bucket = aws_s3_bucket.website_bucket.id
 
   cors_rule {
     allowed_headers = ["Authorization", "Content-Length"]
@@ -49,14 +61,17 @@ resource "aws_s3_bucket" "website_bucket" {
     allowed_origins = ["*"]
     max_age_seconds = 3000
   }
+}
 
-  website {
-    index_document = "index.html"
-    error_document = "404/index.html"
+resource "aws_s3_bucket_website_configuration" "website_bucket" {
+  bucket = aws_s3_bucket.website_bucket.id
+
+  index_document {
+    suffix = "index.html"
   }
 
-  tags = {
-    Name = var.deployment_name
+  error_document {
+    key = "404/index.html"
   }
 }
 
@@ -106,7 +121,7 @@ resource "aws_cloudfront_distribution" "distribution" {
   }
 
   origin {
-    domain_name = aws_s3_bucket.website_bucket.website_endpoint
+    domain_name = aws_s3_bucket_website_configuration.website_bucket.website_endpoint
     origin_id   = "website-bucket"
 
     custom_origin_config {
