@@ -37,6 +37,18 @@ variable "next_image_image_sizes" {
   default     = null
 }
 
+variable "next_image_dangerously_allow_SVG" {
+  description = "Enable the optimization of SVG images."
+  type        = bool
+  default     = false
+}
+
+variable "next_image_content_security_policy" {
+  description = "Set the value of the Content-Security-Policy header in the response of the image optimizer."
+  type        = string
+  default     = null
+}
+
 variable "lambda_memory_size" {
   description = "Amount of memory in MB the worker Lambda Function can use. Valid value between 128 MB to 10,240 MB, in 1 MB increments."
   type        = number
