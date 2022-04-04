@@ -26,13 +26,15 @@ module "image_optimizer" {
   publish       = true
 
   environment_variables = {
-    NODE_ENV                   = "production"
-    TF_NEXTIMAGE_BASE_ORIGIN   = var.next_image_base_origin
-    TF_NEXTIMAGE_DOMAINS       = jsonencode(var.next_image_domains)
-    TF_NEXTIMAGE_DEVICE_SIZES  = var.next_image_device_sizes != null ? jsonencode(var.next_image_device_sizes) : null
-    TF_NEXTIMAGE_FORMATS       = jsonencode(var.next_image_formats)
-    TF_NEXTIMAGE_IMAGE_SIZES   = var.next_image_image_sizes != null ? jsonencode(var.next_image_image_sizes) : null
-    TF_NEXTIMAGE_SOURCE_BUCKET = var.source_bucket_id
+    NODE_ENV                             = "production"
+    TF_NEXTIMAGE_BASE_ORIGIN             = var.next_image_base_origin
+    TF_NEXTIMAGE_DOMAINS                 = jsonencode(var.next_image_domains)
+    TF_NEXTIMAGE_DEVICE_SIZES            = var.next_image_device_sizes != null ? jsonencode(var.next_image_device_sizes) : null
+    TF_NEXTIMAGE_FORMATS                 = jsonencode(var.next_image_formats)
+    TF_NEXTIMAGE_IMAGE_SIZES             = var.next_image_image_sizes != null ? jsonencode(var.next_image_image_sizes) : null
+    TF_NEXTIMAGE_DANGEROUSLY_ALLOW_SVG   = var.next_image_dangerously_allow_SVG ? jsonencode(var.next_image_dangerously_allow_SVG) : null
+    TF_NEXTIMAGE_CONTENT_SECURITY_POLICY = var.next_image_content_security_policy != null ? jsonencode(var.next_image_content_security_policy) : null
+    TF_NEXTIMAGE_SOURCE_BUCKET           = var.source_bucket_id
   }
 
   create_package         = false
