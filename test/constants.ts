@@ -3,7 +3,7 @@ type Fixture = [string, string];
 
 export const acceptAllFixtures: Fixture[] = [
   // inputFilename | outputContentType
-  ['avif/test.avif', 'image/avif'],
+  ['avif/test.avif', 'image/jpeg'],
   ['bmp/test.bmp', 'image/bmp'],
   ['gif/test.gif', 'image/gif'],
   ['gif/animated.gif', 'image/gif'],
@@ -11,7 +11,7 @@ export const acceptAllFixtures: Fixture[] = [
   ['png/test.png', 'image/png'],
   ['svg/test.svg', 'image/svg+xml'],
   ['tiff/test.tiff', 'image/tiff'],
-  ['webp/test.webp', 'image/webp'],
+  ['webp/test.webp', 'image/jpeg'],
   ['webp/animated.webp', 'image/webp'],
 ];
 
