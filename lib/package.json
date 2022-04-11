@@ -16,7 +16,7 @@
     "postpack": "rm ./LICENSE ./third-party-licenses.txt"
   },
   "dependencies": {
-    "@millihq/pixel-core": "4.1.0",
+    "@millihq/pixel-core": "4.2.0",
     "aws-sdk": "*",
     "next": "12.1.1",
     "node-fetch": "2.6.7",
