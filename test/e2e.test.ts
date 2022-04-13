@@ -7,11 +7,6 @@ import { extension as extensionMimeType } from 'mime-types';
 
 import { s3PublicDir } from './utils/s3-public-dir';
 import { getLocalIpAddressFromHost } from './utils/host-ip-address';
-import {
-  acceptAllFixtures,
-  acceptAvifFixtures,
-  acceptWebpFixtures,
-} from './constants';
 
 const NODE_RUNTIME = 'nodejs14.x';
 // Environment variables that should be set in the Lambda environment
@@ -87,9 +82,22 @@ describe('[e2e]', () => {
       await lambdaSAM.stop();
     });
 
-    test.each(acceptAllFixtures)(
+    test.each([
+      // inputFilename | outputContentType | outputCacheControlHeader
+      ['avif/test.avif', 'image/jpeg', cacheControlHeader],
+      // Files that are not converted by sharp use minimumCacheTTL config
+      ['bmp/test.bmp', 'image/bmp', 'public, max-age=60'],
+      ['gif/test.gif', 'image/gif', cacheControlHeader],
+      ['gif/animated.gif', 'image/gif', cacheControlHeader],
+      ['jpeg/test.jpg', 'image/jpeg', cacheControlHeader],
+      ['png/test.png', 'image/png', cacheControlHeader],
+      ['svg/test.svg', 'image/svg+xml', cacheControlHeader],
+      ['tiff/test.tiff', 'image/tiff', cacheControlHeader],
+      ['webp/test.webp', 'image/jpeg', cacheControlHeader],
+      ['webp/animated.webp', 'image/webp', cacheControlHeader],
+    ])(
       'External: Accept */*: %s',
-      async (filePath, outputContentType) => {
+      async (filePath, outputContentType, outputCacheControlHeader) => {
         const publicPath = `http://${s3Endpoint}/${fixtureBucketName}/${filePath}`;
         const optimizerParams = new URLSearchParams({
           url: publicPath,
@@ -120,7 +128,9 @@ describe('[e2e]', () => {
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
         expect(response.headers.get('Content-Type')).toBe(outputContentType);
-        expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
+        expect(response.headers.get('Cache-Control')).toBe(
+          outputCacheControlHeader
+        );
 
         // Check that Content-Security-Policy header is present to prevent potential
         // XSS attack
@@ -137,9 +147,22 @@ describe('[e2e]', () => {
       }
     );
 
-    test.each(acceptAllFixtures)(
+    test.each([
+      // inputFilename | outputContentType | outputCacheControlHeader
+      ['avif/test.avif', 'image/jpeg', cacheControlHeader],
+      // Files that are not converted by sharp use minimumCacheTTL config
+      ['bmp/test.bmp', 'image/bmp', 'public, max-age=60'],
+      ['gif/test.gif', 'image/gif', cacheControlHeader],
+      ['gif/animated.gif', 'image/gif', cacheControlHeader],
+      ['jpeg/test.jpg', 'image/jpeg', cacheControlHeader],
+      ['png/test.png', 'image/png', cacheControlHeader],
+      ['svg/test.svg', 'image/svg+xml', cacheControlHeader],
+      ['tiff/test.tiff', 'image/tiff', cacheControlHeader],
+      ['webp/test.webp', 'image/jpeg', cacheControlHeader],
+      ['webp/animated.webp', 'image/webp', cacheControlHeader],
+    ])(
       'Internal: Accept */*: %s',
-      async (filePath, outputContentType) => {
+      async (filePath, outputContentType, outputCacheControlHeader) => {
         const publicPath = `/${fixtureBucketName}/${filePath}`;
         const optimizerParams = new URLSearchParams({
           url: publicPath,
@@ -172,7 +195,9 @@ describe('[e2e]', () => {
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
         expect(response.headers.get('Content-Type')).toBe(outputContentType);
-        expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
+        expect(response.headers.get('Cache-Control')).toBe(
+          outputCacheControlHeader
+        );
 
         // Header settings needed for CloudFront compression
         expect(response.headers.has('Content-Length')).toBeTruthy();
@@ -180,9 +205,22 @@ describe('[e2e]', () => {
       }
     );
 
-    test.each(acceptWebpFixtures)(
+    test.each([
+      // inputFilename | outputContentType | outputCacheControlHeader
+      ['avif/test.avif', 'image/webp', cacheControlHeader],
+      // Files that are not converted by sharp use minimumCacheTTL config
+      ['bmp/test.bmp', 'image/bmp', 'public, max-age=60'],
+      ['gif/test.gif', 'image/webp', cacheControlHeader],
+      ['gif/animated.gif', 'image/gif', cacheControlHeader],
+      ['jpeg/test.jpg', 'image/webp', cacheControlHeader],
+      ['png/test.png', 'image/webp', cacheControlHeader],
+      ['svg/test.svg', 'image/svg+xml', cacheControlHeader],
+      ['tiff/test.tiff', 'image/webp', cacheControlHeader],
+      ['webp/test.webp', 'image/webp', cacheControlHeader],
+      ['webp/animated.webp', 'image/webp', cacheControlHeader],
+    ])(
       'External: Accept image/webp,*/*: %s',
-      async (filePath, outputContentType) => {
+      async (filePath, outputContentType, outputCacheControlHeader) => {
         const publicPath = `http://${s3Endpoint}/${fixtureBucketName}/${filePath}`;
         const optimizerParams = new URLSearchParams({
           url: publicPath,
@@ -213,7 +251,9 @@ describe('[e2e]', () => {
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
         expect(response.headers.get('Content-Type')).toBe(outputContentType);
-        expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
+        expect(response.headers.get('Cache-Control')).toBe(
+          outputCacheControlHeader
+        );
 
         // Header settings needed for CloudFront compression
         expect(response.headers.has('Content-Length')).toBeTruthy();
@@ -221,9 +261,22 @@ describe('[e2e]', () => {
       }
     );
 
-    test.each(acceptWebpFixtures)(
+    test.each([
+      // inputFilename | outputContentType | outputCacheControlHeader
+      ['avif/test.avif', 'image/webp', cacheControlHeader],
+      // Files that are not converted by sharp use minimumCacheTTL config
+      ['bmp/test.bmp', 'image/bmp', 'public, max-age=60'],
+      ['gif/test.gif', 'image/webp', cacheControlHeader],
+      ['gif/animated.gif', 'image/gif', cacheControlHeader],
+      ['jpeg/test.jpg', 'image/webp', cacheControlHeader],
+      ['png/test.png', 'image/webp', cacheControlHeader],
+      ['svg/test.svg', 'image/svg+xml', cacheControlHeader],
+      ['tiff/test.tiff', 'image/webp', cacheControlHeader],
+      ['webp/test.webp', 'image/webp', cacheControlHeader],
+      ['webp/animated.webp', 'image/webp', cacheControlHeader],
+    ])(
       'Internal: Accept image/webp,*/*: %s',
-      async (filePath, outputContentType) => {
+      async (filePath, outputContentType, outputCacheControlHeader) => {
         const publicPath = `/${fixtureBucketName}/${filePath}`;
         const optimizerParams = new URLSearchParams({
           url: publicPath,
@@ -256,7 +309,9 @@ describe('[e2e]', () => {
         expect(response.status).toBe(200);
         expect(body).toMatchFile(snapshotFileName);
         expect(response.headers.get('Content-Type')).toBe(outputContentType);
-        expect(response.headers.get('Cache-Control')).toBe(cacheControlHeader);
+        expect(response.headers.get('Cache-Control')).toBe(
+          outputCacheControlHeader
+        );
 
         // Header settings needed for CloudFront compression
         expect(response.headers.has('Content-Length')).toBeTruthy();
@@ -310,8 +365,7 @@ describe('[e2e]', () => {
     });
 
     test('Internal: Fetch image from S3', async () => {
-      const fixture = acceptWebpFixtures[1];
-      const publicPath = `/${fixture[0]}`;
+      const publicPath = '/jpeg/test.jpg';
       const optimizerParams = new URLSearchParams({
         url: publicPath,
         w: '2048',
@@ -329,7 +383,7 @@ describe('[e2e]', () => {
       );
 
       expect(response.ok).toBeTruthy();
-      expect(response.headers.get('content-type')).toBe(fixture[1]);
+      expect(response.headers.get('content-type')).toBe('image/webp');
     });
   });
 
@@ -381,30 +435,39 @@ describe('[e2e]', () => {
       await lambdaSAM.stop();
     });
 
-    test.each(acceptAvifFixtures)(
-      'Accept image/avif,*/*: %s',
-      async (filePath, outputContentType) => {
-        const publicPath = `/${filePath}`;
-        const optimizerParams = new URLSearchParams({
-          url: publicPath,
-          w: '128',
-          q: '75',
-        });
+    test.each([
+      // inputFilename | outputContentType
+      ['avif/test.avif', 'image/avif'],
+      ['bmp/test.bmp', 'image/bmp'],
+      ['gif/test.gif', 'image/avif'],
+      ['gif/animated.gif', 'image/gif'],
+      ['jpeg/test.jpg', 'image/avif'],
+      ['png/test.png', 'image/avif'],
+      ['svg/test.svg', 'image/svg+xml'],
+      ['tiff/test.tiff', 'image/avif'],
+      ['webp/test.webp', 'image/avif'],
+      ['webp/animated.webp', 'image/webp'],
+    ])('Accept image/avif,*/*: %s', async (filePath, outputContentType) => {
+      const publicPath = `/${filePath}`;
+      const optimizerParams = new URLSearchParams({
+        url: publicPath,
+        w: '128',
+        q: '75',
+      });
 
-        const response = await lambdaSAM.sendApiGwRequest(
-          `${route}?${optimizerParams.toString()}`,
-          {
-            headers: {
-              Accept: 'image/avif,*/*',
-              Referer: `http://${s3Endpoint}/`,
-            },
-          }
-        );
+      const response = await lambdaSAM.sendApiGwRequest(
+        `${route}?${optimizerParams.toString()}`,
+        {
+          headers: {
+            Accept: 'image/avif,*/*',
+            Referer: `http://${s3Endpoint}/`,
+          },
+        }
+      );
 
-        expect(response.ok).toBeTruthy();
-        expect(response.headers.get('content-type')).toBe(outputContentType);
-      }
-    );
+      expect(response.ok).toBeTruthy();
+      expect(response.headers.get('content-type')).toBe(outputContentType);
+    });
   });
 
   describe('From filesystem cache for external image', () => {
@@ -441,11 +504,8 @@ describe('[e2e]', () => {
       'internet. (first call)',
       'hitting filesystem cache. (2nd call)',
     ])('Fetch external image by %s', async () => {
-      const [filePath, outputContentType] =
-        acceptAllFixtures.find((f) => f[1] === 'image/png') || [];
-      if (!filePath || !outputContentType)
-        throw new Error('Can not found png file path');
-
+      const filePath = 'png/test.png';
+      const outputContentType = 'image/png';
       const publicPath = `http://${s3Endpoint}/${fixtureBucketName}/${filePath}`;
       const [w, q] = ['2048', '75'];
       const optimizerParams = new URLSearchParams({ url: publicPath, w, q });
