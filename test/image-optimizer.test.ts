@@ -4,12 +4,14 @@ import * as path from 'path';
 
 import S3 from 'aws-sdk/clients/s3';
 import { extension as extensionMimeType } from 'mime-types';
-import { ImageConfig, imageConfigDefault } from 'next/dist/server/image-config';
+import {
+  ImageConfig,
+  imageConfigDefault,
+} from 'next/dist/shared/lib/image-config';
 
 import { generateParams } from './utils/generate-params';
 import { runOptimizer } from './utils/run-optimizer';
 import { s3PublicDir } from './utils/s3-public-dir';
-import { acceptAllFixtures, acceptWebpFixtures } from './constants';
 
 // 1 min timeout, since first request for S3 image can be pretty slow on local
 // machines
@@ -49,9 +51,7 @@ describe('unit', () => {
   });
 
   test('Fetch internal image from S3', async () => {
-    const fixture = acceptAllFixtures[0];
-    const fixturePath = `/${fixture[0]}`;
-    const params = generateParams(fixturePath, optimizerParams);
+    const params = generateParams('/avif/test.avif', optimizerParams);
 
     const result = await runOptimizer(
       params,
@@ -66,12 +66,11 @@ describe('unit', () => {
       throw result.error;
     }
 
-    expect(result.contentType).toBe(fixture[1]);
+    expect(result.contentType).toBe('image/jpeg');
   });
 
   test('Custom image size', async () => {
-    const fixture = acceptAllFixtures[0];
-    const fixturePath = `http://${s3Endpoint}/${bucketName}/${fixture[0]}`;
+    const fixturePath = `http://${s3Endpoint}/${bucketName}/avif/test.avif`;
     const defaultImageSize = 32;
     const nonDefaultImageSize = 33;
 
@@ -97,7 +96,7 @@ describe('unit', () => {
         throw result.error;
       }
 
-      expect(result.contentType).toBe(fixture[1]);
+      expect(result.contentType).toBe('image/jpeg');
     }
 
     {
@@ -125,8 +124,7 @@ describe('unit', () => {
   });
 
   test('Custom device size', async () => {
-    const fixture = acceptAllFixtures[0];
-    const fixturePath = `http://${s3Endpoint}/${bucketName}/${fixture[0]}`;
+    const fixturePath = `http://${s3Endpoint}/${bucketName}/avif/test.avif`;
     const defaultDeviceSize = 1080;
     const nonDefaultDeviceSize = 1081;
 
@@ -152,7 +150,7 @@ describe('unit', () => {
         throw result.error;
       }
 
-      expect(result.contentType).toBe(fixture[1]);
+      expect(result.contentType).toBe('image/jpeg');
     }
 
     {
@@ -178,37 +176,59 @@ describe('unit', () => {
     }
   });
 
-  test.each(acceptAllFixtures)(
-    'External image: Accept */*: %s',
-    async (filePath, outputContentType) => {
-      const publicPath = `http://${s3Endpoint}/${bucketName}/${filePath}`;
-      const params = generateParams(publicPath, optimizerParams);
+  test.each([
+    // inputFilename | outputContentType
+    ['avif/test.avif', 'image/jpeg'],
+    ['bmp/test.bmp', 'image/bmp'],
+    ['gif/test.gif', 'image/gif'],
+    ['gif/animated.gif', 'image/gif'],
+    ['jpeg/test.jpg', 'image/jpeg'],
+    ['png/test.png', 'image/png'],
+    ['svg/test.svg', 'image/svg+xml'],
+    ['tiff/test.tiff', 'image/tiff'],
+    ['webp/test.webp', 'image/jpeg'],
+    ['webp/animated.webp', 'image/webp'],
+  ])('External image: Accept */*: %s', async (filePath, outputContentType) => {
+    const publicPath = `http://${s3Endpoint}/${bucketName}/${filePath}`;
+    const params = generateParams(publicPath, optimizerParams);
 
-      const result = await runOptimizer(params, imageConfig, {
-        accept: '*/*',
-      });
+    const result = await runOptimizer(params, imageConfig, {
+      accept: '*/*',
+    });
 
-      if ('error' in result) {
-        throw result.error;
-      }
-
-      expect(result.contentType).toBe(outputContentType);
-
-      const optimizerPrefix = `external_accept_all_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
-      const snapshotFileName = path.join(
-        __dirname,
-        '__snapshots__',
-        `${optimizerPrefix}${filePath.replace('/', '_')}.${extensionMimeType(
-          outputContentType
-        )}`
-      );
-      expect(result.buffer).toMatchFile(snapshotFileName);
+    if ('error' in result) {
+      throw result.error;
     }
-  );
 
-  test.each(acceptWebpFixtures)(
+    expect(result.contentType).toBe(outputContentType);
+
+    const optimizerPrefix = `external_accept_all_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
+    const snapshotFileName = path.join(
+      __dirname,
+      '__snapshots__',
+      `${optimizerPrefix}${filePath.replace('/', '_')}.${extensionMimeType(
+        outputContentType
+      )}`
+    );
+    expect(result.buffer).toMatchFile(snapshotFileName);
+  });
+
+  test.each([
+    // inputFilename | outputContentType | outputMaxAge
+    ['avif/test.avif', 'image/webp', 123456],
+    // Files that are not converted by sharp use minimumCacheTTL config
+    ['bmp/test.bmp', 'image/bmp', 60],
+    ['gif/test.gif', 'image/webp', 123456],
+    ['gif/animated.gif', 'image/gif', 123456],
+    ['jpeg/test.jpg', 'image/webp', 123456],
+    ['png/test.png', 'image/webp', 123456],
+    ['svg/test.svg', 'image/svg+xml', 123456],
+    ['tiff/test.tiff', 'image/webp', 123456],
+    ['webp/test.webp', 'image/webp', 123456],
+    ['webp/animated.webp', 'image/webp', 123456],
+  ])(
     'External image: Accept image/webp: %s',
-    async (filePath, outputContentType) => {
+    async (filePath, outputContentType, outputMaxAge) => {
       const publicPath = `http://${s3Endpoint}/${bucketName}/${filePath}`;
       const params = generateParams(publicPath, optimizerParams);
 
@@ -221,7 +241,7 @@ describe('unit', () => {
       }
 
       expect(result.contentType).toBe(outputContentType);
-      expect(result.maxAge).toBe(123456);
+      expect(result.maxAge).toBe(outputMaxAge);
 
       const optimizerPrefix = `external_accept_webp_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
       const snapshotFileName = path.join(
@@ -235,36 +255,57 @@ describe('unit', () => {
     }
   );
 
-  test.each(acceptAllFixtures)(
-    'Internal image: Accept */*: %s',
-    async (filePath, outputContentType) => {
-      const publicPath = `/${bucketName}/${filePath}`;
-      const params = generateParams(publicPath, optimizerParams);
+  test.each([
+    // inputFilename | outputContentType
+    ['avif/test.avif', 'image/jpeg'],
+    ['bmp/test.bmp', 'image/bmp'],
+    ['gif/test.gif', 'image/gif'],
+    ['gif/animated.gif', 'image/gif'],
+    ['jpeg/test.jpg', 'image/jpeg'],
+    ['png/test.png', 'image/png'],
+    ['svg/test.svg', 'image/svg+xml'],
+    ['tiff/test.tiff', 'image/tiff'],
+    ['webp/test.webp', 'image/jpeg'],
+    ['webp/animated.webp', 'image/webp'],
+  ])('Internal image: Accept */*: %s', async (filePath, outputContentType) => {
+    const publicPath = `/${bucketName}/${filePath}`;
+    const params = generateParams(publicPath, optimizerParams);
 
-      const result = await runOptimizer(params, imageConfig, {
-        accept: '*/*',
-        referer: `http://${s3Endpoint}/hello/world?foo=bar`,
-      });
+    const result = await runOptimizer(params, imageConfig, {
+      accept: '*/*',
+      referer: `http://${s3Endpoint}/hello/world?foo=bar`,
+    });
 
-      if ('error' in result) {
-        throw result.error;
-      }
-
-      expect(result.contentType).toBe(outputContentType);
-
-      const optimizerPrefix = `internal_accept_all_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
-      const snapshotFileName = path.join(
-        __dirname,
-        '__snapshots__',
-        `${optimizerPrefix}${filePath.replace('/', '_')}.${extensionMimeType(
-          outputContentType
-        )}`
-      );
-      expect(result.buffer).toMatchFile(snapshotFileName);
+    if ('error' in result) {
+      throw result.error;
     }
-  );
 
-  test.each(acceptWebpFixtures)(
+    expect(result.contentType).toBe(outputContentType);
+
+    const optimizerPrefix = `internal_accept_all_w-${optimizerParams.w}_q-${optimizerParams.q}_`;
+    const snapshotFileName = path.join(
+      __dirname,
+      '__snapshots__',
+      `${optimizerPrefix}${filePath.replace('/', '_')}.${extensionMimeType(
+        outputContentType
+      )}`
+    );
+    expect(result.buffer).toMatchFile(snapshotFileName);
+  });
+
+  test.each([
+    // inputFilename | outputContentType
+    ['avif/test.avif', 'image/webp'],
+    ['bmp/test.bmp', 'image/bmp'],
+    ['gif/test.gif', 'image/webp'],
+    ['gif/animated.gif', 'image/gif'],
+    ['jpeg/test.jpg', 'image/webp'],
+    ['png/test.png', 'image/webp'],
+    ['svg/test.svg', 'image/svg+xml'],
+    ['tiff/test.tiff', 'image/webp'],
+    ['webp/test.webp', 'image/webp'],
+    ['webp/animated.webp', 'image/webp'],
+  ])(
     'Internal image: Accept image/webp: %s',
     async (filePath, outputContentType) => {
       const publicPath = `/${bucketName}/${filePath}`;
@@ -294,9 +335,7 @@ describe('unit', () => {
   );
 
   test('Use base origin option', async () => {
-    const fixture = acceptAllFixtures[0];
-    const fixturePath = `/${fixture[0]}`;
-    const params = generateParams(fixturePath, {
+    const params = generateParams('/avif/test.avif', {
       w: '1080',
       q: '75',
     });
@@ -316,6 +355,6 @@ describe('unit', () => {
       throw result.error;
     }
 
-    expect(result.contentType).toBe(fixture[1]);
+    expect(result.contentType).toBe('image/jpeg');
   });
 });

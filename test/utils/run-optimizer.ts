@@ -3,7 +3,7 @@ import { URLSearchParams } from 'url';
 
 import { Pixel } from '@millihq/pixel-core';
 import getPort from 'get-port';
-import { ImageConfig } from 'next/dist/server/image-config';
+import { ImageConfig } from 'next/dist/shared/lib/image-config';
 import fetch from 'node-fetch';
 import S3 from 'aws-sdk/clients/s3';
 
