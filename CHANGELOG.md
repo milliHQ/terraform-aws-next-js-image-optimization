@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [12.1.1] - 2022-04-13
+
 - Uses Image Optimizer module of [Next.js 12.1.1](https://github.com/vercel/next.js/releases/tag/v12.1.1) ([#116](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/116))
 
 ## [12.1.0] - 2022-04-04
