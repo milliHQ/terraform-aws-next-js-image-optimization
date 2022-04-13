@@ -4,7 +4,7 @@
 variable "next_image_version" {
   description = "Next.js version from where you want to use the image optimizer from. Supports semver ranges."
   type        = string
-  default     = "12.1.0"
+  default     = "12.1.1"
 }
 
 variable "next_image_base_origin" {
