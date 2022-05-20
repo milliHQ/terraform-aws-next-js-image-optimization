@@ -44,7 +44,7 @@
     "release-it": "^14.12.3",
     "release-it-yarn-workspaces": "^2.0.1",
     "ts-jest": "^27.0.5",
-    "typescript": "^4.6.3"
+    "typescript": "^4.6.4"
   },
   "resolutions": {
     "aws-sdk": "2.1055.0"
