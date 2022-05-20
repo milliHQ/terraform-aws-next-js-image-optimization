@@ -157,7 +157,6 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | cloudfront\_origin | Predefined CloudFront origin. Can be used to embed the image optimizer into an existing CloudFront resource. |
 | cloudfront\_origin\_id | Id of the custom origin used for image optimization. |
 | cloudfront\_origin\_request\_policy\_id | Request policy id used for image optimization. |
-
 <!-- END_TF_DOCS -->
 <!-- prettier-ignore-end -->
 
