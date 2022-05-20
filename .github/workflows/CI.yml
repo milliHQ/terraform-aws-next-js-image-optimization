@@ -9,15 +9,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: public.ecr.aws/sam/build-nodejs14.x:latest
+    container: public.ecr.aws/sam/build-nodejs16.x:latest
     steps:
       - name: Install yarn
-        run: npm install --global yarn@1.22.17
+        run: npm install --global yarn@1.22.18
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             .yarn
@@ -30,7 +30,7 @@ jobs:
           yarn workspace @millihq/tf-next-image-optimization build
 
       - name: Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: lambda
           path: |
@@ -40,7 +40,7 @@ jobs:
 
   test-integration:
     runs-on: ubuntu-latest
-    container: public.ecr.aws/sam/build-nodejs14.x:latest
+    container: public.ecr.aws/sam/build-nodejs16.x:latest
 
     services:
       s3:
@@ -51,12 +51,12 @@ jobs:
 
     steps:
       - name: Install yarn
-        run: npm install --global yarn@1.22.17
+        run: npm install --global yarn@1.22.18
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             .yarn
@@ -93,15 +93,13 @@ jobs:
           brew install aws-sam-cli
           sam --version
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Cache
-        uses: actions/cache@v2
+      - name: Setup node
+        uses: actions/setup-node@v3
         with:
-          path: |
-            .yarn
-            **/node_modules
-          key: e2e-${{ hashFiles('yarn.lock') }}
+          node-version: '16'
+          cache: 'yarn'
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile --check-files
@@ -131,16 +129,16 @@ jobs:
         run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '16'
           cache: 'yarn'
 
       - name: Install dependencies
         run: yarn --frozen-lockfile
 
       - name: Download build artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: lambda
           path: lib
