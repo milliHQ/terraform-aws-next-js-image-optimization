@@ -104,8 +104,8 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
   Use the image optimizer with an existing CloudFront distribution.
 
 <!-- prettier-ignore-start -->
-<!--- STOP: Auto generated values - Make no manual edits here --->
-<!--- BEGIN_TF_DOCS --->
+<!-- STOP: Auto generated values - Make no manual edits here -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -158,7 +158,7 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | cloudfront\_origin\_id | Id of the custom origin used for image optimization. |
 | cloudfront\_origin\_request\_policy\_id | Request policy id used for image optimization. |
 
-<!--- END_TF_DOCS --->
+<!-- END_TF_DOCS -->
 <!-- prettier-ignore-end -->
 
 ## Limits

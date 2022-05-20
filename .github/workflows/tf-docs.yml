@@ -12,9 +12,9 @@ jobs:
   update-docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Update Terraform docs in README
-        uses: terraform-docs/gh-actions@v0.10.0
+        uses: terraform-docs/gh-actions@v1.0.0
         with:
           config-file: '.terraform-docs.yml'
           output-file: README.md
