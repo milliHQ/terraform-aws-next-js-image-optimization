@@ -21,3 +21,14 @@ variable "deployment_name" {
 variable "tags" {
   type = map(string)
 }
+
+variable "certificate_arn" {
+  description = "CloudFront ACM certificate to use."
+  type        = string
+  default     = null
+}
+
+variable "domain_name" {
+  description = "CloudFront alternative domain name."
+  type = string
+}

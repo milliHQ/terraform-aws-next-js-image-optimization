@@ -178,6 +178,7 @@ locals {
     origin_request_policy_id = aws_cloudfront_origin_request_policy.this.id
     cache_policy_id          = aws_cloudfront_cache_policy.this.id
   }
+
 }
 
 resource "aws_cloudfront_origin_request_policy" "this" {
@@ -243,6 +244,9 @@ module "cloudfront" {
   cloudfront_price_class         = var.cloudfront_price_class
   cloudfront_origin              = local.cloudfront_origin
   cloudfront_default_behavior    = local.cloudfront_cache_behavior
+
+  domain_name = var.domain_name
+  certificate_arn = var.certificate_arn
 
   deployment_name = var.deployment_name
   tags            = var.tags

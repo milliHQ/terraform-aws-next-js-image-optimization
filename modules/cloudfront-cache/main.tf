@@ -9,6 +9,7 @@ resource "aws_cloudfront_distribution" "distribution" {
   comment         = var.deployment_name
   price_class     = var.cloudfront_price_class
 
+  aliases = [var.domain_name]
   dynamic "default_cache_behavior" {
     for_each = [var.cloudfront_default_behavior]
 
@@ -68,7 +69,10 @@ resource "aws_cloudfront_distribution" "distribution" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn            = var.certificate_arn
+    cloudfront_default_certificate = false
+    minimum_protocol_version       = "TLSv1.2_2018"
+    ssl_support_method             = "sni-only"
   }
 
   restrictions {

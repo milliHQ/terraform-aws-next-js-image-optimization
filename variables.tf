@@ -129,6 +129,16 @@ variable "cloudfront_origin_id" {
   default     = "tf-next-image-optimizer"
 }
 
+variable "certificate_arn" {
+  description = "CloudFront ACM certificate to use."
+  type        = string
+}
+
+variable "domain_name" {
+  description = "CloudFront alternative domain name."
+  type = string
+}
+
 ##########
 # Labeling
 ##########
