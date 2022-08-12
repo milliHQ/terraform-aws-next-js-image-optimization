@@ -178,7 +178,6 @@ locals {
     origin_request_policy_id = aws_cloudfront_origin_request_policy.this.id
     cache_policy_id          = aws_cloudfront_cache_policy.this.id
   }
-
 }
 
 resource "aws_cloudfront_origin_request_policy" "this" {
