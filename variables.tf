@@ -118,7 +118,7 @@ variable "cloudfront_enable_origin_shield" {
 }
 
 variable "cloudfront_origin_shield_region" {
-  description = "Override the region choosen for the CloudFront origin shield. Use `auto` to automatically determine the optimal region."
+  description = "Override the region chosen for the CloudFront origin shield. Use `auto` to automatically determine the optimal region."
   type        = string
   default     = "auto"
 }
