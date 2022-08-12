@@ -4,7 +4,7 @@
 variable "next_image_version" {
   description = "Next.js version from where you want to use the image optimizer from. Supports semver ranges."
   type        = string
-  default     = "12.1.2"
+  default     = "12.1.3"
 }
 
 variable "next_image_base_origin" {
@@ -118,7 +118,7 @@ variable "cloudfront_enable_origin_shield" {
 }
 
 variable "cloudfront_origin_shield_region" {
-  description = "Override the region choosen for the CloudFront origin shield. Use `auto` to automatically determine the optimal region."
+  description = "Override the region chosen for the CloudFront origin shield. Use `auto` to automatically determine the optimal region."
   type        = string
   default     = "auto"
 }
@@ -127,6 +127,24 @@ variable "cloudfront_origin_id" {
   description = "Override the id for the custom CloudFront id."
   type        = string
   default     = "tf-next-image-optimizer"
+}
+
+variable "cloudfront_minimum_protocol_version" {
+  description = "The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections. One of SSLv3, TLSv1, TLSv1_2016, TLSv1.1_2016, TLSv1.2_2018 TLSv1.2_2019 or TLSv1.2_2021."
+  type        = string
+  default     = "TLSv1"
+}
+
+variable "cloudfront_acm_certificate_arn" {
+  description = "CloudFront ACM certificate to use."
+  type        = string
+  default     = null
+}
+
+variable "cloudfront_aliases" {
+  description = "Custom domain(s) for CloudFront."
+  type        = list(string)
+  default     = []
 }
 
 ##########

@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [12.1.3] - 2022-08-12
+
+- Uses Image Optimizer module of [Next.js 12.1.3](https://github.com/vercel/next.js/releases/tag/v12.1.3) ([#121](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/121))
+- Updates sharp from `v0.30.3` to [`v0.30.7`](https://github.com/lovell/sharp/releases/tag/v0.30.7) ([#136](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/136))
+- Support usage of custom domain and SSL certificate with the default CloudFront distribution ([#134](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/134))
+- Minimum protocol version for the default CloudFront distribution can now set using `cloudfront_minimum_protocol_version` variable. New default value is `TLSv1` (was `TLSv1.2_2018` before) ([#134](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/134))
+
 ## [12.1.2] - 2022-04-16
 
 - Uses Image Optimizer module of [Next.js 12.1.2](https://github.com/vercel/next.js/releases/tag/v12.1.2) ([#118](https://github.com/milliHQ/terraform-aws-next-js-image-optimization/pull/118))

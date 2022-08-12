@@ -104,8 +104,8 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
   Use the image optimizer with an existing CloudFront distribution.
 
 <!-- prettier-ignore-start -->
-<!--- STOP: Auto generated values - Make no manual edits here --->
-<!--- BEGIN_TF_DOCS --->
+<!-- STOP: Auto generated values - Make no manual edits here -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -123,10 +123,13 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| cloudfront\_acm\_certificate\_arn | CloudFront ACM certificate to use. | `string` | `null` | no |
+| cloudfront\_aliases | Custom domain(s) for CloudFront. | `list(string)` | `[]` | no |
 | cloudfront\_create\_distribution | Controls whether a CloudFront distribution should be created. | `bool` | `true` | no |
 | cloudfront\_enable\_origin\_shield | Controls whether CloudFront Origin Shield should be enabled on the image optimizer lambdas. | `bool` | `true` | no |
+| cloudfront\_minimum\_protocol\_version | The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections. One of SSLv3, TLSv1, TLSv1\_2016, TLSv1.1\_2016, TLSv1.2\_2018 TLSv1.2\_2019 or TLSv1.2\_2021. | `string` | `"TLSv1"` | no |
 | cloudfront\_origin\_id | Override the id for the custom CloudFront id. | `string` | `"tf-next-image-optimizer"` | no |
-| cloudfront\_origin\_shield\_region | Override the region choosen for the CloudFront origin shield. Use `auto` to automatically determine the optimal region. | `string` | `"auto"` | no |
+| cloudfront\_origin\_shield\_region | Override the region chosen for the CloudFront origin shield. Use `auto` to automatically determine the optimal region. | `string` | `"auto"` | no |
 | cloudfront\_price\_class | Price class for the CloudFront distribution. One of PriceClass\_All, PriceClass\_200, PriceClass\_100. | `string` | `"PriceClass_100"` | no |
 | debug\_use\_local\_packages | (Debug) Use local packages instead of downloading them from npm. | `bool` | `false` | no |
 | deployment\_name | Identifier for the deployment group (only lowercase alphanumeric characters and hyphens are allowed). | `string` | `"tf-next-image"` | no |
@@ -142,7 +145,7 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | next\_image\_domains | Allowed origin domains that can be used for fetching images. | `list(string)` | `[]` | no |
 | next\_image\_formats | If the Accept head matches more than one of the configured formats, the first match in the array is used. Therefore, the array order matters. If there is no match, the Image Optimization API will fallback to the original image's format. | `list(string)` | <pre>[<br>  "image/webp"<br>]</pre> | no |
 | next\_image\_image\_sizes | Allowed image sizes that should be used for image optimization. | `list(number)` | `null` | no |
-| next\_image\_version | Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"12.1.2"` | no |
+| next\_image\_version | Next.js version from where you want to use the image optimizer from. Supports semver ranges. | `string` | `"12.1.3"` | no |
 | source\_bucket\_id | When your static files are deployed to a Bucket (e.g. with Terraform Next.js) the optimizer can pull the source from the bucket rather than over the internet. | `string` | `null` | no |
 | tags | Tag metadata to label AWS resources that support tags. | `map(string)` | `{}` | no |
 
@@ -157,8 +160,7 @@ Then rebuild and redeploy your Next.js application to make use of the changed co
 | cloudfront\_origin | Predefined CloudFront origin. Can be used to embed the image optimizer into an existing CloudFront resource. |
 | cloudfront\_origin\_id | Id of the custom origin used for image optimization. |
 | cloudfront\_origin\_request\_policy\_id | Request policy id used for image optimization. |
-
-<!--- END_TF_DOCS --->
+<!-- END_TF_DOCS -->
 <!-- prettier-ignore-end -->
 
 ## Limits

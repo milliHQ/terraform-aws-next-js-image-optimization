@@ -239,10 +239,13 @@ resource "aws_cloudfront_cache_policy" "this" {
 module "cloudfront" {
   source = "./modules/cloudfront-cache"
 
-  cloudfront_create_distribution = var.cloudfront_create_distribution
-  cloudfront_price_class         = var.cloudfront_price_class
-  cloudfront_origin              = local.cloudfront_origin
-  cloudfront_default_behavior    = local.cloudfront_cache_behavior
+  cloudfront_create_distribution      = var.cloudfront_create_distribution
+  cloudfront_price_class              = var.cloudfront_price_class
+  cloudfront_origin                   = local.cloudfront_origin
+  cloudfront_default_behavior         = local.cloudfront_cache_behavior
+  cloudfront_minimum_protocol_version = var.cloudfront_minimum_protocol_version
+  cloudfront_acm_certificate_arn      = var.cloudfront_acm_certificate_arn
+  cloudfront_aliases                  = var.cloudfront_aliases
 
   deployment_name = var.deployment_name
   tags            = var.tags

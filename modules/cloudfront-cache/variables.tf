@@ -21,3 +21,17 @@ variable "deployment_name" {
 variable "tags" {
   type = map(string)
 }
+
+variable "cloudfront_minimum_protocol_version" {
+  type = string
+}
+
+variable "cloudfront_acm_certificate_arn" {
+  type    = string
+  default = null
+}
+
+variable "cloudfront_aliases" {
+  type    = list(string)
+  default = []
+}
