@@ -8,7 +8,7 @@ import { extension as extensionMimeType } from 'mime-types';
 import { s3PublicDir } from './utils/s3-public-dir';
 import { getLocalIpAddressFromHost } from './utils/host-ip-address';
 
-const NODE_RUNTIME = 'nodejs14.x';
+const NODE_RUNTIME = 'nodejs16.x';
 // Environment variables that should be set in the Lambda environment
 const ENVIRONMENT_VARIABLES = {
   NODE_ENV: 'production',
