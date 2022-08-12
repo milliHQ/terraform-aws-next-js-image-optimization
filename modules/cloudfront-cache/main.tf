@@ -8,8 +8,8 @@ resource "aws_cloudfront_distribution" "distribution" {
   is_ipv6_enabled = true
   comment         = var.deployment_name
   price_class     = var.cloudfront_price_class
+  aliases         = var.cloudfront_aliases
 
-  aliases = [var.domain_name]
   dynamic "default_cache_behavior" {
     for_each = [var.cloudfront_default_behavior]
 
@@ -69,10 +69,10 @@ resource "aws_cloudfront_distribution" "distribution" {
   }
 
   viewer_certificate {
-    acm_certificate_arn            = var.certificate_arn
-    cloudfront_default_certificate = false
-    minimum_protocol_version       = "TLSv1.2_2018"
-    ssl_support_method             = "sni-only"
+    acm_certificate_arn            = var.cloudfront_acm_certificate_arn
+    cloudfront_default_certificate = var.cloudfront_acm_certificate_arn == null
+    minimum_protocol_version       = var.cloudfront_minimum_protocol_version
+    ssl_support_method             = var.cloudfront_acm_certificate_arn != null ? "sni-only" : null
   }
 
   restrictions {

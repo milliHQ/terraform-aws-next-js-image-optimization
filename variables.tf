@@ -129,14 +129,22 @@ variable "cloudfront_origin_id" {
   default     = "tf-next-image-optimizer"
 }
 
-variable "certificate_arn" {
-  description = "CloudFront ACM certificate to use."
+variable "cloudfront_minimum_protocol_version" {
+  description = "The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections. One of SSLv3, TLSv1, TLSv1_2016, TLSv1.1_2016, TLSv1.2_2018 TLSv1.2_2019 or TLSv1.2_2021."
   type        = string
+  default     = "TLSv1"
 }
 
-variable "domain_name" {
-  description = "CloudFront alternative domain name."
-  type = string
+variable "cloudfront_acm_certificate_arn" {
+  description = "CloudFront ACM certificate to use."
+  type        = string
+  default     = null
+}
+
+variable "cloudfront_aliases" {
+  description = "Custom domain(s) for CloudFront."
+  type        = list(string)
+  default     = []
 }
 
 ##########

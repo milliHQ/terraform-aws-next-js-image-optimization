@@ -244,9 +244,8 @@ module "cloudfront" {
   cloudfront_price_class         = var.cloudfront_price_class
   cloudfront_origin              = local.cloudfront_origin
   cloudfront_default_behavior    = local.cloudfront_cache_behavior
-
-  domain_name = var.domain_name
-  certificate_arn = var.certificate_arn
+  cloudfront_acm_certificate_arn = var.cloudfront_acm_certificate_arn
+  cloudfront_aliases             = var.cloudfront_aliases
 
   deployment_name = var.deployment_name
   tags            = var.tags

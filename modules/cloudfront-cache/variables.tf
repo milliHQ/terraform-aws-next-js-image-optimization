@@ -22,13 +22,16 @@ variable "tags" {
   type = map(string)
 }
 
-variable "certificate_arn" {
-  description = "CloudFront ACM certificate to use."
-  type        = string
-  default     = null
+variable "cloudfront_minimum_protocol_version" {
+  type = string
 }
 
-variable "domain_name" {
-  description = "CloudFront alternative domain name."
-  type = string
+variable "cloudfront_acm_certificate_arn" {
+  type    = string
+  default = null
+}
+
+variable "cloudfront_aliases" {
+  type    = list(string)
+  default = []
 }
