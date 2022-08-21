@@ -13,42 +13,6 @@ variable "next_image_base_origin" {
   default     = null
 }
 
-variable "next_image_domains" {
-  description = "Allowed origin domains that can be used for fetching images."
-  type        = list(string)
-  default     = []
-}
-
-variable "next_image_device_sizes" {
-  description = "Allowed device sizes that should be used for image optimization."
-  type        = list(number)
-  default     = null
-}
-
-variable "next_image_formats" {
-  description = "If the Accept head matches more than one of the configured formats, the first match in the array is used. Therefore, the array order matters. If there is no match, the Image Optimization API will fallback to the original image's format."
-  type        = list(string)
-  default     = ["image/webp"]
-}
-
-variable "next_image_image_sizes" {
-  description = "Allowed image sizes that should be used for image optimization."
-  type        = list(number)
-  default     = null
-}
-
-variable "next_image_dangerously_allow_SVG" {
-  description = "Enable the optimization of SVG images."
-  type        = bool
-  default     = false
-}
-
-variable "next_image_content_security_policy" {
-  description = "Set the value of the Content-Security-Policy header in the response of the image optimizer."
-  type        = string
-  default     = null
-}
-
 variable "lambda_memory_size" {
   description = "Amount of memory in MB the worker Lambda Function can use. Valid value between 128 MB to 10,240 MB, in 1 MB increments."
   type        = number
@@ -91,6 +55,58 @@ variable "lambda_role_permissions_boundary" {
 
 variable "source_bucket_id" {
   description = "When your static files are deployed to a Bucket (e.g. with Terraform Next.js) the optimizer can pull the source from the bucket rather than over the internet."
+  type        = string
+  default     = null
+}
+
+variable "nextjs_config_endpoint_url" {
+  description = "Endpoint that could be used to retrieve a Next.js config from (Allows to use different configs depending on the hostname). Should accept requests of the format https://example.com/.../{endpoint}."
+  type        = string
+  default     = null
+}
+
+########################
+# Next.js image settings
+########################
+
+# See: https://nextjs.org/docs/api-reference/next/image#domains
+variable "next_image_domains" {
+  description = "Allowed origin domains that can be used for fetching images."
+  type        = list(string)
+  default     = []
+}
+
+# See: https://nextjs.org/docs/api-reference/next/image#device-sizes
+variable "next_image_device_sizes" {
+  description = "Allowed device sizes that should be used for image optimization."
+  type        = list(number)
+  default     = null
+}
+
+# See: https://nextjs.org/docs/api-reference/next/image#acceptable-formats
+variable "next_image_formats" {
+  description = "If the Accept head matches more than one of the configured formats, the first match in the array is used. Therefore, the array order matters. If there is no match, the Image Optimization API will fallback to the original image's format."
+  type        = list(string)
+  default     = ["image/webp"]
+}
+
+# See: https://nextjs.org/docs/api-reference/next/image#image-sizes
+variable "next_image_image_sizes" {
+  description = "Allowed image sizes that should be used for image optimization."
+  type        = list(number)
+  default     = null
+}
+
+# See: https://nextjs.org/docs/api-reference/next/image#dangerously-allow-svg
+variable "next_image_dangerously_allow_SVG" {
+  description = "Enable the optimization of SVG images."
+  type        = bool
+  default     = false
+}
+
+# See: https://nextjs.org/docs/api-reference/next/image#dangerously-allow-svg
+variable "next_image_content_security_policy" {
+  description = "Set the value of the Content-Security-Policy header in the response of the image optimizer."
   type        = string
   default     = null
 }

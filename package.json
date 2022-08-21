@@ -22,11 +22,11 @@
     "@millihq/sammy": "^2.0.1",
     "@ofhouse/keep-a-changelog": "2.3.0-no-increment-fix",
     "@release-it/bumper": "^3.0.1",
-    "@tsconfig/node14": "^1.0.1",
+    "@tsconfig/node14": "^1.0.3",
     "@types/jest": "^27.0.1",
     "@types/mime-types": "^2.1.1",
     "@types/node": "^14.0.0",
-    "@types/node-fetch": "^2.5.10",
+    "@types/node-fetch": "^2.6.2",
     "@typescript-eslint/eslint-plugin": "^4.30.0",
     "@typescript-eslint/parser": "^4.30.0",
     "@vercel/nft": "0.17.5",
@@ -44,10 +44,11 @@
     "release-it": "^14.12.3",
     "release-it-yarn-workspaces": "^2.0.1",
     "ts-jest": "^27.0.5",
-    "typescript": "^4.6.3"
+    "typescript": "*"
   },
   "resolutions": {
-    "aws-sdk": "2.1001.0"
+    "aws-sdk": "2.1001.0",
+    "typescript": "4.7.4"
   },
   "release-it": {
     "git": {

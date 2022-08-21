@@ -6,10 +6,8 @@ process.env.NEXT_SHARP_PATH = require.resolve('sharp');
 
 import { parse as parseUrl } from 'url';
 
-import {
-  defaultConfig,
-  NextConfigComplete,
-} from 'next/dist/server/config-shared';
+import { ETagCache } from '@millihq/etag-cache';
+import createFetch from '@vercel/fetch-cached-dns';
 import type {
   APIGatewayProxyEventV2,
   APIGatewayProxyStructuredResultV2,
@@ -18,14 +16,15 @@ import type {
   // eslint-disable-next-line import/no-unresolved
 } from 'aws-lambda';
 import S3 from 'aws-sdk/clients/s3';
+import nodeFetch from 'node-fetch';
 
 import { imageOptimizer, S3Config } from './image-optimizer';
 import { normalizeHeaders } from './normalized-headers';
-
-/* -----------------------------------------------------------------------------
- * Types
- * ---------------------------------------------------------------------------*/
-type ImageConfig = Partial<NextConfigComplete['images']>;
+import {
+  fetchImageConfigGenerator,
+  getImageConfig,
+  NextImageConfig,
+} from './image-config';
 
 /* -----------------------------------------------------------------------------
  * Utils
@@ -51,64 +50,21 @@ function generateS3Config(bucketName?: string): S3Config | undefined {
   };
 }
 
-function parseFromEnv<T>(key: string, defaultValue: T) {
-  try {
-    const envValue = process.env[key];
-    if (typeof envValue === 'string') {
-      return JSON.parse(envValue) as T;
-    }
-
-    return defaultValue;
-  } catch (err) {
-    console.error(`Could not parse ${key} from environment variable`);
-    console.error(err);
-    return defaultValue;
-  }
-}
-
 /* -----------------------------------------------------------------------------
  * Globals
  * ---------------------------------------------------------------------------*/
-// `images` property is defined on default config
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const imageConfigDefault = defaultConfig.images!;
 
-const domains = parseFromEnv(
-  'TF_NEXTIMAGE_DOMAINS',
-  imageConfigDefault.domains ?? []
-);
-const deviceSizes = parseFromEnv(
-  'TF_NEXTIMAGE_DEVICE_SIZES',
-  imageConfigDefault.deviceSizes
-);
-const formats = parseFromEnv(
-  'TF_NEXTIMAGE_FORMATS',
-  imageConfigDefault.formats
-);
-const imageSizes = parseFromEnv(
-  'TF_NEXTIMAGE_IMAGE_SIZES',
-  imageConfigDefault.imageSizes
-);
-const dangerouslyAllowSVG = parseFromEnv(
-  'TF_NEXTIMAGE_DANGEROUSLY_ALLOW_SVG',
-  imageConfigDefault.dangerouslyAllowSVG
-);
-const contentSecurityPolicy = parseFromEnv(
-  'TF_NEXTIMAGE_CONTENT_SECURITY_POLICY',
-  imageConfigDefault.contentSecurityPolicy
-);
 const sourceBucket = process.env.TF_NEXTIMAGE_SOURCE_BUCKET ?? undefined;
 const baseOriginUrl = process.env.TF_NEXTIMAGE_BASE_ORIGIN ?? undefined;
 
-const imageConfig: ImageConfig = {
-  ...imageConfigDefault,
-  domains,
-  deviceSizes,
-  formats,
-  imageSizes,
-  dangerouslyAllowSVG,
-  contentSecurityPolicy,
-};
+/**
+ * We use a custom fetch implementation here that caches DNS resolutions
+ * to improve performance for repeated requests.
+ */
+// eslint-disable-next-line
+const fetch = createFetch();
+const fetchImageConfig = fetchImageConfigGenerator(fetch as typeof nodeFetch);
+const configCache = new ETagCache<NextImageConfig>(60, fetchImageConfig);
 
 /* -----------------------------------------------------------------------------
  * Handler
@@ -117,18 +73,16 @@ const imageConfig: ImageConfig = {
 export async function handler(
   event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyStructuredResultV2> {
+  const headers = normalizeHeaders(event.headers);
+  const hostname = headers['host'];
+  const imageConfig = await getImageConfig({ configCache, hostname });
   const s3Config = generateS3Config(sourceBucket);
-
   const parsedUrl = parseUrl(`/?${event.rawQueryString}`, true);
-  const imageOptimizerResult = await imageOptimizer(
-    { headers: normalizeHeaders(event.headers) },
-    imageConfig,
-    {
-      baseOriginUrl,
-      parsedUrl,
-      s3Config,
-    }
-  );
+  const imageOptimizerResult = await imageOptimizer({ headers }, imageConfig, {
+    baseOriginUrl,
+    parsedUrl,
+    s3Config,
+  });
 
   if ('error' in imageOptimizerResult) {
     return {

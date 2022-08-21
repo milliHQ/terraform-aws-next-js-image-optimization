@@ -15,6 +15,10 @@ declare global {
       TF_NEXTIMAGE_SOURCE_BUCKET?: string;
       __DEBUG__USE_LOCAL_BUCKET?: string;
       NEXT_SHARP_PATH?: string;
+      /**
+       * Use this endpoint to fetch the Next.js config.
+       */
+      IMAGE_CONFIG_ENDPOINT?: string;
     }
   }
 }
