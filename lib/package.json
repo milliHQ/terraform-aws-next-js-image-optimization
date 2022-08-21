@@ -16,7 +16,7 @@
     "postpack": "rm ./LICENSE ./third-party-licenses.txt"
   },
   "dependencies": {
-    "@millihq/etag-cache": "^1.0.1",
+    "@millihq/etag-cache": "^1.1.0",
     "@millihq/pixel-core": "4.2.0",
     "@vercel/fetch-cached-dns": "^2.1.0",
     "abort-controller": "3.0.0",

@@ -775,10 +775,10 @@
     semver "^7.3.4"
     tar "^6.1.0"
 
-"@millihq/etag-cache@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@millihq/etag-cache/-/etag-cache-1.0.1.tgz#b262dac8c6221b15bd64c488fb5afa01376e4904"
-  integrity sha512-081fi/k+fFHv+4bVIdvfgLH4L3vDc/igV2QaevXDnZeucjqCtsIBRIPVksFi/AT8SGLPbXI4TetCaj90Y8SDLw==
+"@millihq/etag-cache@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@millihq/etag-cache/-/etag-cache-1.1.0.tgz#5bff66a278ed5a7ff755091a382ea069f0dddf3d"
+  integrity sha512-mQl1JfXfGlboOwvuoj+cMuvgOZWBm3Fx7kYemcy7GHrH7HGa5yTzXsmtQNAdXcpyDH/0Fgo99od00wlrcxjAvA==
 
 "@millihq/pixel-core@4.2.0":
   version "4.2.0"
