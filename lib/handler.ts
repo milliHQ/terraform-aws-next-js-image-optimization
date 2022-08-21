@@ -7,6 +7,7 @@ process.env.NEXT_SHARP_PATH = require.resolve('sharp');
 import { parse as parseUrl } from 'url';
 
 import { ETagCache } from '@millihq/etag-cache';
+import createFetch from '@vercel/fetch-cached-dns';
 import type {
   APIGatewayProxyEventV2,
   APIGatewayProxyStructuredResultV2,
@@ -15,6 +16,7 @@ import type {
   // eslint-disable-next-line import/no-unresolved
 } from 'aws-lambda';
 import S3 from 'aws-sdk/clients/s3';
+import nodeFetch from 'node-fetch';
 
 import { imageOptimizer, S3Config } from './image-optimizer';
 import { normalizeHeaders } from './normalized-headers';
@@ -60,8 +62,8 @@ const baseOriginUrl = process.env.TF_NEXTIMAGE_BASE_ORIGIN ?? undefined;
  * to improve performance for repeated requests.
  */
 // eslint-disable-next-line
-const fetch = require('@vercel/fetch-cached-dns')(require('node-fetch'));
-const fetchImageConfig = fetchImageConfigGenerator(fetch);
+const fetch = createFetch();
+const fetchImageConfig = fetchImageConfigGenerator(fetch as typeof nodeFetch);
 const configCache = new ETagCache<NextImageConfig>(60, fetchImageConfig);
 
 /* -----------------------------------------------------------------------------
