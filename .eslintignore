@@ -2,3 +2,4 @@
 
 # Build output
 /lib/dist
+/examples/*/out
